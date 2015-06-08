@@ -63,7 +63,24 @@ function children(parent) {
           });
 }
 
-function DecisionTable(el) {
+
+function cellFocus(evt) {
+  console.info('cellFocus', evt.target, evt.target.innerText);
+}
+
+
+function cellBlur(evt) {
+  console.info('cellBlur', evt.target, evt.target.innerText);
+}
+
+
+function cellInput(evt) {
+  console.info('cellInput', evt.target, evt.target.innerText);
+}
+
+
+
+function DecisionTable(el, options) {
   if (!el) {
     throw new Error('Missing element to construct a DecisionTable');
   }
@@ -112,6 +129,9 @@ function DecisionTable(el) {
     'tbody .annotation'
   ].join(', '), this.el).forEach(function (cell) {
     cell.contentEditable = true;
+    cell.addEventListener('focus', cellFocus);
+    cell.addEventListener('blur', cellBlur);
+    cell.addEventListener('input', cellInput);
   });
 
   selectAll('tbody .input, tbody .output', this.el).forEach(function (col) {
