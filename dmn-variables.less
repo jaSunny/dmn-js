@@ -3,6 +3,7 @@
 
 @dmn-primary:             #52b415;
 @dmn-border-color:        desaturate(@dmn-primary, 30%);
+@dmn-focus:               #f9fac8;// #E4E5BB
 
 @dmn-gray-lighter:        #f0f0f0;
 @dmn-gray-light:          #c0c0c0;
@@ -12,9 +13,9 @@
 
 @dmn-table-bg:            #fff;
 @dmn-row-even-bg:         #efefef;
-@dmn-row-even-hover-bg:   #e0e0e0;
+@dmn-row-even-hover-bg:   mix(@dmn-focus, #e0e0e0);
 @dmn-row-odd-bg:          #fefefe;
-@dmn-row-odd-hover-bg:    #e6e6e6;
+@dmn-row-odd-hover-bg:    mix(@dmn-focus, #e6e6e6);
 
 @dmn-col-even-hover-bg:   @dmn-row-even-hover-bg;
 @dmn-col-odd-hover-bg:    @dmn-row-odd-hover-bg;
