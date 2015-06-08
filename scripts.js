@@ -102,8 +102,19 @@ function DecisionTable(el) {
     this.el.appendChild(div);
   }
 
-  var cols = selectAll('tbody .input, tbody .output', this.el);
-  cols.forEach(function (col) {
+
+  selectAll([
+    '.labels td',
+    '.values td',
+    '.mappings td',
+    'tbody .input',
+    'tbody .output',
+    'tbody .annotation'
+  ].join(', '), this.el).forEach(function (cell) {
+    cell.contentEditable = true;
+  });
+
+  selectAll('tbody .input, tbody .output', this.el).forEach(function (col) {
     col.addEventListener('mouseover', tableColumnHover);
   });
 }
