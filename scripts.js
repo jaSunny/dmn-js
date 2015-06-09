@@ -16,16 +16,6 @@ function addHoverClass(el) {
   el.classList.add('hover');
 }
 
-function tableColumnHover(evt) {
-  var colNum = selectAll('td', evt.target.parentNode).indexOf(evt.target);
-  var rows = selectAll('tbody tr', cellTable(evt.target));
-  rows.forEach(function (row) {
-    var tds = selectAll('td', row);
-    tds.forEach(removeHoverClass);
-    addHoverClass(tds[colNum]);
-  });
-}
-
 function elStyle(el) {
   return el.currentStyle || window.getComputedStyle(el);
 }
@@ -64,62 +54,65 @@ function children(parent) {
 }
 
 
-function cellFocus(evt) {
-  console.info('cellFocus', evt.target, evt.target.innerText);
-}
-
-
-function cellBlur(evt) {
-  console.info('cellBlur', evt.target, evt.target.innerText);
-}
-
-
-function cellInput(evt) {
-  console.info('cellInput', evt.target, evt.target.innerText);
-}
-
-
 
 function DecisionTable(el, options) {
   if (!el) {
     throw new Error('Missing element to construct a DecisionTable');
   }
+  options = options || {};
   this.el = el;
-
-  var parent = this.el.parentNode;
-  var parentBox = elBox(parent);
-  var parentHeight = parent.clientHeight - (parentBox.top + parentBox.bottom);
+  this.inputs = [];
+  this.outputs = [];
 
   this.table = selectAll('table', this.el)[0];
   this.body = selectAll('tbody', this.table)[0];
 
-  if (this.el.clientHeight > parentHeight) {
-    var fullHeight = parentHeight;
-    var div = document.createElement('div');
 
-    this.table.classList.add('detached', 'dmn-table-head');
-    this.table.removeChild(this.body);
+  this
+    .splitBody()
+    .bindEvents();
+}
 
-    this.bodyTable = document.createElement('table');
-    this.bodyTable.classList.add('detached', 'dmn-table-body');
-    this.bodyTable.appendChild(this.body);
 
-    div.classList.add('body-wrapper');
-    this.el.classList.add('scrollable');
-    this.el.style.height = fullHeight +'px';
 
-    children(parent).forEach(function (child) {
-      if (child === el) { return; }
-      fullHeight -= (child.clientHeight + child.offsetTop);
-    });
+DecisionTable.prototype.splitBody = function () {
+  var parent = this.el.parentNode;
+  var parentBox = elBox(parent);
+  var parentHeight = parent.clientHeight - (parentBox.top + parentBox.bottom);
 
-    div.style.height = (fullHeight - (this.table.clientHeight + this.table.offsetTop + 1)) +'px';
-    div.appendChild(this.bodyTable);
-
-    this.el.appendChild(div);
+  if (this.el.clientHeight <= parentHeight) {
+    return this;
   }
 
+  var el = this.el;
+  var fullHeight = parentHeight;
+  var div = document.createElement('div');
 
+  this.table.classList.add('detached', 'dmn-table-head');
+  this.table.removeChild(this.body);
+
+  this.bodyTable = document.createElement('table');
+  this.bodyTable.classList.add('detached', 'dmn-table-body');
+  this.bodyTable.appendChild(this.body);
+
+  div.classList.add('body-wrapper');
+  el.classList.add('scrollable');
+  el.style.height = fullHeight +'px';
+
+  children(parent).forEach(function (child) {
+    if (child === el) { return; }
+    fullHeight -= (child.clientHeight + child.offsetTop);
+  });
+
+  div.style.height = (fullHeight - (this.table.clientHeight + this.table.offsetTop + 1)) +'px';
+  div.appendChild(this.bodyTable);
+
+  el.appendChild(div);
+
+  return this;
+};
+
+DecisionTable.prototype.bindEvents = function () {
   selectAll([
     '.labels td',
     '.values td',
@@ -129,17 +122,156 @@ function DecisionTable(el, options) {
     'tbody .annotation'
   ].join(', '), this.el).forEach(function (cell) {
     cell.contentEditable = true;
-    cell.addEventListener('focus', cellFocus);
-    cell.addEventListener('blur', cellBlur);
-    cell.addEventListener('input', cellInput);
-  });
+    cell.addEventListener('focus', this.cellFocus.bind(this));
+    cell.addEventListener('blur', this.cellBlur.bind(this));
+    cell.addEventListener('input', this.cellInput.bind(this));
+  }, this);
 
   selectAll('tbody .input, tbody .output', this.el).forEach(function (col) {
-    col.addEventListener('mouseover', tableColumnHover);
+    col.addEventListener('mouseover', this.tableColumnHover.bind(this));
+  }, this);
+
+  return this;
+};
+
+
+DecisionTable.prototype.tableColumnHover = function(evt) {
+  var colNum = selectAll('td', evt.target.parentNode).indexOf(evt.target);
+  var rows = selectAll('tbody tr', cellTable(evt.target));
+  rows.forEach(function (row) {
+    var tds = selectAll('td', row);
+    tds.forEach(removeHoverClass);
+    addHoverClass(tds[colNum]);
   });
-}
+};
+
+
+DecisionTable.prototype.cellFocus = function (evt) {
+  console.info('cellFocus', evt.target, evt.target.innerText);
+};
+
+
+DecisionTable.prototype.cellBlur = function (evt) {
+  console.info('cellBlur', evt.target, evt.target.innerText);
+};
+
+
+DecisionTable.prototype.cellInput = function (evt) {
+  console.info('cellInput', evt.target, evt.target.innerText);
+};
+
+
+
+
+
+
 
 DecisionTable.prototype.columnNumber = function (cell) {
   return selectAll('td', this.el).indexOf(cell);
 };
 
+DecisionTable.prototype.addInput = function () {
+
+};
+
+
+DecisionTable.prototype.addOutput = function () {
+
+};
+
+
+DecisionTable.prototype.addRow = function () {
+
+};
+
+
+DecisionTable.prototype.toggleEditing = function () {
+
+};
+
+
+
+
+
+function DecisionTableInput(table) {
+  if (!table) { throw new Error('Missing table argument for DecisionTableInput'); }
+  this.table = table;
+}
+
+DecisionTableInput.prototype.label = function (value) {
+  if (!value) { return this.labelEl.innerText.trim(); }
+  this.labelEl.innerText = value;
+  return this;
+};
+
+
+DecisionTableInput.prototype.choices = function (value) {
+  if (!value) { return this.choicesEl.innerText.trim(); }
+  this.choicesEl.innerText = value;
+  return this;
+};
+
+
+DecisionTableInput.prototype.mapping = function (value) {
+  if (!value) { return this.mappingEl.innerText.trim(); }
+  this.mappingEl.innerText = value;
+  return this;
+};
+
+
+DecisionTableInput.prototype.remove = function () {
+  // this.table =
+};
+
+
+
+
+
+function DecisionTableOutput(table) {
+  if (!table) { throw new Error('Missing table argument for DecisionTableOutput'); }
+  this.table = table;
+}
+
+DecisionTableOutput.prototype.label = function (value) {
+  if (!value) { return this.labelEl.innerText.trim(); }
+  this.labelEl.innerText = value;
+  return this;
+};
+
+
+DecisionTableOutput.prototype.choices = function (value) {
+  if (!value) { return this.choicesEl.innerText.trim(); }
+  this.choicesEl.innerText = value;
+  return this;
+};
+
+
+DecisionTableOutput.prototype.mapping = function (value) {
+  if (!value) { return this.mappingEl.innerText.trim(); }
+  this.mappingEl.innerText = value;
+  return this;
+};
+
+
+DecisionTableOutput.prototype.remove = function () {};
+
+
+
+
+var dialogElement = document.createElement('div');
+dialogElement.classList.add('dmn-modal');
+function DecisionTableDialog() {
+  if (document.body.contains(dialogElement)) {
+    return;
+  }
+
+  document.body.appendChild(dialogElement);
+}
+
+DecisionTableDialog.prototype.open = function () {
+  document.body.classList.add('dmn-modal-open');
+};
+
+DecisionTableDialog.prototype.close = function () {
+  document.body.classList.remove('dmn-modal-open');
+};
