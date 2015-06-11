@@ -1,13 +1,199 @@
 'use strict';
 
-function selectAll(selector, ctx) {
-  ctx = ctx || document;
+var State = require('ampersand-state');
+var Collection = require('ampersand-collection');
+var Events = require('ampersand-view/node_modules/events-mixin');
+var View = require('ampersand-view');
+
+
+
+
+var DecisionTableView = View.extend({
+  
+});
+
+
+
+var specialKeys = [
+  8
+];
+
+
+var ChoicesCollection = Collection.extend({
+  model: State.extend({
+    props: {
+      value: 'string'
+    }
+  })
+});
+
+var ChoiceSuggestionView = View.extend({
+  template: '<li></li>',
+  bindings: {
+    'model.value': {
+      type: 'text'
+      /*
+      type: function (el, value) {
+        if (!value) { return; }
+        var val = this.parent.content().length;
+        var htmlStr = '<span>' + value.slice(0, val) + '</span>';
+        htmlStr += value.slice(val);
+        el.innerHTML = htmlStr;
+      }
+      */
+    }
+  }
+});
+
+var ChoiceView = View.extend({
+  collections: {
+    choices: ChoicesCollection
+  },
+
+  events: {
+    input: '_autocomplete'
+  },
+
+  _filter: function (val) {
+    if (!val) { return []; }
+    return this.choices.filter(function (choice) {
+      return choice.value.indexOf(val) === 0;
+    });
+  },
+
+  content: function () {
+    return this.el.textContent.trim();
+  },
+
+  initialize: function (options) {
+    options = options || {};
+
+    this.el.contentEditable = true;
+    var choices = options.choices || [];
+    this.choices.reset(choices.map(function (choice) {
+      return {value: choice};
+    }));
+
+    this.suggestions = new ChoicesCollection({
+      parent: this.choices
+    });
+    
+    var suggestionsEl = this.suggestionsEl = document.createElement('ul');
+    suggestionsEl.className = 'choice-suggestions-helper';
+
+    document.body.appendChild(suggestionsEl);
+
+    var suggestionsView = this.renderCollection(this.suggestions, ChoiceSuggestionView, suggestionsEl);
+    this.listenToAndRun(this.choices, 'change', function () {
+      this.suggestions.reset(this._filter(this.content()));
+    });
+    this.listenToAndRun(this.suggestions, 'reset', function () {
+      this.suggestionsEl.style.display = this.suggestions.length < 2 ? 'none' : 'block';
+    });
+
+    var self = this;
+    function _handleResize() {
+      self._handleResize();
+    }
+    this._handleResize();
+    window.addEventListener('resize', this._handleResize);
+  },
+
+  /*
+  remove: function () {
+    window.remoeEventListener();
+    View.prototype.remove.apply(this, arguments);
+  },
+  */
+
+  _handleResize: function () {
+    var node = this.el;
+    var top = node.offsetTop;
+    var left = node.offsetLeft;
+    var helper = this.suggestionsEl;
+
+    while (node = node.offsetParent) {
+      if (node.offsetTop) {
+        top += parseInt(node.offsetTop, 10);
+      }
+      if (node.offsetLeft) {
+        left += parseInt(node.offsetLeft, 10);
+      }
+    }
+
+    top - helper.clientHeight;
+    helper.style.top = top;
+    helper.style.left = left;
+  },
+
+
+  _autocomplete: function (evt) {
+    if (evt && (specialKeys.indexOf(evt.keyCode) > -1 || evt.ctrlKey)) {
+      return;
+    }
+    var val = this.content();
+
+    var filtered = this._filter(val);
+    this.suggestions.reset(filtered);
+    
+    if (filtered.length === 1) {
+      if (evt) {
+        evt.preventDefault();
+      }
+      this.el.textContent = filtered[0].value;
+    }
+  }
+});
+
+
+
+
+
+
+
+
+
+function nodeListarray(els) {
+  if (Array.isArray(els)) {
+    return els;
+  }
   var arr = [];
-  var els = ctx.querySelectorAll(selector);
   for (var i = 0; i < els.length; i++) {
     arr.push(els[i]);
   }
   return arr;
+}
+
+function children(parent) {
+  return nodeListarray(parent.childNodes)
+          .filter(function (el) {
+            return !!el.tagName;
+          });
+}
+
+function mkEl(name, attributes,childEls) {
+  var el = document.createElement(name);
+  var keys = Object.keys(attributes || {});
+  keys.forEach(function (key) {
+    el.setAttribute(key, attributes[key]);
+  });
+
+  if (['string', 'number'].indexOf(typeof childEls) > -1) {
+    el.textContent = childEls;
+  }
+  else {
+    childEls = childEls ? nodeListarray(childEls) : [];
+    childEls.forEach(function (child) {
+      el.appendChild(child);
+    });
+  }
+  
+  return el;
+}
+
+function selectAll(selector, ctx) {
+  ctx = ctx || document;
+  return nodeListarray(ctx.querySelectorAll(selector));
 }
 window.selectAll = selectAll;
 
@@ -54,13 +240,6 @@ function elBox(el, withMargin, withoutBorder) {
   };
 }
 
-function children(parent) {
-  return Array.prototype.slice.apply(parent.childNodes)
-          .filter(function (el) {
-            return !!el.tagName;
-          });
-}
-
 function DropDownCell(el, choices) {
   this.el = el;
   this.el.classList.add('dropdown');
@@ -73,9 +252,7 @@ DropDownCell.prototype.render = function () {
   var wrapper = document.createElement('div');
   wrapper.classList.add('wrapper');
 
-  var val = document.createElement('span');
-  val.textContent = this.el.textContent;
-  val.classList.add('value');
+  var val = mkEl('span', {class: 'value'}, this.el.textContent)
   val.addEventListener('click', function (evt) {
     cell.classList.toggle('open');
   });
@@ -197,7 +374,11 @@ function DecisionTable(el, options) {
 
     else {
       cellEls.forEach(function (cell) {
-        new DropDownCell(cell, choices);
+        // new DropDownCell(cell, choices);
+        new ChoiceView({
+          el: cell,
+          choices: choices
+        });
       }, this);
     }
   }, this);
