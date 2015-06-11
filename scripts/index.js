@@ -1,6 +1,5 @@
 'use strict';
 
-
 function selectAll(selector, ctx) {
   ctx = ctx || document;
   var arr = [];
@@ -10,6 +9,7 @@ function selectAll(selector, ctx) {
   }
   return arr;
 }
+window.selectAll = selectAll;
 
 function cellTable(cell) {
   for (var node = cell.parentNode; node.tagName.toLowerCase() !== 'table'; node = node.parentNode) {}
@@ -60,8 +60,6 @@ function children(parent) {
             return !!el.tagName;
           });
 }
-
-
 
 function DropDownCell(el, choices) {
   this.el = el;
@@ -298,7 +296,7 @@ DecisionTable.prototype.cellInput = function (evt) {
 
 
 
-
+module.exports = DecisionTable;
 
 
 

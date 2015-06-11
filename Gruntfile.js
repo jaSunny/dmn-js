@@ -8,16 +8,30 @@ module.exports = function(grunt) {
     less: {
       options: {
         paths: [
-          'node_modules/camunda-commons-ui/resources/less',
-          'node_modules/camunda-commons-ui/node_modules/bootstrap/less'
+          'node_modules/bootstrap/less'
         ]
       },
 
       styles: {
         files: {
-          'styles.css': 'styles.less',
-          'dev.css': 'dev.less',
-          'normalize.css': 'node_modules/camunda-commons-ui/node_modules/bootstrap/less/normalize.less'
+          'dist/styles.css':    'styles/styles.less',
+          'dist/dev.css':       'styles/dev.less',
+          'dist/normalize.css': 'node_modules/bootstrap/less/normalize.less'
+        }
+      }
+    },
+
+    browserify: {
+      scripts: {
+        options: {
+          browserifyOptions: {
+            standalone: 'DecisionTable',
+            list: true,
+            debug: true
+          }
+        },
+        files: {
+          'dist/scripts.js': 'scripts/index.js'
         }
       }
     },
@@ -27,8 +41,20 @@ module.exports = function(grunt) {
         options: {
           port: 9999,
           livereload: 9998,
-          base: '.'
+          base: 'dist'
         }
+      }
+    },
+
+    copy: {
+      fonts: {
+        files: [{expand: true, src: 'fonts/**', dest: 'dist/'}]
+      },
+      html: {
+        files: [
+          {src: 'index.html', dest: 'dist/index.html'},
+          {src: 'favicon.ico', dest: 'dist/favicon.ico'}
+        ]
       }
     },
 
@@ -37,17 +63,38 @@ module.exports = function(grunt) {
         files: ['*.less'],
         tasks: ['less:styles']
       },
+
+      html: {
+        files: ['index.html'],
+        tasks: ['copy:html']
+      },
+
+      scripts: {
+        files: ['scripts/**'],
+        tasks: ['browserify:scripts']
+      },
+
       connect: {
-        files: [
-          '*.*'
-        ],
-        tasks: [],
         options: {
           livereload: 9998
-        }
+        },
+        files: [
+          'dist/**.*'
+        ],
+        tasks: []
       }
     }
   });
 
-  grunt.registerTask('default', ['less:styles', 'connect:dev', 'watch']);
+  grunt.registerTask('build', [
+    'copy',
+    'browserify',
+    'less'
+  ]);
+
+  grunt.registerTask('default', [
+    'build',
+    'connect:dev',
+    'watch'
+  ]);
 };
