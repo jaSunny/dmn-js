@@ -86,6 +86,7 @@ DropDownCell.prototype.render = function () {
   clear.classList.add('clear', 'icon-dmn');
   clear.addEventListener('click', function () {
     val.innerHTML = '';
+    cell.classList.remove('open');
   });
   wrapper.appendChild(clear);
 
