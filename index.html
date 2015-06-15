@@ -10,6 +10,8 @@
     <link type="text/css"
           rel="stylesheet"
           href="styles.css" />
+    <link rel="favicon"
+          href="favicon.ico" />
   </head>
   <body>
     <div class="page-wrapper">
@@ -50,8 +52,6 @@
           <table>
             <thead>
               <tr>
-                <th class="control"
-                    rowspan="4"></th>
                 <th class="hit"
                     rowspan="4">UC</th>
 
@@ -120,7 +120,6 @@
 
             <tbody>
               <tr class="double-border-top">
-                <th class="control"></th>
                 <td class="number">1</td>
 
                 <td class="input">&ge; 100</td>
@@ -138,7 +137,6 @@
               </tr>
 
               <tr>
-                <th class="control"></th>
                 <td class="number">2</td>
 
                 <td class="input"></td>
@@ -152,7 +150,6 @@
               </tr>
 
               <tr>
-                <th class="control"></th>
                 <td class="number">3</td>
 
                 <td class="input"></td>
@@ -166,7 +163,6 @@
               </tr>
 
               <tr>
-                <th class="control"></th>
                 <td class="number">4</td>
 
                 <td class="input"></td>
@@ -180,7 +176,6 @@
               </tr>
 
               <tr>
-                <th class="control"></th>
                 <td class="number">5</td>
 
                 <td class="input"></td>
@@ -194,7 +189,6 @@
               </tr>
 
               <tr>
-                <th class="control"></th>
                 <td class="number">6</td>
 
                 <td class="input"></td>
@@ -208,7 +202,6 @@
               </tr>
 
               <tr>
-                <th class="control"></th>
                 <td class="number">7</td>
 
                 <td class="input"></td>
@@ -222,7 +215,6 @@
               </tr>
 
               <tr>
-                <th class="control"></th>
                 <td class="number">8</td>
 
                 <td class="input"></td>
@@ -236,7 +228,6 @@
               </tr>
 
               <tr>
-                <th class="control"></th>
                 <td class="number">9</td>
 
                 <td class="input"></td>
@@ -250,7 +241,6 @@
               </tr>
 
               <tr>
-                <th class="control"></th>
                 <td class="number">10</td>
 
                 <td class="input"></td>
@@ -264,7 +254,6 @@
               </tr>
 
               <tr>
-                <th class="control"></th>
                 <td class="number">11</td>
 
                 <td class="input"></td>
@@ -278,7 +267,6 @@
               </tr>
 
               <tr>
-                <th class="control"></th>
                 <td class="number">12</td>
 
                 <td class="input"></td>
@@ -292,7 +280,6 @@
               </tr>
 
               <tr>
-                <th class="control"></th>
                 <td class="number">13</td>
 
                 <td class="input"></td>
@@ -306,7 +293,6 @@
               </tr>
 
               <tr>
-                <th class="control"></th>
                 <td class="number">14</td>
 
                 <td class="input"></td>
@@ -934,8 +920,7 @@
               <tr>
                 <td class="number">2</td>
 
-                <td class="input"
-                    rowspan="2">
+                <td class="input">
                   silver
                 </td>
                 <td class="input double-border-right">
@@ -955,6 +940,9 @@
               <tr>
                 <td class="number">3</td>
 
+                <td class="input">
+                  silver
+                </td>
                 <td class="input double-border-right">
                   &gt;= 1000
                 </td>
@@ -1000,7 +988,9 @@
       /* global selectAll: false, DecisionTable: false */
 
       selectAll('.dmn-table').forEach(function (dt) {
-        new DecisionTable(dt);
+        new DecisionTable({
+          el: dt
+        });
       });
     </script>
   </body>

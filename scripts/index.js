@@ -1,157 +1,15 @@
 'use strict';
+/* global require: false, module: false, console: false */
+/* jshint debug: true */
 
-var State = require('ampersand-state');
-var Collection = require('ampersand-collection');
-var Events = require('ampersand-view/node_modules/events-mixin');
-var View = require('ampersand-view');
-
+require('./classList');
 
 
-
-var DecisionTableView = View.extend({
-  
-});
+var DecisionTableView = require('./decision-table-view');
+var ChoiceView = require('./choice-view');
 
 
-
-var specialKeys = [
-  8
-];
-
-
-var ChoicesCollection = Collection.extend({
-  model: State.extend({
-    props: {
-      value: 'string'
-    }
-  })
-});
-
-var ChoiceSuggestionView = View.extend({
-  template: '<li></li>',
-  bindings: {
-    'model.value': {
-      type: 'text'
-      /*
-      type: function (el, value) {
-        if (!value) { return; }
-        var val = this.parent.content().length;
-        var htmlStr = '<span>' + value.slice(0, val) + '</span>';
-        htmlStr += value.slice(val);
-        el.innerHTML = htmlStr;
-      }
-      */
-    }
-  }
-});
-
-var ChoiceView = View.extend({
-  collections: {
-    choices: ChoicesCollection
-  },
-
-  events: {
-    input: '_autocomplete'
-  },
-
-  _filter: function (val) {
-    if (!val) { return []; }
-    return this.choices.filter(function (choice) {
-      return choice.value.indexOf(val) === 0;
-    });
-  },
-
-  content: function () {
-    return this.el.textContent.trim();
-  },
-
-  initialize: function (options) {
-    options = options || {};
-
-    this.el.contentEditable = true;
-    var choices = options.choices || [];
-    this.choices.reset(choices.map(function (choice) {
-      return {value: choice};
-    }));
-
-    this.suggestions = new ChoicesCollection({
-      parent: this.choices
-    });
-    
-    var suggestionsEl = this.suggestionsEl = document.createElement('ul');
-    suggestionsEl.className = 'choice-suggestions-helper';
-
-    document.body.appendChild(suggestionsEl);
-
-    var suggestionsView = this.renderCollection(this.suggestions, ChoiceSuggestionView, suggestionsEl);
-    this.listenToAndRun(this.choices, 'change', function () {
-      this.suggestions.reset(this._filter(this.content()));
-    });
-    this.listenToAndRun(this.suggestions, 'reset', function () {
-      this.suggestionsEl.style.display = this.suggestions.length < 2 ? 'none' : 'block';
-    });
-
-    var self = this;
-    function _handleResize() {
-      self._handleResize();
-    }
-    this._handleResize();
-    window.addEventListener('resize', this._handleResize);
-  },
-
-  /*
-  remove: function () {
-    window.remoeEventListener();
-    View.prototype.remove.apply(this, arguments);
-  },
-  */
-
-  _handleResize: function () {
-    var node = this.el;
-    var top = node.offsetTop;
-    var left = node.offsetLeft;
-    var helper = this.suggestionsEl;
-
-    while (node = node.offsetParent) {
-      if (node.offsetTop) {
-        top += parseInt(node.offsetTop, 10);
-      }
-      if (node.offsetLeft) {
-        left += parseInt(node.offsetLeft, 10);
-      }
-    }
-
-    top - helper.clientHeight;
-    helper.style.top = top;
-    helper.style.left = left;
-  },
-
-
-  _autocomplete: function (evt) {
-    if (evt && (specialKeys.indexOf(evt.keyCode) > -1 || evt.ctrlKey)) {
-      return;
-    }
-    var val = this.content();
-
-    var filtered = this._filter(val);
-    this.suggestions.reset(filtered);
-    
-    if (filtered.length === 1) {
-      if (evt) {
-        evt.preventDefault();
-      }
-      this.el.textContent = filtered[0].value;
-    }
-  }
-});
-
-
-
-
-
-
-
-
+module.exports = DecisionTableView;
 
 function nodeListarray(els) {
   if (Array.isArray(els)) {
@@ -163,6 +21,19 @@ function nodeListarray(els) {
   }
   return arr;
 }
+
+function selectAll(selector, ctx) {
+  ctx = ctx || document;
+  return nodeListarray(ctx.querySelectorAll(selector));
+}
+window.selectAll = selectAll;
+
+
+/*
+
+
+
+
 
 function children(parent) {
   return nodeListarray(parent.childNodes)
@@ -190,12 +61,6 @@ function mkEl(name, attributes,childEls) {
   
   return el;
 }
-
-function selectAll(selector, ctx) {
-  ctx = ctx || document;
-  return nodeListarray(ctx.querySelectorAll(selector));
-}
-window.selectAll = selectAll;
 
 function cellTable(cell) {
   for (var node = cell.parentNode; node.tagName.toLowerCase() !== 'table'; node = node.parentNode) {}
@@ -252,8 +117,8 @@ DropDownCell.prototype.render = function () {
   var wrapper = document.createElement('div');
   wrapper.classList.add('wrapper');
 
-  var val = mkEl('span', {class: 'value'}, this.el.textContent)
-  val.addEventListener('click', function (evt) {
+  var val = mkEl('span', {class: 'value'}, this.el.textContent);
+  val.addEventListener('click', function () {
     cell.classList.toggle('open');
   });
 
@@ -312,12 +177,11 @@ DropDownCell.prototype.value = function () {};
 
 
 
-function DecisionTable(el, options) {
-  if (!el) {
+function DecisionTable(options) {
+  if (!options || options.el) {
     throw new Error('Missing element to construct a DecisionTable');
   }
-  options = options || {};
-  this.el = el;
+  var el = this.el = options.el;
   this.inputs = [];
   this.outputs = [];
 
@@ -330,7 +194,6 @@ function DecisionTable(el, options) {
   }
 
   selectAll('thead tr.labels td.input', this.el).forEach(function (labelCell, delta) {
-    var label = labelCell.textContent.trim();
     var dataType;
     var choicesCell = this.el.querySelector('thead tr.values td:nth-child(' + (delta + 1) + ')');
     var choices = choicesCell.textContent.trim();
@@ -356,13 +219,8 @@ function DecisionTable(el, options) {
 
 
 
-    var mappingsCell = this.el.querySelector('thead tr.mappings td:nth-child(' + (delta + 1) + ')');
-    var mappings = mappingsCell.textContent.trim();
 
     var cellEls = selectAll('tbody tr td:nth-child(' + (delta + index) + ')', this.body);
-    var cells = cellEls.map(function (cell) {
-      return cell.textContent.trim();
-    });
 
 
     if (choices.length < 2) {
@@ -479,273 +337,4 @@ DecisionTable.prototype.cellInput = function (evt) {
 
 module.exports = DecisionTable;
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/*
- * classList.js: Cross-browser full element.classList implementation.
- * 2014-07-23
- *
- * By Eli Grey, http://eligrey.com
- * Public Domain.
- * NO WARRANTY EXPRESSED OR IMPLIED. USE AT YOUR OWN RISK.
- */
-
-/*global self, document, DOMException */
-
-/*! @source http://purl.eligrey.com/github/classList.js/blob/master/classList.js*/
-
-if ("document" in self) {
-
-// Full polyfill for browsers with no classList support
-if (!("classList" in document.createElement("_"))) {
-
-(function (view) {
-
-"use strict";
-
-if (!('Element' in view)) return;
-
-var
-	  classListProp = "classList"
-	, protoProp = "prototype"
-	, elemCtrProto = view.Element[protoProp]
-	, objCtr = Object
-	, strTrim = String[protoProp].trim || function () {
-		return this.replace(/^\s+|\s+$/g, "");
-	}
-	, arrIndexOf = Array[protoProp].indexOf || function (item) {
-		var
-			  i = 0
-			, len = this.length
-		;
-		for (; i < len; i++) {
-			if (i in this && this[i] === item) {
-				return i;
-			}
-		}
-		return -1;
-	}
-	// Vendors: please allow content code to instantiate DOMExceptions
-	, DOMEx = function (type, message) {
-		this.name = type;
-		this.code = DOMException[type];
-		this.message = message;
-	}
-	, checkTokenAndGetIndex = function (classList, token) {
-		if (token === "") {
-			throw new DOMEx(
-				  "SYNTAX_ERR"
-				, "An invalid or illegal string was specified"
-			);
-		}
-		if (/\s/.test(token)) {
-			throw new DOMEx(
-				  "INVALID_CHARACTER_ERR"
-				, "String contains an invalid character"
-			);
-		}
-		return arrIndexOf.call(classList, token);
-	}
-	, ClassList = function (elem) {
-		var
-			  trimmedClasses = strTrim.call(elem.getAttribute("class") || "")
-			, classes = trimmedClasses ? trimmedClasses.split(/\s+/) : []
-			, i = 0
-			, len = classes.length
-		;
-		for (; i < len; i++) {
-			this.push(classes[i]);
-		}
-		this._updateClassName = function () {
-			elem.setAttribute("class", this.toString());
-		};
-	}
-	, classListProto = ClassList[protoProp] = []
-	, classListGetter = function () {
-		return new ClassList(this);
-	}
-;
-// Most DOMException implementations don't allow calling DOMException's toString()
-// on non-DOMExceptions. Error's toString() is sufficient here.
-DOMEx[protoProp] = Error[protoProp];
-classListProto.item = function (i) {
-	return this[i] || null;
-};
-classListProto.contains = function (token) {
-	token += "";
-	return checkTokenAndGetIndex(this, token) !== -1;
-};
-classListProto.add = function () {
-	var
-		  tokens = arguments
-		, i = 0
-		, l = tokens.length
-		, token
-		, updated = false
-	;
-	do {
-		token = tokens[i] + "";
-		if (checkTokenAndGetIndex(this, token) === -1) {
-			this.push(token);
-			updated = true;
-		}
-	}
-	while (++i < l);
-
-	if (updated) {
-		this._updateClassName();
-	}
-};
-classListProto.remove = function () {
-	var
-		  tokens = arguments
-		, i = 0
-		, l = tokens.length
-		, token
-		, updated = false
-		, index
-	;
-	do {
-		token = tokens[i] + "";
-		index = checkTokenAndGetIndex(this, token);
-		while (index !== -1) {
-			this.splice(index, 1);
-			updated = true;
-			index = checkTokenAndGetIndex(this, token);
-		}
-	}
-	while (++i < l);
-
-	if (updated) {
-		this._updateClassName();
-	}
-};
-classListProto.toggle = function (token, force) {
-	token += "";
-
-	var
-		  result = this.contains(token)
-		, method = result ?
-			force !== true && "remove"
-		:
-			force !== false && "add"
-	;
-
-	if (method) {
-		this[method](token);
-	}
-
-	if (force === true || force === false) {
-		return force;
-	} else {
-		return !result;
-	}
-};
-classListProto.toString = function () {
-	return this.join(" ");
-};
-
-if (objCtr.defineProperty) {
-	var classListPropDesc = {
-		  get: classListGetter
-		, enumerable: true
-		, configurable: true
-	};
-	try {
-		objCtr.defineProperty(elemCtrProto, classListProp, classListPropDesc);
-	} catch (ex) { // IE 8 doesn't support enumerable:true
-		if (ex.number === -0x7FF5EC54) {
-			classListPropDesc.enumerable = false;
-			objCtr.defineProperty(elemCtrProto, classListProp, classListPropDesc);
-		}
-	}
-} else if (objCtr[protoProp].__defineGetter__) {
-	elemCtrProto.__defineGetter__(classListProp, classListGetter);
-}
-
-}(self));
-
-} else {
-// There is full or partial native classList support, so just check if we need
-// to normalize the add/remove and toggle APIs.
-
-(function () {
-	"use strict";
-
-	var testElement = document.createElement("_");
-
-	testElement.classList.add("c1", "c2");
-
-	// Polyfill for IE 10/11 and Firefox <26, where classList.add and
-	// classList.remove exist but support only one argument at a time.
-	if (!testElement.classList.contains("c2")) {
-		var createMethod = function(method) {
-			var original = DOMTokenList.prototype[method];
-
-			DOMTokenList.prototype[method] = function(token) {
-				var i, len = arguments.length;
-
-				for (i = 0; i < len; i++) {
-					token = arguments[i];
-					original.call(this, token);
-				}
-			};
-		};
-		createMethod('add');
-		createMethod('remove');
-	}
-
-	testElement.classList.toggle("c3", false);
-
-	// Polyfill for IE 10 and Firefox <24, where classList.toggle does not
-	// support the second argument.
-	if (testElement.classList.contains("c3")) {
-		var _toggle = DOMTokenList.prototype.toggle;
-
-		DOMTokenList.prototype.toggle = function(token, force) {
-			if (1 in arguments && !this.contains(token) === !force) {
-				return force;
-			} else {
-				return _toggle.call(this, token);
-			}
-		};
-
-	}
-
-	testElement = null;
-}());
-
-}
-
-}
+*/
