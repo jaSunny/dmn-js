@@ -173,7 +173,7 @@ var ChoiceView = View.extend({
   },
 
   _handleBlur: function () {
-    this.model.focused = false;
+    // this.model.focused = false;
   },
 
   _handleResize: function () {

@@ -24,12 +24,16 @@ var CellModel = State.extend({
   },
 
   initialize: function () {
+    var cid = this.cid;
     this.on('change:focused', function () {
       if (!this.focused) { return; }
 
       var ruleCid = this.collection.parent.cid;
       this.collection.parent.collection.forEach(function (rule) {
         rule.focused = rule.cid === ruleCid;
+        rule.cells.forEach(function (cell) {
+          cell.focused = cell.cid === cid;
+        });
       });
     });
   }

@@ -57,8 +57,13 @@
     .transition(background-color 0.218s ease);
     overflow: hidden;
     text-overflow: ellipsis;
+    
     &:focus {
-      outline-color: @dmn-primary;
+      outline: none;
+    }
+
+    &.focused {
+      outline: 1px solid @dmn-primary;
     }
   }
 
@@ -173,6 +178,23 @@
     //   }
     // }
   }
+
+
+
+  tr.focused {
+    .number {
+      color: @dmn-primary;
+      background-color: @dmn-input-color;
+    }
+  }
+
+
+
+
+
+
+
+
 
   &.scrollable {
     overflow: hidden;
