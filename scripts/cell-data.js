@@ -14,6 +14,7 @@ var CellModel = State.extend({
       type: 'boolean',
       default: true
     },
+    choices: 'array',
     focused: 'boolean'
   }
 });

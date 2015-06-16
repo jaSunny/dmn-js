@@ -425,11 +425,28 @@ var DecisionTableView = View.extend({
     this.queryAll('tbody tr').forEach(function (row) {
       var cells = [];
       var cellEls = row.querySelectorAll('td');
+
       for (var c = 1; c < cellEls.length; c++) {
+        var datatype;
+        var choices;
+        var value = cellEls[c].textContent.trim();
+        var type = c <= inputs.length ? 'input' : (c < (cellEls.length - 1) ? 'output' : 'annotation');
+        var oc = c - (inputs.length + 1);
+
+        if (type === 'input' && inputs[c - 1]) {
+          choices = inputs[c - 1].choices;
+        }
+        else if (type === 'output' && outputs[oc]) {
+          choices = outputs[oc].choices;
+        }
+
         cells.push({
-          value: cellEls[c].textContent.trim()
+          value:    value,
+          choices:  choices,
+          datatype: datatype
         });
       }
+
       clauses.push({
         cells: cells
       });

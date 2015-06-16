@@ -72,7 +72,11 @@ var ChoiceView = View.extend({
       this.value = this.el.textContent.trim();
     }
 
-    var choices = options.choices || [];
+    var choices = this.model.choices;
+    if (!choices || !choices.length) {
+      choices = options.choices || [];
+    }
+
     this.choices.reset(choices.map(function (choice) {
       return {value: choice};
     }));
@@ -136,7 +140,6 @@ var ChoiceView = View.extend({
   },
 
   _handleFocus: function () {
-    console.info('_handleFocus', this);
     // this.el.setSelectionRange(0, this.el.textContent.length);
     this._handleInput();
   },
@@ -167,6 +170,7 @@ var ChoiceView = View.extend({
   },
 
   _handleInput: function (evt) {
+    console.info('input', evt);
     if (evt && (specialKeys.indexOf(evt.keyCode) > -1 || evt.ctrlKey)) {
       return;
     }
