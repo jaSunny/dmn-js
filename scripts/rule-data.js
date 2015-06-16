@@ -5,7 +5,7 @@ var State = deps('ampersand-state');
 var Collection = deps('ampersand-collection');
 var Cell = require('./cell-data');
 
-var ClauseModel = State.extend({
+var RuleModel = State.extend({
   session: {
     focused: 'boolean'
   },
@@ -46,9 +46,9 @@ var ClauseModel = State.extend({
 });
 
 module.exports = {
-  Model: ClauseModel,
+  Model: RuleModel,
 
   Collection: Collection.extend({
-    model: ClauseModel
+    model: RuleModel
   })
 };

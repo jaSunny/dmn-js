@@ -6,7 +6,7 @@ var merge = deps('lodash.merge');
 
 
 var ChoiceView = require('./choice-view');
-var ClauseCellView = View.extend(merge(ChoiceView.prototype, {
+var RuleCellView = View.extend(merge(ChoiceView.prototype, {
   bindings: merge({}, ChoiceView.prototype.bindings, {
     'model.value': {
       type: 'text'
@@ -21,8 +21,8 @@ var ClauseCellView = View.extend(merge(ChoiceView.prototype, {
 
 
 
-var ClauseInputCellView = ClauseCellView.extend({
-  bindings: merge({}, ClauseCellView.prototype.bindings, {
+var RuleInputCellView = RuleCellView.extend({
+  bindings: merge({}, RuleCellView.prototype.bindings, {
     last: {
       type: 'booleanClass',
       name: 'double-border-right'
@@ -48,7 +48,7 @@ var ClauseInputCellView = ClauseCellView.extend({
 
 
 
-var ClauseOutputCellView = ClauseCellView.extend({
+var RuleOutputCellView = RuleCellView.extend({
   template: '<td class="output"></td>'
 });
 
@@ -56,15 +56,15 @@ var ClauseOutputCellView = ClauseCellView.extend({
 
 
 
-var ClauseAnnotationCellView = ClauseCellView.extend({
+var RuleAnnotationCellView = RuleCellView.extend({
   template: '<td class="annotation"></td>'
 });
 
 
 
 module.exports = {
-  Cell:       ClauseCellView,
-  Input:      ClauseInputCellView,
-  Output:     ClauseOutputCellView,
-  Annotation: ClauseAnnotationCellView
+  Cell:       RuleCellView,
+  Input:      RuleInputCellView,
+  Output:     RuleOutputCellView,
+  Annotation: RuleAnnotationCellView
 };

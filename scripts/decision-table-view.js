@@ -3,7 +3,7 @@
 
 var View = deps('ampersand-view');
 var DecisionTable = require('./table-data');
-var ClauseView = require('./clause-view');
+var RuleView = require('./rule-view');
 
 
 
@@ -17,7 +17,7 @@ var DecisionTableControlsView = View.extend({
   autoRender: true,
 
   session: {
-    focusedClause: {
+    focusedRule: {
       default: 0,
       type: 'number'
     },
@@ -40,14 +40,14 @@ var DecisionTableControlsView = View.extend({
     focusedCell: {
       deps: ['model'],
       fn: function () {
-        return this.data.clauses.at();
+        return this.data.rules.at();
       }
     },
 
     focusedType: {
       deps: ['focusedCell'],
       fn: function () {
-        return this.focusedColumn === this.data.clauses.at(0).cell.length - 1 ?
+        return this.focusedColumn === this.data.rules.at(0).cell.length - 1 ?
                   'annotation' :
                   this.focusedColumn < this.data.inputs.length ?
                     'input' :
@@ -69,22 +69,22 @@ var DecisionTableControlsView = View.extend({
                 '<li class="add"><a>Add output</a></li>' +
               '</ul>' +
               */
-              '<ul class="clauses actions">' +
+              '<ul class="rules actions">' +
                 '<li class="add"><a>Add row</a></li>' +
               '</ul>' +
             '</div>',
 
   events: {
-    'click .actions.clauses .add': '_handleClauseAdd'
+    'click .actions.rules .add': '_handleRuleAdd'
   },
 
-  _handleClauseAdd: function () {
-    this.data.clauses.add({
-      cells: this.makeClauseCells()
+  _handleRuleAdd: function () {
+    this.data.rules.add({
+      cells: this.makeRuleCells()
     });
   },
 
-  makeClauseCells: function (){
+  makeRuleCells: function (){
     var cells = [];
     var c;
     for (c = 0; c < this.data.inputs.length; c++) {
@@ -116,7 +116,7 @@ var DecisionTableControlsView = View.extend({
       tableActionsEl:   '.table.actions',
       inputsActionsEl:  '.inputs.actions',
       outputsActionsEl: '.outputs.actions',
-      clausesActionsEl: '.clauses.actions'
+      rulesActionsEl: '.rules.actions'
     });
 
     return this;
@@ -144,10 +144,10 @@ var DecisionTableView = View.extend({
               '<table>' +
                 '<thead>' +
                   '<tr>' +
-                    '<th class="hit" clausespan="4"></th>' +
+                    '<th class="hit" rulespan="4"></th>' +
                     '<th class="input double-border-right" colspan="2">Input</th>' +
                     '<th class="output" colspan="2">Output</th>' +
-                    '<th class="annotation" clausespan="4">Annotation</th>' +
+                    '<th class="annotation" rulespan="4">Annotation</th>' +
                   '</tr>' +
                   '<tr class="labels"></tr>' +
                   '<tr class="values"></tr>' +
@@ -166,7 +166,7 @@ var DecisionTableView = View.extend({
           el:     el
         });
 
-        this.listenToAndRun(this.model.clauses, 'reset', function () {
+        this.listenToAndRun(this.model.rules, 'reset', function () {
           view.render();
         });
         
@@ -205,8 +205,8 @@ var DecisionTableView = View.extend({
     return [];
   },
 
-  parseClauses: function (clauseEls) {
-    return clauseEls.map(function (el) {
+  parseRules: function (ruleEls) {
+    return ruleEls.map(function (el) {
       return el.textContent.trim();
     });
   },
@@ -214,7 +214,7 @@ var DecisionTableView = View.extend({
   parseTable: function () {
     var inputs = [];
     var outputs = [];
-    var clauses = [];
+    var rules = [];
 
     this.queryAll('thead .labels .input').forEach(function (el, num) {
       var choiceEls = this.query('thead .values .input:nth-child(' + (num + 1) + ')');
@@ -257,7 +257,7 @@ var DecisionTableView = View.extend({
         });
       }
 
-      clauses.push({
+      rules.push({
         cells: cells
       });
     });
@@ -265,7 +265,7 @@ var DecisionTableView = View.extend({
     this.model.name = this.query('h3').textContent.trim();
     this.model.inputs.reset(inputs);
     this.model.outputs.reset(outputs);
-    this.model.clauses.reset(clauses);
+    this.model.rules.reset(rules);
 
     return this.toJSON();
   },
@@ -291,7 +291,7 @@ var DecisionTableView = View.extend({
     }
 
     this.bodyEl.innerHTML = '';
-    this.clausesView = this.renderCollection(this.model.clauses, ClauseView, this.bodyEl);
+    this.rulesView = this.renderCollection(this.model.rules, RuleView, this.bodyEl);
 
     return this.update();
   }

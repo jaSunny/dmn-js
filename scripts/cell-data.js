@@ -27,9 +27,9 @@ var CellModel = State.extend({
     this.on('change:focused', function () {
       if (!this.focused) { return; }
 
-      var clauseCid = this.collection.parent.cid;
-      this.collection.parent.collection.forEach(function (clause) {
-        clause.focused = clause.cid === clauseCid;
+      var ruleCid = this.collection.parent.cid;
+      this.collection.parent.collection.forEach(function (rule) {
+        rule.focused = rule.cid === ruleCid;
       });
     });
   }

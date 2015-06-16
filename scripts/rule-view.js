@@ -21,7 +21,7 @@ function elPosition(el) {
   };
 }
 
-var ClauseView = View.extend({
+var RuleView = View.extend({
   template: '<tr><td class="number"></td></tr>',
 
   bindings: {
@@ -67,7 +67,7 @@ var ClauseView = View.extend({
 
   initialize: function () {
     var root = this.model.collection.parent;
-    this.listenToAndRun(root.clauses, 'reset', this.render);
+    this.listenToAndRun(root.rules, 'reset', this.render);
     this.listenToAndRun(root.inputs, 'reset', this.render);
     this.listenToAndRun(root.outputs, 'reset', this.render);
   },
@@ -112,4 +112,4 @@ var ClauseView = View.extend({
   }
 });
 
-module.exports = ClauseView;
+module.exports = RuleView;

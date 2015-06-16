@@ -5,13 +5,13 @@ var State = deps('ampersand-state');
 var Input = require('./cell-data');
 var Output = require('./cell-data');
 
-var Clause = require('./clause-data');
+var Rule = require('./rule-data');
 
 var DecisionTableModel = State.extend({
   collections: {
     inputs:       Input.Collection,
     outputs:      Output.Collection,
-    clauses:      Clause.Collection
+    rules:      Rule.Collection
   },
 
   props: {
