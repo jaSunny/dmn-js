@@ -45,6 +45,8 @@
         <h2>Limited available height</h2>
 
         <section class="dmn-table">
+          <div data-hook="controls"></div>
+
           <header>
             <h3>Table name</h3>
           </header>
@@ -324,6 +326,8 @@
         <h2>Limited available width</h2>
 
         <section class="dmn-table">
+          <div data-hook="controls"></div>
+
           <header>
             <h3>Table name</h3>
           </header>
@@ -473,6 +477,8 @@
         <h2>Full width</h2>
 
         <section class="dmn-table">
+          <div data-hook="controls"></div>
+          
           <header>
             <h3>Check order</h3>
           </header>
@@ -986,11 +992,12 @@
     <script type="text/javascript">
       'use strict';
       /* global selectAll: false, DecisionTable: false */
-
+      var dmnTables = {};
       selectAll('.dmn-table').forEach(function (dt) {
-        new DecisionTable({
+        var tableView = new DecisionTable({
           el: dt
         });
+        dmnTables[tableView.cid] = tableView;
       });
     </script>
   </body>

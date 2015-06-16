@@ -1,9 +1,20 @@
-.empty() {
+.empty(@color: @dmn-gray) {
   &:empty:before {
     content: '…';
     display: inline-block;
     width: 100%;
-    color: @dmn-gray;
+    color: @color;
     text-align: center;
   }
+}
+
+.tooltip(@color: @dmn-gray-dark, @bg-color: @dmn-gray-lighter, @shadow-color: fade(@dmn-gray-darker, 50%)) {
+  position: absolute;
+  display: block;
+  z-index: 99;
+  color: @color;
+  background-color: @bg-color;
+  .box-shadow(0 0 3px 1px @shadow-color);
+  
+  list-style: none;
 }

@@ -29,12 +29,8 @@
     background-color: @dmn-output-color;
   }
 
-  .control {
-    width: 3em;
-  }
   .number {
     text-align: right;
-    width: 2em;
   }
 
   .double-border-right {
@@ -90,7 +86,7 @@
 
     .hit {
       vertical-align: top;
-      width: 2em;
+      width: 3em;
     }
 
     .labels,
@@ -307,17 +303,63 @@
     }
   }
 
+
+  .controls {
+    background-color: @dmn-gray-lighter;
+    border: 1px solid @dmn-gray-light;
+    margin-bottom: 12px;
+
+    ul, li {
+      margin: 0;
+      padding: 0;
+    }
+    ul {
+      list-style: none;
+    }
+
+    .coordinates {
+      &:before {
+        display: inline-block;
+        min-width: 1px;
+        content: '*';
+      }
+      min-width: 100%;
+      padding: 3px 6px;
+    }
+
+    .actions {
+      display: inline-block;
+
+      a {
+        padding: 3px 6px;
+        cursor: pointer;
+        display: inline-block;
+        &:hover {
+          background-color: @dmn-gray-light;
+          color: @dmn-primary;
+        }
+      }
+    }
+  }
+
+
+
   &.dmn-table-compact {
     font-size: 95%;
     header,
     td,
     th,
-    .dropdown ul a {
+    .dropdown ul a,
+    .controls .coordinates,
+    .controls a {
       padding: 1px 2px;
     }
     .dropdown ul {
       left: -3px;
       right: -3px;
+    }
+    .controls {
+      margin-bottom: 4px;
     }
   }
 
@@ -326,12 +368,29 @@
     header,
     td,
     th,
-    .dropdown ul a {
+    .dropdown ul a,
+    .controls .coordinates,
+    .controls a {
       padding: 6px 12px;
     }
     .dropdown ul {
       left: -13px;
       right: -13px;
     }
+    .controls {
+      margin-bottom: 24px;
+    }
+  }
+}
+
+.dmn-table-clause-controls {
+  .tooltip;
+  margin: 0;
+  padding: 0;
+
+  li {
+    padding: 3px 6px;
+    margin: 3px 0 0 6px;
+    cursor: pointer;
   }
 }

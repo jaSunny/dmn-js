@@ -34,8 +34,8 @@ var ChoiceSuggestionView = View.extend({
   _handleClick: function () {
     if (!this.parent) { return; }
     this.parent.value = this.model.value;
-    if (this.parent.value === this.model.value) { 
-      this.parent.trigger('change:value');
+    if (this.parent.model.value === this.model.value) { 
+      this.parent.model.trigger('change:value');
     }
   }
 });
@@ -57,7 +57,7 @@ var ChoiceView = View.extend({
   },
 
   bindings: {
-    value: {
+    'model.value': {
       type: function (el, value) {
         if (!value || !value.trim()) { return; }
         this.el.textContent = value.trim();
@@ -67,10 +67,11 @@ var ChoiceView = View.extend({
 
   initialize: function (options) {
     options = options || {};
+    if (this.el) {
+      this.el.contentEditable = true;
+      this.value = this.el.textContent.trim();
+    }
 
-    this.el.contentEditable = true;
-    this.value = this.el.textContent.trim();
-    
     var choices = options.choices || [];
     this.choices.reset(choices.map(function (choice) {
       return {value: choice};
@@ -88,7 +89,7 @@ var ChoiceView = View.extend({
     function resetSuggestions() {
       this.suggestions.reset(this._filter(this.value));
     }
-    this.on('change:value', resetSuggestions.bind(this));
+    this.listenToAndRun(this.model, 'change:value', resetSuggestions.bind(this));
 
     this.renderCollection(this.suggestions, ChoiceSuggestionView, suggestionsEl);
 
@@ -102,8 +103,11 @@ var ChoiceView = View.extend({
     function _handleResize() {
       self._handleResize();
     }
-    this._handleResize();
+    if (!this.el) {
+      this.once('change:el', _handleResize);
+    }
     window.addEventListener('resize', _handleResize);
+    this._handleResize();
   },
 
   remove: function () {
@@ -132,6 +136,7 @@ var ChoiceView = View.extend({
   },
 
   _handleFocus: function () {
+    console.info('_handleFocus', this);
     // this.el.setSelectionRange(0, this.el.textContent.length);
     this._handleInput();
   },
@@ -141,6 +146,7 @@ var ChoiceView = View.extend({
   },
 
   _handleResize: function () {
+    if (!this.el) { return; }
     var node = this.el;
     var top = node.offsetTop;
     var left = node.offsetLeft;
@@ -176,7 +182,7 @@ var ChoiceView = View.extend({
       }
       
       var matching = filtered[0].value;
-      this.set({
+      this.model.set({
         value: matching
       }, {
         silent: true
