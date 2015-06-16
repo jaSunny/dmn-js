@@ -1,7 +1,7 @@
 'use strict';
 /*global module: false, require: false*/
 
-var State = require('ampersand-state');
+var State = deps('ampersand-state');
 var Input = require('./cell-data');
 var Output = require('./cell-data');
 

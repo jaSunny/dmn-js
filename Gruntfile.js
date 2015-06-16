@@ -22,8 +22,26 @@ module.exports = function(grunt) {
     },
 
     browserify: {
+      dependencies: {
+        options: {
+          browserifyOptions: {
+            standalone: 'deps',
+            list: true,
+            debug: true
+          }
+        },
+        files: {
+          'dist/dependencies.js': 'scripts/dependencies.js'
+        }
+      },
       scripts: {
         options: {
+          ignore: [
+            './dependencies'
+          ],
+          exclude: [
+            './dependencies'
+          ],
           browserifyOptions: {
             standalone: 'DecisionTable',
             list: true,
@@ -70,8 +88,21 @@ module.exports = function(grunt) {
       },
 
       scripts: {
-        files: ['scripts/**'],
-        tasks: ['browserify:scripts']
+        files: [
+          'scripts/**/*.js',
+          '!scripts/dependencies.js'
+        ],
+        tasks: [
+          'browserify:scripts'
+        ]
+      },
+      dependencies: {
+        files: [
+          'scripts/dependencies.js'
+        ],
+        tasks: [
+          'browserify:dependencies'
+        ]
       },
 
       connect: {

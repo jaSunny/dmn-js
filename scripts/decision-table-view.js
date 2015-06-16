@@ -1,8 +1,8 @@
 'use strict';
-/* global require: false, module: false */
+/* global require: false, module: false, deps: false */
 
-var View = require('ampersand-view');
-var merge = require('lodash.merge');
+var View = deps('ampersand-view');
+var merge = deps('lodash.merge');
 
 function elPosition(el) {
   var node = el;
@@ -427,8 +427,7 @@ var DecisionTableView = View.extend({
       var cellEls = row.querySelectorAll('td');
 
       for (var c = 1; c < cellEls.length; c++) {
-        var datatype;
-        var choices;
+        var choices = null;
         var value = cellEls[c].textContent.trim();
         var type = c <= inputs.length ? 'input' : (c < (cellEls.length - 1) ? 'output' : 'annotation');
         var oc = c - (inputs.length + 1);
@@ -442,8 +441,7 @@ var DecisionTableView = View.extend({
 
         cells.push({
           value:    value,
-          choices:  choices,
-          datatype: datatype
+          choices:  choices
         });
       }
 

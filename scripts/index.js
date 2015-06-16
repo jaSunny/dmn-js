@@ -1,12 +1,11 @@
 'use strict';
-/* global require: false, module: false, console: false */
+/* global require: false, module: false, console: false, deps: false */
 /* jshint debug: true */
 
-require('./classList');
+deps('./classList');
 
 
 var DecisionTableView = require('./decision-table-view');
-var ChoiceView = require('./choice-view');
 
 
 module.exports = DecisionTableView;
@@ -32,6 +31,7 @@ window.selectAll = selectAll;
 /*
 
 
+var ChoiceView = require('./choice-view');
 
 
 

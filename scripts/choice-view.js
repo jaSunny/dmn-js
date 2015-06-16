@@ -1,9 +1,9 @@
 'use strict';
 /* global require: false, module: false */
 
-var State = require('ampersand-state');
-var Collection = require('ampersand-collection');
-var View = require('ampersand-view');
+var State = deps('ampersand-state');
+var Collection = deps('ampersand-collection');
+var View = deps('ampersand-view');
 
 var specialKeys = [
   8 // backspace

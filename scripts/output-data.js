@@ -1,8 +1,8 @@
 'use strict';
 /*global module: false, require: false*/
 
-var State = require('ampersand-state');
-var Collection = require('ampersand-collection');
+var State = deps('ampersand-state');
+var Collection = deps('ampersand-collection');
 
 var OutputModel = State.extend({
   props: {
