@@ -16,61 +16,16 @@ var RuleView = require('./rule-view');
 var DecisionTableControlsView = View.extend({
   autoRender: true,
 
-  session: {
-    focusedRule: {
-      default: 0,
-      type: 'number'
-    },
-
-    focusedColumn: {
-      default: 0,
-      type: 'number'
-    }
-  },
-
-  derived: {
-    data: {
-      deps: ['parent', 'parent.model'],
-      fn: function () {
-        return this.parent.model;
-      }
-    },
-
-
-    focusedCell: {
-      deps: ['model'],
-      fn: function () {
-        return this.data.rules.at();
-      }
-    },
-
-    focusedType: {
-      deps: ['focusedCell'],
-      fn: function () {
-        return this.focusedColumn === this.data.rules.at(0).cell.length - 1 ?
-                  'annotation' :
-                  this.focusedColumn < this.data.inputs.length ?
-                    'input' :
-                    'output';
-      }
-    }
-  },
-
   template: '<div class="controls">' +
               '<div class="coordinates"></div>' +
-              /*
-              '<ul class="table actions">' +
-                '<li class="add"><a>Add</a></li>' +
+              '<ul class="rules actions">' +
+                '<li class="add"><a>Add row</a></li>' +
               '</ul>' +
               '<ul class="inputs actions">' +
                 '<li class="add"><a>Add input</a></li>' +
               '</ul>' +
               '<ul class="outputs actions">' +
                 '<li class="add"><a>Add output</a></li>' +
-              '</ul>' +
-              */
-              '<ul class="rules actions">' +
-                '<li class="add"><a>Add row</a></li>' +
               '</ul>' +
             '</div>',
 
@@ -84,28 +39,76 @@ var DecisionTableControlsView = View.extend({
     });
   },
 
+  derived: {
+    data: {
+      deps: ['parent.model'],
+      fn: function () {
+        return this.parent.model;
+      }
+    },
+
+    inputClauses: {
+      deps: [
+        'data.x',
+        'data.inputs'
+      ],
+      fn: function () {
+        return this.data.x < (this.data.inputs.length - 1);
+      }
+    },
+
+    outputClauses: {
+      deps: [
+        'data.x',
+        'data.inputs',
+        'data.outputs'
+      ],
+      fn: function () {
+        return !this.inputClauses && (this.data.x < (this.data.outputs.length + this.data.inputs.length - 1));
+      }
+    },
+
+    annotationColumn: {
+      deps: [
+        'inputClauses',
+        'outputClauses'
+      ],
+      fn: function () {
+        return !this.inputClauses && !this.outputClauses;
+      }
+    }
+  },
+
   makeRuleCells: function (){
     var cells = [];
     var c;
+
     for (c = 0; c < this.data.inputs.length; c++) {
       cells.push({
         value: '',
         choices: this.data.inputs.at(c).choices,
-        type: 'input'
+        focused: c === 0
       });
     }
+    
     for (c = 0; c < this.data.outputs.length; c++) {
       cells.push({
         value: '',
-        choices: this.data.outputs.at(c).choices,
-        type: 'output'
+        choices: this.data.outputs.at(c).choices
       });
     }
+    
     cells.push({
-      value: '',
-      type: 'annotation'
+      value: ''
     });
+    
     return cells;
+  },
+
+  initialize: function () {
+    this.listenToAndRun(this.data, 'change:x change:y', function () {
+      console.info('changed position', this.data.x, this.data.y);
+    });
   },
 
   render: function () {
@@ -113,10 +116,9 @@ var DecisionTableControlsView = View.extend({
 
     this.cacheElements({
       coordinatesEl:    '.coordinates',
-      tableActionsEl:   '.table.actions',
       inputsActionsEl:  '.inputs.actions',
       outputsActionsEl: '.outputs.actions',
-      rulesActionsEl: '.rules.actions'
+      rulesActionsEl:   '.rules.actions'
     });
 
     return this;

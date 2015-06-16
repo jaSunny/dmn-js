@@ -19,6 +19,9 @@
          -moz-box-sizing: border-box;
               box-sizing: border-box;
     }
+    &:focus {
+      outline: none;
+    }
   }
 
   .input {
@@ -58,12 +61,8 @@
     overflow: hidden;
     text-overflow: ellipsis;
     
-    &:focus {
-      outline: none;
-    }
-
     &.focused {
-      outline: 1px solid @dmn-primary;
+      outline: 2px solid @dmn-primary;
     }
   }
 
