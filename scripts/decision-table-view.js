@@ -2,198 +2,9 @@
 /* global require: false, module: false, deps: false */
 
 var View = deps('ampersand-view');
-var merge = deps('lodash.merge');
+var DecisionTable = require('./table-data');
+var ClauseView = require('./clause-view');
 
-function elPosition(el) {
-  var node = el;
-  var top = node.offsetTop;
-  var left = node.offsetLeft;
-
-  while ((node = node.offsetParent)) {
-    top += node.offsetTop;
-    left += node.offsetLeft;
-  }
-
-  return {
-    top: top,
-    left: left
-  };
-}
-
-var ChoiceView = require('./choice-view');
-var ClauseCellView = View.extend(merge(ChoiceView.prototype, {
-  bindings: merge({}, ChoiceView.prototype.bindings, {
-    'model.value': {
-      type: 'text'
-    },
-
-    'model.editable': {
-      type: 'booleanAttribute',
-      name: 'contenteditable'
-    }
-  })
-}));
-
-
-
-var ClauseInputCellView = ClauseCellView.extend({
-  bindings: merge({}, ClauseCellView.prototype.bindings, {
-    last: {
-      type: 'booleanClass',
-      name: 'double-border-right'
-    }
-  }),
-
-  derived: {
-    last: {
-      deps: [
-        'model.collection',
-        'parent.inputs'
-      ],
-      fn: function () {
-        var index = this.model.collection.indexOf(this.model);
-        return index === (this.parent.inputs.length - 1);
-      }
-    }
-  },
-
-  template: '<td class="input"></td>'
-});
-
-
-
-
-var ClauseOutputCellView = ClauseCellView.extend({
-  template: '<td class="output"></td>'
-});
-
-
-
-
-
-var ClauseAnnotationCellView = ClauseCellView.extend({
-  template: '<td class="annotation"></td>'
-});
-
-
-
-
-
-var ClauseView = View.extend({
-  template: '<tr><td class="number"></td></tr>',
-
-  bindings: {
-    'model.delta': {
-      type: 'text',
-      selector: '.number'
-    }
-  },
-
-  derived: {
-    inputs: {
-      deps: ['parent.model.inputs'],
-      fn: function () {
-        return this.parent.model.inputs;
-      }
-    },
-
-    outputs: {
-      deps: ['parent.model.outputs'],
-      fn: function () {
-        return this.parent.model.outputs;
-      }
-    },
-
-    annotation: {
-      deps: ['parent.model.annotations'],
-      fn: function () {
-        return this.parent.model.annotations.at(0);
-      }
-    },
-
-    position: {
-      deps: ['el', 'parent'],
-      cache: false, // because of resize
-      fn: function () { return elPosition(this.el); }
-    }
-  },
-
-  session: {
-    focused: 'boolean'
-  },
-
-  events: {
-    'focus td':   '_handleFocus',
-    'blur td':    '_handleBlur'
-  },
-
-  _handleFocus: function () {
-    this.focused = true;
-    this.positionControls();
-  },
-
-  _handleBlur: function () {
-    this.focused = false;
-  },
-
-  positionControls: function () {
-    if (!this.controlsEl) {
-      return;
-    }
-
-    var pos = this.position;
-
-    var controlsEl = this.controls.el;
-    controlsEl.style.top = pos.top + 'px';
-    controlsEl.style.left = pos.left + 'px';
-  },
-
-  initialize: function () {
-    var root = this.model.collection.parent;
-    this.listenToAndRun(root.clauses, 'reset', this.render);
-    this.listenToAndRun(root.inputs, 'reset', this.render);
-    this.listenToAndRun(root.outputs, 'reset', this.render);
-  },
-
-  render: function () {
-    this.renderWithTemplate();
-
-    var i;
-    var subview;
-    
-    for (i = 0; i < this.inputs.length; i++) {
-      subview = new ClauseInputCellView({
-        model:  this.model.inputCells[i],
-        parent: this
-      });
-      
-      this.registerSubview(subview.render());
-      this.el.appendChild(subview.el);
-    }
-
-    for (i = 0; i < this.outputs.length; i++) {
-      subview = new ClauseOutputCellView({
-        model:  this.model.outputCells[i],
-        parent: this
-      });
-      
-      this.registerSubview(subview.render());
-      this.el.appendChild(subview.el);
-    }
-    subview = new ClauseAnnotationCellView({
-      model:  this.model.annotation,
-      parent: this
-    });
-    this.registerSubview(subview.render());
-    this.el.appendChild(subview.el);
-
-    this.on('change:el change:parent', this.positionControls);
-
-    this.positionControls();
-
-    return this;
-  }
-});
 
 
 
@@ -259,7 +70,7 @@ var DecisionTableControlsView = View.extend({
               '</ul>' +
               */
               '<ul class="clauses actions">' +
-                '<li class="add"><a>Add clause</a></li>' +
+                '<li class="add"><a>Add row</a></li>' +
               '</ul>' +
             '</div>',
 
@@ -279,12 +90,14 @@ var DecisionTableControlsView = View.extend({
     for (c = 0; c < this.data.inputs.length; c++) {
       cells.push({
         value: '',
+        choices: this.data.inputs.at(c).choices,
         type: 'input'
       });
     }
     for (c = 0; c < this.data.outputs.length; c++) {
       cells.push({
         value: '',
+        choices: this.data.outputs.at(c).choices,
         type: 'output'
       });
     }
@@ -317,7 +130,6 @@ var DecisionTableControlsView = View.extend({
 
 
 
-var DecisionTable = require('./table-data');
 
 
 

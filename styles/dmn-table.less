@@ -134,44 +134,44 @@
       }
     }
 
-    tr {
-      &:nth-child(even) {
-        td, th {
-          background-color: @dmn-row-even-bg;
-        }
-        &:hover {
-          td, th {
-            background-color: @dmn-row-even-hover-bg;
-          }
-        }
-        td, th {
-          &.hover {
-            background-color: @dmn-col-even-hover-bg;
-          }
-        }
-      }
-      &:nth-child(odd) {
-        td, th {
-          background-color: @dmn-row-odd-bg;
-        }
-        &:hover {
-          td, th {
-            background-color: @dmn-row-odd-hover-bg;
-          }
-        }
-        td, th {
-          &.hover {
-            background-color: @dmn-col-odd-hover-bg;
-          }
-        }
-      }
+    // tr {
+    //   &:nth-child(even) {
+    //     td, th {
+    //       background-color: @dmn-row-even-bg;
+    //     }
+    //     &:hover {
+    //       td, th {
+    //         background-color: @dmn-row-even-hover-bg;
+    //       }
+    //     }
+    //     td, th {
+    //       &.hover {
+    //         background-color: @dmn-col-even-hover-bg;
+    //       }
+    //     }
+    //   }
+    //   &:nth-child(odd) {
+    //     td, th {
+    //       background-color: @dmn-row-odd-bg;
+    //     }
+    //     &:hover {
+    //       td, th {
+    //         background-color: @dmn-row-odd-hover-bg;
+    //       }
+    //     }
+    //     td, th {
+    //       &.hover {
+    //         background-color: @dmn-col-odd-hover-bg;
+    //       }
+    //     }
+    //   }
 
-      &:hover td,
-      &:hover th,
-      .hover {
-        color: @dmn-gray-darker;
-      }
-    }
+    //   &:hover td,
+    //   &:hover th,
+    //   .hover {
+    //     color: @dmn-gray-darker;
+    //   }
+    // }
   }
 
   &.scrollable {
@@ -190,123 +190,10 @@
     }
   }
 
-  .dropdown {
-    overflow: visible;
-    z-index: 1;
-    cursor: pointer;
-
-    > .wrapper {
-      overflow: visible;
-      min-width: 100%;
-      margin: 0;
-      position: relative;
-      display: inline-block;
-
-      &:hover {
-        .caret,
-        .clear {
-          color: @dmn-primary;
-        }
-      }
-    }
-
-    .value {
-      width: 100%;
-      padding: 0 1.2em;
-      display: inline-block;
-    }
-
-    .clear,
-    .caret {
-      position: absolute;
-      top: 2px;
-      width: 1em;
-      cursor: pointer;
-    }
-
-    .clear {
-      left: -2px;
-      &:before {
-        content: '\e802';
-      }
-    }
-
-    .caret {
-      right: 0;
-      &:before {
-        content: '\e801';
-      }
-    }
-
-    .value {
-      overflow: hidden;
-      text-overflow: ellipsis;
-      .empty();
-
-      &:empty:before {
-        content: ' - ';
-        color: @dmn-gray-light;
-      }
-    }
-
-    ul {
-      position: absolute;
-      background-color: #fff;
-      margin: 0;
-      padding: 0;
-      list-style: none;
-      top: 100%;
-      margin-top: 2px;
-      left: -7px;
-      right: -7px;
-      max-height: 0;
-      z-index: 999;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      border: 0 solid fade(@dmn-primary, 0);
-
-      .box-shadow(0 0 0 0 fade(@dmn-shadow-color, 0));
-      .transition(all 0.218s ease);
-
-      li {
-        padding: 0;
-        margin: 0;
-      }
-
-      a {
-        cursor: pointer;
-        display: block;
-        padding: 3px 6px;
-        &:before {
-          display: inline-block;
-          content: '';
-          width: 1.2em;
-        }
-        &:hover {
-          background-color: @dmn-gray-lighter;
-        }
-      }
-    }
-
-    &.open {
-      z-index: 10;
-
-      .caret:before {
-        content: '\e800';
-      }
-
-      ul {
-        border: 1px solid @dmn-primary;
-        max-height: 1000px;
-        .box-shadow(0 3px 3px 3px @dmn-shadow-color);
-      }
-    }
-  }
-
 
   .controls {
     background-color: @dmn-gray-lighter;
-    border: 1px solid @dmn-gray-light;
+    // border: 1px solid @dmn-gray-light;
     margin-bottom: 12px;
 
     ul, li {
@@ -318,11 +205,13 @@
     }
 
     .coordinates {
-      &:before {
+      &:empty:before {
         display: inline-block;
         min-width: 1px;
         content: '*';
       }
+      background-color: #fff;
+      border-bottom: 1px dashed @dmn-gray;
       min-width: 100%;
       padding: 3px 6px;
     }
@@ -335,7 +224,6 @@
         cursor: pointer;
         display: inline-block;
         &:hover {
-          background-color: @dmn-gray-light;
           color: @dmn-primary;
         }
       }
@@ -349,14 +237,9 @@
     header,
     td,
     th,
-    .dropdown ul a,
     .controls .coordinates,
     .controls a {
       padding: 1px 2px;
-    }
-    .dropdown ul {
-      left: -3px;
-      right: -3px;
     }
     .controls {
       margin-bottom: 4px;
@@ -368,14 +251,9 @@
     header,
     td,
     th,
-    .dropdown ul a,
     .controls .coordinates,
     .controls a {
       padding: 6px 12px;
-    }
-    .dropdown ul {
-      left: -13px;
-      right: -13px;
     }
     .controls {
       margin-bottom: 24px;

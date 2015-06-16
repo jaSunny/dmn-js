@@ -1,5 +1,5 @@
 'use strict';
-/*global module: false, require: false*/
+/*global module: false, deps: false*/
 
 var State = deps('ampersand-state');
 var Collection = deps('ampersand-collection');

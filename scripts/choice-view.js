@@ -1,5 +1,5 @@
 'use strict';
-/* global require: false, module: false */
+/* global deps: false, module: false */
 
 var State = deps('ampersand-state');
 var Collection = deps('ampersand-collection');
@@ -33,7 +33,7 @@ var ChoiceSuggestionView = View.extend({
 
   _handleClick: function () {
     if (!this.parent) { return; }
-    this.parent.value = this.model.value;
+    this.parent.model.value = this.model.value;
     if (this.parent.model.value === this.model.value) { 
       this.parent.model.trigger('change:value');
     }
@@ -48,12 +48,25 @@ var ChoiceView = View.extend({
   events: {
     input: '_handleInput',
     focus: '_handleFocus',
-    click: '_handleFocus',
     blur:  '_handleBlur'
   },
+  
+  session: {
+    valid:          {
+      default: true,
+      type: 'boolean'
+    },
+    
+    originalValue:  'string'
+  },
 
-  props: {
-    value: 'string'
+  derived: {
+    isOriginal: {
+      deps: ['model.value', 'originalValue'],
+      fn: function () {
+        return this.model.value === this.originalValue;
+      }
+    }
   },
 
   bindings: {
@@ -62,6 +75,16 @@ var ChoiceView = View.extend({
         if (!value || !value.trim()) { return; }
         this.el.textContent = value.trim();
       }
+    },
+
+    'model.focused': {
+      type: 'booleanClass',
+      name: 'focused'
+    },
+
+    isOriginal: {
+      type: 'booleanClass',
+      name: 'untouched'
     }
   },
 
@@ -69,8 +92,12 @@ var ChoiceView = View.extend({
     options = options || {};
     if (this.el) {
       this.el.contentEditable = true;
-      this.value = this.el.textContent.trim();
+      this.originalValue = this.value = this.el.textContent.trim();
     }
+    else {
+      this.originalValue = this.value;
+    }
+
 
     var choices = this.model.choices;
     if (!choices || !choices.length) {
@@ -90,20 +117,22 @@ var ChoiceView = View.extend({
 
     document.body.appendChild(suggestionsEl);
     
+    var self = this;
+
     function resetSuggestions() {
-      this.suggestions.reset(this._filter(this.value));
+      self.suggestions.reset(self._filter(self.value));
     }
-    this.listenToAndRun(this.model, 'change:value', resetSuggestions.bind(this));
+    this.listenToAndRun(this.model, 'change:value', resetSuggestions);
 
     this.renderCollection(this.suggestions, ChoiceSuggestionView, suggestionsEl);
 
-    this.listenToAndRun(this.choices, 'change', resetSuggestions.bind(this));
+    this.listenToAndRun(this.choices, 'change', resetSuggestions);
 
     this.listenToAndRun(this.suggestions, 'reset', function () {
       this.suggestionsEl.style.display = this.suggestions.length < 2 ? 'none' : 'block';
     });
 
-    var self = this;
+
     function _handleResize() {
       self._handleResize();
     }
@@ -121,7 +150,6 @@ var ChoiceView = View.extend({
   },
 
   _filter: function (val) {
-    if (!val) { return []; }
     var filtered = this.choices
           .filter(function (choice) {
             return choice.value.indexOf(val) === 0;
@@ -140,12 +168,12 @@ var ChoiceView = View.extend({
   },
 
   _handleFocus: function () {
-    // this.el.setSelectionRange(0, this.el.textContent.length);
     this._handleInput();
+    this.model.focused = true;
   },
 
   _handleBlur: function () {
-    // this.suggestionsEl.style.display = 'none';
+    this.model.focused = false;
   },
 
   _handleResize: function () {
@@ -170,7 +198,6 @@ var ChoiceView = View.extend({
   },
 
   _handleInput: function (evt) {
-    console.info('input', evt);
     if (evt && (specialKeys.indexOf(evt.keyCode) > -1 || evt.ctrlKey)) {
       return;
     }
