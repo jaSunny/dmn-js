@@ -7,94 +7,26 @@ var RuleView = require('./rule-view');
 
 
 
+function toArray(els) {
+  return Array.prototype.slice.apply(els);
+}
 
+// function makeTh(type) {
+//   var el = document.createElement('th');
+//   el.className = type;
+//   return el;
+// }
 
-
-
-/*
-
-var DecisionTableControlsView = View.extend({
-  autoRender: true,
-
-  template: '<div class="controls">' +
-              '<div class="coordinates"></div>' +
-              '<ul class="rules actions">' +
-                '<li class="add"><a>Add row</a></li>' +
-              '</ul>' +
-              '<ul class="inputs actions">' +
-                '<li class="add"><a>Add input</a></li>' +
-              '</ul>' +
-              '<ul class="outputs actions">' +
-                '<li class="add"><a>Add output</a></li>' +
-              '</ul>' +
-            '</div>',
-
-  events: {
-    'click .actions.rules .add': '_handleRuleAdd',
-  },
-
-  _handleRuleAdd: function () {
-    this.parent.addRule();
-  },
-
-  derived: {
-    data: {
-      deps: ['parent.model'],
-      fn: function () {
-        return this.parent.model;
-      }
-    },
-
-    inputClauses: {
-      deps: [
-        'data.x',
-        'data.inputs'
-      ],
-      fn: function () {
-        return this.data.x < (this.data.inputs.length - 1);
-      }
-    },
-
-    outputClauses: {
-      deps: [
-        'data.x',
-        'data.inputs',
-        'data.outputs'
-      ],
-      fn: function () {
-        return !this.inputClauses && (this.data.x < (this.data.outputs.length + this.data.inputs.length - 1));
-      }
-    },
-
-    annotationColumn: {
-      deps: [
-        'inputClauses',
-        'outputClauses'
-      ],
-      fn: function () {
-        return !this.inputClauses && !this.outputClauses;
-      }
-    }
-  },
-
-  render: function () {
-    this.renderWithTemplate();
-
-    this.cacheElements({
-      coordinatesEl:    '.coordinates',
-      inputsActionsEl:  '.inputs.actions',
-      outputsActionsEl: '.outputs.actions',
-      rulesActionsEl:   '.rules.actions'
-    });
-
-    return this;
-  }
-});
-*/
-
-
+function makeTd(type) {
+  var el = document.createElement('td');
+  el.className = type;
+  return el;
+}
 
 var ContextMenuView = require('./contextmenu-view');
+var ClauseHeaderView = require('./clause-view');
+
+
 
 
 var DecisionTableView = View.extend({
@@ -120,27 +52,6 @@ var DecisionTableView = View.extend({
                 '<tbody></tbody>' +
               '</table>' +
             '</div>',
-/*
-  subviews: {
-    controls: {
-      container: '[data-hook="controls"]',
-      prepareView: function (el) {
-        var view = new DecisionTableControlsView({
-          model:  this.model,
-          parent: this,
-          el:     el
-        });
-
-        this.listenToAndRun(this.model.rules, 'reset', function () {
-          view.render();
-        });
-
-        return view;
-      }
-    }
-  },
-*/
-
 
   initialize: function () {
     this.model = this.model || new DecisionTable.Model();
@@ -269,6 +180,27 @@ var DecisionTableView = View.extend({
     return this.model.toJSON();
   },
 
+  inputClauseViews: [],
+  outputClauseViews: [],
+
+  _headerClear: function (type) {
+    toArray(this.labelsRowEl.querySelectorAll('.'+ type)).forEach(function (el) {
+      this.labelsRowEl.removeChild(el);
+    }, this);
+
+    toArray(this.valuesRowEl.querySelectorAll('.'+ type)).forEach(function (el) {
+      this.valuesRowEl.removeChild(el);
+    }, this);
+
+    toArray(this.mappingsRowEl.querySelectorAll('.'+ type)).forEach(function (el) {
+      this.mappingsRowEl.removeChild(el);
+    }, this);
+
+    return this;
+  },
+
+
+
   render: function () {
     if (!this.el) {
       this.renderWithTemplate();
@@ -279,11 +211,63 @@ var DecisionTableView = View.extend({
 
     if (!this.headerEl) {
       this.cacheElements({
-        labelEl:  'header h3',
-        headerEl: 'thead',
-        bodyEl:   'tbody'
+        labelEl:          'header h3',
+        headerEl:         'thead',
+        bodyEl:           'tbody',
+        inputsHeaderEl:   'thead tr:nth-child(1) th.input',
+        outputsHeaderEl:  'thead tr:nth-child(1) th.output',
+        labelsRowEl:      'thead tr.labels',
+        valuesRowEl:      'thead tr.values',
+        mappingsRowEl:    'thead tr.mappings'
       });
     }
+
+    ['input', 'output'].forEach(function (type) {
+      this.listenToAndRun(this.model[type + 's'], 'add reset remove', function () {
+
+        var cols = this.model[type + 's'].length;
+        if (cols > 1) {
+          this[type + 'sHeaderEl'].setAttribute('colspan', cols);
+        }
+        else {
+          this[type + 'sHeaderEl'].removeAttribute('colspan');
+        }
+
+        this._headerClear(type);
+        this[type + 'ClauseViews'].forEach(function (view) {
+          view.remove();
+        }, this);
+
+        this.model[type + 's'].forEach(function (clause) {
+          var labelEl = makeTd(type);
+          var valueEl = makeTd(type);
+          var mappingEl = makeTd(type);
+
+          var view = new ClauseHeaderView({
+            labelEl:    labelEl,
+            valueEl:    valueEl,
+            mappingEl:  mappingEl,
+
+            model:      clause,
+            parent:     this
+          });
+
+          ['label', 'value', 'mapping'].forEach(function (kind) {
+            if (type === 'input') {
+              this[kind +'sRowEl'].insertBefore(view[kind + 'El'], this[kind +'sRowEl'].querySelector('.output'));
+            }
+            else {
+              this[kind +'sRowEl'].appendChild(view[kind + 'El']);
+            }
+          }, this);
+
+          this.registerSubview(view);
+
+          this[type + 'ClauseViews'].push(view);
+        }, this);
+      });
+    }, this);
+
 
     this.bodyEl.innerHTML = '';
     this.rulesView = this.renderCollection(this.model.rules, RuleView, this.bodyEl);

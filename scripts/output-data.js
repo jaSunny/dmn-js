@@ -6,7 +6,7 @@ var Collection = deps('ampersand-collection');
 
 var OutputModel = State.extend({
   props: {
-    name: 'string',
+    label:   'string',
     choices: 'array',
     mapping: 'string'
   },

@@ -7,22 +7,35 @@ var ChoiceView = require('./choice-view');
 
 
 
-var NameView = View.extend(merge({}, ChoiceView.prototype, {
-
+var LabelView = View.extend(merge({/*}, ChoiceView.prototype, {*/
+  render: function () {
+    this.el.textContent = (this.model.label || '').trim();
+  }
 }));
 
 
 
 
-var MappingView = View.extend(merge({}, ChoiceView.prototype, {
-
+var MappingView = View.extend(merge({/*}, ChoiceView.prototype, {*/
+  render: function () {
+    this.el.textContent = (this.model.mapping || '').trim();
+  }
 }));
 
 
 
 
-var ValueView = View.extend(merge({}, ChoiceView.prototype, {
-
+var ValueView = View.extend(merge({/*}, ChoiceView.prototype, {*/
+  render: function () {
+    var str = '';
+    if (this.model.choices && this.model.choices.length) {
+      str = '(' + this.model.choices.join(', ') + ')';
+    }
+    else {
+      str = 'TODO: datatype';
+    }
+    this.el.textContent = str;
+  }
 }));
 
 
@@ -36,26 +49,31 @@ var requiredElement = {
 
 var ClauseView = View.extend({
   session: {
-    nameEl:     requiredElement,
+    labelEl:    requiredElement,
     mappingEl:  requiredElement,
     valueEl:    requiredElement
   },
 
   initialize: function () {
+    var clause = this.model;
+
     var subviews = {
-      name:     NameView,
+      label:    LabelView,
       mapping:  MappingView,
       value:    ValueView
     };
 
-    Object.keys(subviews).forEach(function (name) {
-      this.on('change:' + name, function () {
-        if (this[name + 'View']) { this.stopListening(this[name + 'View']); }
+    Object.keys(subviews).forEach(function (kind) {
+      this.listenToAndRun(this.model, 'change:' + kind, function () {
+        if (this[kind + 'View']) {
+          this.stopListening(this[kind + 'View']);
+        }
 
-        this[name + 'View'] = new subviews[name]({
+        this[kind + 'View'] = new subviews[kind]({
           parent: this,
-          el: this[name + 'El']
-        });
+          model:  clause,
+          el:     this[kind + 'El']
+        }).render();
       });
     }, this);
   }

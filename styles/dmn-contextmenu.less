@@ -1,5 +1,4 @@
 .fancy-list() {
-  // list-style: none;
   li {
     position: relative;
 
@@ -12,7 +11,7 @@
       content: '';
       position: absolute;
       z-index: 1;
-      background-color: rgba(122, 122, 122, .4);
+      background-color: rgba(200, 200, 200, .3);
       height: 100%;
       top: 0;
       left: 0;
@@ -21,7 +20,7 @@
     }
 
     &:hover:after {
-      width: 1.2em;
+      width: 1.6em;
     }
 
     > a {
@@ -40,9 +39,11 @@
   background-color: #fff;
   .transition(top 0.218s ease);
   .transition(left 0.218s ease);
+  min-width: 120px;
 
   .coordinates {
     padding: 3px 6px;
+    display: none;
   }
 
   li > a {
@@ -64,7 +65,38 @@
     display: inline-block;
     &.icon {
       width: 1.2em;
+      .dmn-font;
+      text-align: left;
+      &:before { content: '\e803'; }
     }
   }
 
+  > ul {
+
+    > li {
+      padding-top: 3px;
+      padding-bottom: 3px;
+      border-bottom: 1px dotted @dmn-gray-light;
+
+      > a,
+      > a:hover {
+        color: @dmn-gray-dark;
+        cursor: default;
+      }
+
+      > a .icon:before {
+        display: none;
+      }
+
+      > ul {
+        &:empty {
+          display: none;
+        }
+
+        .label {
+          padding-left: 0.4em;
+        }
+      }
+    }
+  }
 }
