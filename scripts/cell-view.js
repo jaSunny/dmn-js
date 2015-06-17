@@ -6,7 +6,7 @@ var merge = deps('lodash.merge');
 
 
 var ChoiceView = require('./choice-view');
-var RuleCellView = View.extend(merge(ChoiceView.prototype, {
+var RuleCellView = View.extend(merge({}, ChoiceView.prototype, {
   bindings: merge({}, ChoiceView.prototype.bindings, {
     'model.value': {
       type: 'text'
@@ -16,12 +16,32 @@ var RuleCellView = View.extend(merge(ChoiceView.prototype, {
       type: 'booleanAttribute',
       name: 'contenteditable'
     }
-  })
+  }),
+
+  events: merge({}, ChoiceView.prototype.events, {
+    'contextmenu':  '_handleContextMenu',
+    'click':        '_handleClick'
+  }),
+
+  _handleFocus: function () {
+    ChoiceView.prototype._handleFocus.apply(this, arguments);
+    this.parent.parent.hideContextMenu();
+  },
+
+  _handleClick: function () {
+    this.parent.parent.hideContextMenu();
+  },
+
+  _handleContextMenu: function (evt) {
+    this.parent.parent.showContextMenu(this.model, evt);
+  }
 }));
 
 
 
 var RuleInputCellView = RuleCellView.extend({
+  // events: RuleCellView.prototype.events,
+
   bindings: merge({}, RuleCellView.prototype.bindings, {
     last: {
       type: 'booleanClass',

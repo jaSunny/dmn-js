@@ -80,7 +80,8 @@ var RuleView = View.extend({
     
     for (i = 0; i < this.inputs.length; i++) {
       subview = new CellViews.Input({
-        model:  this.model.inputCells[i],
+        //model:  this.model.inputCells[i],
+        model:  this.model.cells.at(i),
         parent: this
       });
       
@@ -90,7 +91,8 @@ var RuleView = View.extend({
 
     for (i = 0; i < this.outputs.length; i++) {
       subview = new CellViews.Output({
-        model:  this.model.outputCells[i],
+        //model:  this.model.outputCells[i],
+        model:  this.model.cells.at(this.inputs.length + i),
         parent: this
       });
       

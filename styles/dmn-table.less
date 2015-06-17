@@ -4,21 +4,9 @@
   color: @dmn-gray-darker;
   overflow: visible;
 
-  -webkit-box-sizing: border-box;
-     -moz-box-sizing: border-box;
-          box-sizing: border-box;
-
+  .borderbox;
 
   * {
-    -webkit-box-sizing: border-box;
-       -moz-box-sizing: border-box;
-            box-sizing: border-box;
-    &:before,
-    &:after {
-      -webkit-box-sizing: border-box;
-         -moz-box-sizing: border-box;
-              box-sizing: border-box;
-    }
     &:focus {
       outline: none;
     }
@@ -60,7 +48,7 @@
     .transition(background-color 0.218s ease);
     overflow: hidden;
     text-overflow: ellipsis;
-    
+
     &.focused {
       outline: 2px solid @dmn-primary;
     }
@@ -282,14 +270,3 @@
   }
 }
 
-.dmn-table-clause-controls {
-  .tooltip;
-  margin: 0;
-  padding: 0;
-
-  li {
-    padding: 3px 6px;
-    margin: 3px 0 0 6px;
-    cursor: pointer;
-  }
-}

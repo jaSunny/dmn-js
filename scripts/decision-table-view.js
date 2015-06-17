@@ -11,7 +11,7 @@ var RuleView = require('./rule-view');
 
 
 
-
+/*
 
 var DecisionTableControlsView = View.extend({
   autoRender: true,
@@ -30,13 +30,11 @@ var DecisionTableControlsView = View.extend({
             '</div>',
 
   events: {
-    'click .actions.rules .add': '_handleRuleAdd'
+    'click .actions.rules .add': '_handleRuleAdd',
   },
 
   _handleRuleAdd: function () {
-    this.data.rules.add({
-      cells: this.makeRuleCells()
-    });
+    this.parent.addRule();
   },
 
   derived: {
@@ -79,38 +77,6 @@ var DecisionTableControlsView = View.extend({
     }
   },
 
-  makeRuleCells: function (){
-    var cells = [];
-    var c;
-
-    for (c = 0; c < this.data.inputs.length; c++) {
-      cells.push({
-        value: '',
-        choices: this.data.inputs.at(c).choices,
-        focused: c === 0
-      });
-    }
-    
-    for (c = 0; c < this.data.outputs.length; c++) {
-      cells.push({
-        value: '',
-        choices: this.data.outputs.at(c).choices
-      });
-    }
-    
-    cells.push({
-      value: ''
-    });
-    
-    return cells;
-  },
-
-  initialize: function () {
-    this.listenToAndRun(this.data, 'change:x change:y', function () {
-      console.info('changed position', this.data.x, this.data.y);
-    });
-  },
-
   render: function () {
     this.renderWithTemplate();
 
@@ -124,15 +90,11 @@ var DecisionTableControlsView = View.extend({
     return this;
   }
 });
+*/
 
 
 
-
-
-
-
-
-
+var ContextMenuView = require('./contextmenu-view');
 
 
 var DecisionTableView = View.extend({
@@ -158,6 +120,7 @@ var DecisionTableView = View.extend({
                 '<tbody></tbody>' +
               '</table>' +
             '</div>',
+/*
   subviews: {
     controls: {
       container: '[data-hook="controls"]',
@@ -171,26 +134,56 @@ var DecisionTableView = View.extend({
         this.listenToAndRun(this.model.rules, 'reset', function () {
           view.render();
         });
-        
+
         return view;
       }
     }
   },
+*/
+
 
   initialize: function () {
     this.model = this.model || new DecisionTable.Model();
+    var contextMenu = this.contextMenu = new ContextMenuView({
+      parent: this
+    });
+    this.registerSubview(contextMenu);
+    document.body.appendChild(contextMenu.el);
+  },
+
+  hideContextMenu: function () {
+    this.contextMenu.close();
+  },
+
+  showContextMenu: function (cellModel, evt) {
+    this.contextMenu.open({
+      top:  evt.clientY,
+      left: evt.clientX,
+      cell: cellModel
+    });
+
+    try {
+      evt.preventDefault();
+    } catch (e) {}
+  },
+
+  remove: function () {
+    document.body.removeChild(this.contextMenu.el);
+    return View.prototype.remove.apply(this, arguments);
   },
 
   update: function () {
     return this;
   },
 
+
+
   parseChoices: function (el) {
     if (!el) {
       return 'MISSING';
     }
     var content = el.textContent.trim();
-    
+
     if (content[0] === '(' && content.slice(-1) === ')') {
       return content
         .slice(1, -1)
@@ -271,7 +264,7 @@ var DecisionTableView = View.extend({
 
     return this.toJSON();
   },
-  
+
   toJSON: function () {
     return this.model.toJSON();
   },
