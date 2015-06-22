@@ -31,7 +31,7 @@ var DecisionTableModel = State.extend({
   },
 
 
-  _clipboard: null,
+  _ruleClipboard: null,
 
 
 
@@ -39,7 +39,7 @@ var DecisionTableModel = State.extend({
 
 
 
-  addRule: function (scopeCell) {
+  addRule: function (scopeCell, beforeAfter) {
     var cells = [];
     var c;
 
@@ -62,47 +62,56 @@ var DecisionTableModel = State.extend({
       value: ''
     });
 
-    // var rule =
+    var options = {};
+    if (beforeAfter) {
+      var ruleDelta = this.rules.indexOf(scopeCell.collection.parent);
+      options.at = ruleDelta + (beforeAfter > 0 ? ruleDelta : (ruleDelta - 1));
+    }
+
     this.rules.add({
       cells: cells
-    });
+    }, options);
 
-    // rule.cells.forEach(function (cell, c) {
-    //   var clause;
-    //   if (c < this.inputs.length) {
-    //     clause = this.inputs.at(c);
-    //     cell.listenTo(clause, 'change:choices', function () {
-    //       cell.choices = clause.choices;
-    //     });
-    //   }
-    //   else if (c < (rule.cells.length - 1)) {
-    //     clause = this.outputs.at(c - (this.inputs.length - 0));
-    //     cell.listenTo(clause, 'change:choices', function () {
-    //       cell.choices = clause.choices;
-    //     });
-    //   }
-    // }, this);
+    return this;
   },
 
   removeRule: function (scopeCell) {
     this.rules.remove(scopeCell.collection.parent);
     this.rules.trigger('reset');
+    return this;
   },
 
 
   copyRule: function (scopeCell, upDown) {
-    var ruleDelta = this.rules.indexOf(scopeCell.collection.parent);
-    var rule = this.rules.at(ruleDelta);
-    if (!rule) { return; }
-    if (!upDown) { return; }
+    var rule = scopeCell.collection.parent;
+    if (!rule) { return this; }
+    this._ruleClipboard = rule;
+
+    if (upDown) {
+      var ruleDelta = this.rules.indexOf(rule);
+      this.pasteRule(ruleDelta + (upDown > 1 ? 0 : 1));
+    }
+
+    return this;
   },
 
 
   pasteRule: function (delta) {
-    if (!this._clipboard) { return; }
-    this.rules.add(this._clipboard.toJSON(), {
+    if (!this._ruleClipboard) { return this; }
+    var data = this._ruleClipboard.toJSON();
+    this.rules.add(data, {
       at: delta
     });
+    return this;
+  },
+
+
+  clearRule: function (scopeCell) {
+    var ruleDelta = this.rules.indexOf(scopeCell.collection.parent);
+    this.rules.at(ruleDelta).cells.forEach(function (cell) {
+      cell.value = '';
+    });
+    return this;
   },
 
 
@@ -126,9 +135,13 @@ var DecisionTableModel = State.extend({
       mapping:  null,
       datatype: 'string'
     }), delta);
+
+    return this;
   },
 
-  removeInput: function () {},
+  removeInput: function () {
+    return this;
+  },
 
 
 
@@ -140,9 +153,13 @@ var DecisionTableModel = State.extend({
       mapping:  null,
       datatype: 'string'
     }), delta);
+
+    return this;
   },
 
-  removeOutput: function () {}
+  removeOutput: function () {
+    return this;
+  }
 });
 
 window.DecisionTableModel = DecisionTableModel;

@@ -80,6 +80,8 @@ var RuleView = View.extend({
     });
 
     var rule = this.model;
+    var table = rule.collection.parent;
+
     var ctrls = new ScopeControlsView({
       parent: this,
       scope: this.model,
@@ -91,6 +93,64 @@ var RuleView = View.extend({
           fn: function () {
             rule.collection.remove(rule);
           }
+        },
+        {
+          label: 'Clear',
+          icon: 'clear',
+          hint: 'Clear the focused rule',
+          fn: function () {
+            table.clearRule(rule);
+          }
+        },
+        {
+          label: 'Add',
+          icon: 'plus',
+          fn: function () {
+            table.addRule(rule);
+          },
+          subcommands: [
+            {
+              label: 'above',
+              icon: 'above',
+              hint: 'Add a rule above the focused one',
+              fn: function () {
+                table.addRule(rule, -1);
+              }
+            },
+            {
+              label: 'below',
+              icon: 'below',
+              hint: 'Add a rule below the focused one',
+              fn: function () {
+                table.addRule(rule, 1);
+              }
+            }
+          ]
+        },
+        {
+          label: 'Copy',
+          icon: 'copy',
+          fn: function () {
+            table.copyRule(rule);
+          },
+          subcommands: [
+            {
+              label: 'above',
+              icon: 'above',
+              hint: 'Copy the rule above the focused one',
+              fn: function () {
+                table.copyRule(rule, -1);
+              }
+            },
+            {
+              label: 'below',
+              icon: 'below',
+              hint: 'Copy the rule below the focused one',
+              fn: function () {
+                table.copyRule(rule, 1);
+              }
+            }
+          ]
         }
       ]
     });

@@ -87,7 +87,25 @@ var DecisionTableView = View.extend({
             icon: 'plus',
             fn: function () {
               table.addRule(this.scope);
-            }
+            },
+            subcommands: [
+              {
+                label: 'above',
+                icon: 'above',
+                hint: 'Add a rule above the focused one',
+                fn: function () {
+                  table.addRule(this.scope, -1);
+                }
+              },
+              {
+                label: 'below',
+                icon: 'below',
+                hint: 'Add a rule below the focused one',
+                fn: function () {
+                  table.addRule(this.scope, 1);
+                }
+              }
+            ]
           },
           {
             label: 'copy',
