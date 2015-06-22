@@ -22,7 +22,7 @@
     },
     {
       "uid": "c709da589c923ba3c2ad48d9fc563e93",
-      "css": "cancel",
+      "css": "clear",
       "code": 59394,
       "src": "entypo"
     },
@@ -39,15 +39,75 @@
       "src": "entypo"
     },
     {
+      "uid": "63b86fedd4ee9ad2105f54f4888e7088",
+      "css": "info",
+      "code": 59397,
+      "src": "entypo"
+    },
+    {
+      "uid": "005a38f6af74b31aeb817fedb09d2175",
+      "css": "keyboard",
+      "code": 59404,
+      "src": "entypo"
+    },
+    {
+      "uid": "922ab2cb66943a83de969990289ef1dc",
+      "css": "copy",
+      "code": 59403,
+      "src": "entypo"
+    },
+    {
+      "uid": "a204f0fa972408eaae5a363c444991b2",
+      "css": "input",
+      "code": 59401,
+      "src": "entypo"
+    },
+    {
+      "uid": "2d76f2c8d13be40694ecadfea7fb83c3",
+      "css": "output",
+      "code": 59402,
+      "src": "entypo"
+    },
+    {
       "uid": "8704cd847a47b64265b8bb110c8b4d62",
-      "css": "down-open",
+      "css": "down",
       "code": 59393,
       "src": "entypo"
     },
     {
+      "uid": "c311c48d79488965b0fab7f9cd12b6b5",
+      "css": "left",
+      "code": 59398,
+      "src": "entypo"
+    },
+    {
+      "uid": "749e7d90a9182938180f1d2d8c33584e",
+      "css": "right",
+      "code": 59400,
+      "src": "entypo"
+    },
+    {
       "uid": "9c7ff134960bb5a82404e4aeaab366d9",
-      "css": "up-open",
+      "css": "up",
       "code": 59392,
+      "src": "entypo"
+    },
+    {
+      "uid": "465bb89b6f204234e5787c326b4ae54c",
+      "css": "undo",
+      "code": 59405,
+      "src": "entypo"
+    },
+    {
+      "uid": "bb46b15cb78cc4cc05d3d715d522ac4d",
+      "css": "redo",
+      "code": 59406,
+      "src": "entypo"
+    },
+    {
+      "uid": "d10920db2e79c997c5e783279291970c",
+      "css": "menu",
+      "code": 59407,
       "src": "entypo"
     }
   ]

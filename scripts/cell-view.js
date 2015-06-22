@@ -7,6 +7,8 @@ var merge = deps('lodash.merge');
 
 var ChoiceView = require('./choice-view');
 var RuleCellView = View.extend(merge({}, ChoiceView.prototype, {
+  template: '<td></td>',
+
   bindings: merge({}, ChoiceView.prototype.bindings, {
     'model.value': {
       type: 'text'
@@ -15,6 +17,15 @@ var RuleCellView = View.extend(merge({}, ChoiceView.prototype, {
     'model.editable': {
       type: 'booleanAttribute',
       name: 'contenteditable'
+    },
+
+    'model.spellchecked': {
+      type: 'booleanAttribute',
+      name: 'spellcheck'
+    },
+
+    'model.type': {
+      type: 'class'
     }
   }),
 
@@ -39,46 +50,11 @@ var RuleCellView = View.extend(merge({}, ChoiceView.prototype, {
 
 
 
-var RuleInputCellView = RuleCellView.extend({
-  // events: RuleCellView.prototype.events,
+var RuleInputCellView = RuleCellView.extend({});
 
-  bindings: merge({}, RuleCellView.prototype.bindings, {
-    last: {
-      type: 'booleanClass',
-      name: 'double-border-right'
-    }
-  }),
+var RuleOutputCellView = RuleCellView.extend({});
 
-  derived: {
-    last: {
-      deps: [
-        'model.collection',
-        'parent.inputs'
-      ],
-      fn: function () {
-        var index = this.model.collection.indexOf(this.model);
-        return index === (this.parent.inputs.length - 1);
-      }
-    }
-  },
-
-  template: '<td class="input"></td>'
-});
-
-
-
-
-var RuleOutputCellView = RuleCellView.extend({
-  template: '<td class="output"></td>'
-});
-
-
-
-
-
-var RuleAnnotationCellView = RuleCellView.extend({
-  template: '<td class="annotation"></td>'
-});
+var RuleAnnotationCellView = RuleCellView.extend({});
 
 
 

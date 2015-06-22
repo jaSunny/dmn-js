@@ -22,12 +22,15 @@ function elPosition(el) {
 }
 
 var RuleView = View.extend({
-  template: '<tr><td class="number"></td></tr>',
+  template: '<tr><td class="number">' +
+              '<span class="value"></span>' +
+              '<span class="ctrls"></span>' +
+            '</td></tr>',
 
   bindings: {
     'model.delta': {
       type: 'text',
-      selector: '.number'
+      selector: '.number .value'
     },
 
     'model.focused': {
@@ -38,28 +41,43 @@ var RuleView = View.extend({
 
   derived: {
     inputs: {
-      deps: ['parent.model.inputs'],
+      deps: [
+        'parent',
+        'parent.model',
+        'parent.model.inputs'
+      ],
       fn: function () {
         return this.parent.model.inputs;
       }
     },
 
     outputs: {
-      deps: ['parent.model.outputs'],
+      deps: [
+        'parent',
+        'parent.model',
+        'parent.model.outputs'
+      ],
       fn: function () {
         return this.parent.model.outputs;
       }
     },
 
     annotation: {
-      deps: ['parent.model.annotations'],
+      deps: [
+        'parent',
+        'parent.model',
+        'parent.model.annotations'
+      ],
       fn: function () {
         return this.parent.model.annotations.at(0);
       }
     },
 
     position: {
-      deps: ['el', 'parent'],
+      deps: [
+        'el',
+        'parent'
+      ],
       cache: false, // because of resize
       fn: function () { return elPosition(this.el); }
     }
@@ -77,14 +95,14 @@ var RuleView = View.extend({
 
     var i;
     var subview;
-    
+
     for (i = 0; i < this.inputs.length; i++) {
       subview = new CellViews.Input({
         //model:  this.model.inputCells[i],
         model:  this.model.cells.at(i),
         parent: this
       });
-      
+
       this.registerSubview(subview.render());
       this.el.appendChild(subview.el);
     }
@@ -95,7 +113,7 @@ var RuleView = View.extend({
         model:  this.model.cells.at(this.inputs.length + i),
         parent: this
       });
-      
+
       this.registerSubview(subview.render());
       this.el.appendChild(subview.el);
     }

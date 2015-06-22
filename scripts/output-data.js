@@ -1,28 +1,13 @@
 'use strict';
-/*global module: false, require: false*/
+/*global module: false, require: false, deps: false*/
 
-var State = deps('ampersand-state');
-var Collection = deps('ampersand-collection');
+var Clause = require('./clause-data');
 
-var OutputModel = State.extend({
-  props: {
-    label:   'string',
-    choices: 'array',
-    mapping: 'string'
-  },
-
-  session: {
-    editable: {
-      type: 'boolean',
-      default: true
-    },
-    focused: 'boolean'
-  }
-});
+var OutputModel = Clause.Model.extend({});
 
 module.exports = {
   Model: OutputModel,
-  Collection: Collection.extend({
+  Collection: Clause.Collection.extend({
     model: OutputModel
   })
 };

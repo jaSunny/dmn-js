@@ -23,6 +23,10 @@
       width: 1.6em;
     }
 
+    li:hover:after {
+      width: 100%;
+    }
+
     > a {
       background-color: transparent;
       position: relative;
@@ -36,17 +40,17 @@
 
 .dmn-context-menu {
   .tooltip;
-  background-color: #fff;
   .transition(top 0.218s ease);
   .transition(left 0.218s ease);
-  min-width: 120px;
+  background-color: #fff;
+  min-width: 180px;
 
   .coordinates {
     padding: 3px 6px;
     display: none;
   }
 
-  li > a {
+  a {
     .links-item;
   }
 
@@ -63,39 +67,103 @@
 
   span {
     display: inline-block;
-    &.icon {
-      width: 1.2em;
+  }
+
+
+  .icon {
+    &:before {
       .dmn-font;
-      text-align: left;
-      &:before { content: '\e803'; }
+      margin: 0;
+    }
+
+    width: 1em;
+    margin-left: 0;
+    margin-right: .4em;
+
+    &.undo:before { content: '\e80d'; }
+    &.redo:before { content: '\e80e'; }
+
+    &.plus:before { content: '\e803'; }
+    &.minus:before { content: '\e804'; }
+
+    &.input:before { content: '\e809'; }
+    &.output:before { content: '\e80a'; }
+
+    &.copy:before { content: '\e80b'; }
+
+    &.above:before { content: '\e800'; }
+    &.below:before { content: '\e801'; }
+    &.left:before { content: '\e806'; }
+    &.right:before { content: '\e808'; }
+  }
+
+  a.disabled,
+  a.disabled:hover {
+    color: @dmn-gray-dark;
+    cursor: default;
+  }
+
+  ul:empty {
+    display: none;
+  }
+
+  > ul > li {
+    padding-top: 3px;
+    padding-bottom: 3px;
+    border-bottom: 1px dotted @dmn-gray-light;
+    &:last-child {
+      border-bottom: none;
+    }
+
+    > ul {
+      .label {
+        padding-left: 0.4em;
+      }
     }
   }
 
-  > ul {
+  ul ul {
+    overflow: hidden;
+    li {
+      overflow: hidden;
+      position: relative;
 
-    > li {
-      padding-top: 3px;
-      padding-bottom: 3px;
-      border-bottom: 1px dotted @dmn-gray-light;
+      float: left;
+      clear: both;
 
-      > a,
-      > a:hover {
-        color: @dmn-gray-dark;
-        cursor: default;
-      }
-
-      > a .icon:before {
-        display: none;
+      > a {
+        display: inline-block;
       }
 
       > ul {
-        &:empty {
-          display: none;
-        }
+        float: right;
+      }
+      &.dropdown {
+        width: 100%;
+      }
+    }
+  }
 
-        .label {
-          padding-left: 0.4em;
-        }
+  ul ul ul {
+    display: inline-block;
+    text-align: right;
+
+    li {
+      display: inline-block;
+      float: none;
+      width: auto;
+
+      &:after {
+        display: none;
+      }
+
+      .icon {
+        width: 1em;
+        margin: 0 0.2em;
+      }
+
+      .label {
+        display: none;
       }
     }
   }

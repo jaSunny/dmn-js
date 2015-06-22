@@ -60,3 +60,38 @@
     }
   }
 }
+
+.controls-icon() {
+  position: relative;
+  .ctrls {
+    position: absolute;
+    // top: 1px;
+    // right: 1px;
+
+    top: 5px;
+    right: -4px;
+    .transform-origin(center);
+    .rotate(90deg);
+
+    &:before {
+      .dmn-font;
+      content: '\e80f';
+      color: @dmn-gray-light;
+      cursor: pointer;
+      .transition(color .218s ease);
+    }
+
+    &.open {
+      &:before {
+        display: none;
+      }
+    }
+  }
+
+  // .focused,
+  &:hover {
+    .ctrls:before {
+      color: @dmn-primary;
+    }
+  }
+}

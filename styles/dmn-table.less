@@ -24,15 +24,19 @@
     text-align: right;
   }
 
-  .double-border-right {
-    border-right: 3px double @dmn-gray;
-  }
 
   header,
   table {
     border: 2px solid @dmn-gray;
   }
 
+  thead,
+  tbody,
+  tr,
+  th,
+  td {
+    position: relative;
+  }
 
   header,
   td,
@@ -49,7 +53,9 @@
     overflow: hidden;
     text-overflow: ellipsis;
 
+
     &.focused {
+      z-index: 10;
       outline: 2px solid @dmn-primary;
     }
   }
@@ -73,6 +79,7 @@
     border-collapse: collapse;
   }
 
+
   thead {
     border-bottom: 3px double @dmn-gray;
 
@@ -90,6 +97,9 @@
 
     .mappings {
       font-family: monospace;
+      td {
+        background-color: @dmn-gray-lighter;
+      }
     }
 
     .values {
@@ -102,6 +112,20 @@
 
     .annotation {
       vertical-align: bottom;
+      &:after {
+        .dmn-font;
+        content: '\e807';
+        position: absolute;
+        top: 12px;
+        right: 0;
+        text-align: right;
+        font-size: 3em;
+        color: @dmn-gray-light;
+        .transition(color .218s ease);
+      }
+      &:hover:after {
+        color: @dmn-primary;
+      }
     }
   }
 
@@ -170,6 +194,7 @@
 
   tr.focused {
     .number {
+      z-index: 10;
       color: @dmn-primary;
       background-color: @dmn-input-color;
     }
@@ -177,8 +202,20 @@
 
 
 
+  tr {
+    > .input + .output {
+      border-left: 3px double @dmn-gray;
+    }
+  }
 
 
+  th.input,
+  th.output,
+  td.input,
+  td.output,
+  td.number {
+    .controls-icon;
+  }
 
 
 
@@ -213,8 +250,6 @@
     }
 
     background-color: @dmn-gray-lighter;
-    // border: 1px solid @dmn-gray-light;
-    // margin-bottom: 12px;
 
     ul, li {
       margin: 0;

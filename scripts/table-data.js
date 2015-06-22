@@ -31,13 +31,15 @@ var DecisionTableModel = State.extend({
   },
 
 
+  _clipboard: null,
 
 
 
 
 
 
-  addRule: function () {
+
+  addRule: function (scopeCell) {
     var cells = [];
     var c;
 
@@ -60,51 +62,90 @@ var DecisionTableModel = State.extend({
       value: ''
     });
 
+    // var rule =
     this.rules.add({
       cells: cells
     });
+
+    // rule.cells.forEach(function (cell, c) {
+    //   var clause;
+    //   if (c < this.inputs.length) {
+    //     clause = this.inputs.at(c);
+    //     cell.listenTo(clause, 'change:choices', function () {
+    //       cell.choices = clause.choices;
+    //     });
+    //   }
+    //   else if (c < (rule.cells.length - 1)) {
+    //     clause = this.outputs.at(c - (this.inputs.length - 0));
+    //     cell.listenTo(clause, 'change:choices', function () {
+    //       cell.choices = clause.choices;
+    //     });
+    //   }
+    // }, this);
+  },
+
+  removeRule: function (scopeCell) {
+    this.rules.remove(scopeCell.collection.parent);
+    this.rules.trigger('reset');
+  },
+
+
+  copyRule: function (scopeCell, upDown) {
+    var ruleDelta = this.rules.indexOf(scopeCell.collection.parent);
+    var rule = this.rules.at(ruleDelta);
+    if (!rule) { return; }
+    if (!upDown) { return; }
+  },
+
+
+  pasteRule: function (delta) {
+    if (!this._clipboard) { return; }
+    this.rules.add(this._clipboard.toJSON(), {
+      at: delta
+    });
+  },
+
+
+  _rulesCells: function (added, delta) {
+    this.rules.forEach(function (rule) {
+      rule.cells.add({
+        choices: added.choices
+      }, {
+        at: delta,
+        silent: true
+      });
+    });
+    this.rules.trigger('reset');
   },
 
   addInput: function () {
     var delta = this.inputs.length;
-    var added = this.inputs.add({
-      name:     null,
+    this._rulesCells(this.inputs.add({
+      label:    null,
       choices:  null,
       mapping:  null,
       datatype: 'string'
-    });
-
-    this.rules.forEach(function (rule) {
-      rule.cells.add({
-        choices: added.choices
-      }, {
-        at: delta,
-        silent: true
-      });
-    });
-    this.rules.trigger('reset');
+    }), delta);
   },
+
+  removeInput: function () {},
+
+
 
   addOutput: function () {
     var delta = this.inputs.length + this.inputs.length - 1;
-    var added = this.outputs.add({
-      name:     null,
+    this._rulesCells(this.outputs.add({
+      label:    null,
       choices:  null,
       mapping:  null,
       datatype: 'string'
-    });
+    }), delta);
+  },
 
-    this.rules.forEach(function (rule) {
-      rule.cells.add({
-        choices: added.choices
-      }, {
-        at: delta,
-        silent: true
-      });
-    });
-    this.rules.trigger('reset');
-  }
+  removeOutput: function () {}
 });
+
+window.DecisionTableModel = DecisionTableModel;
 
 module.exports = {
   Model: DecisionTableModel

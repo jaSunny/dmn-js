@@ -7,11 +7,38 @@ var State = deps('ampersand-state');
 
 var CommandModel = State.extend({
   props: {
-    label:  'string',
+    label: 'string',
+    hint: 'string',
+    icon: 'string',
+    href: 'string',
+
+    possible: {
+      type: 'any',
+      default: function () { return function () {}; },
+      test: function (newValue) {
+        if (typeof newValue !== 'function' && newValue !== false) {
+          return 'must be either a function or false';
+        }
+      }
+    },
+
     fn: {
       type: 'any',
-      default: function () {
-        return function () {};
+      default: false,
+      test: function (newValue) {
+        if (typeof newValue !== 'function' && newValue !== false) {
+          return 'must be either a function or false';
+        }
+      }
+    }
+  },
+
+  derived: {
+    disabled: {
+      deps: ['possible'],
+      cache: false,
+      fn: function () {
+        return typeof this.possible === 'function' ? !this.possible() : false;
       }
     }
   },
@@ -46,14 +73,20 @@ var ContextMenuItem = View.extend({
       selector: '.label'
     },
 
+    'model.hint': {
+      type: 'attribute',
+      name: 'title'
+    },
+
+    'model.fn': {
+      type: 'booleanClass',
+      selector: 'a',
+      no: 'disabled'
+    },
+
     'model.disabled': {
       type: 'booleanClass',
       name: 'disabled'
-    },
-
-    'model.hidden': {
-      type: 'booleanClass',
-      name: 'hidden'
     },
 
     'model.subcommands.length': {
@@ -63,26 +96,22 @@ var ContextMenuItem = View.extend({
 
     'model.href': {
       selector: 'a',
-      type: function (el, value) {
-        if (value) {
-          el.setAttribute('href', value);
-        }
-        else {
-          el.removeAttribute('href');
-        }
-      }
+      name: 'href',
+      type: 'attribute'
     },
 
     'model.icon': {
       type: function (el, value) {
-        el.className = 'icon '+ value;
+        el.className = 'icon ' + value;
       },
       selector: '.icon'
     }
   },
 
   events: {
-    click: '_handleClick'
+    click:      '_handleClick',
+    mouseover:  '_handleMouseover',
+    mouseout:   '_handleMouseout'
   },
 
   render: function () {
@@ -94,11 +123,28 @@ var ContextMenuItem = View.extend({
   },
 
   _handleClick: function (evt) {
-    this.parent.triggerCommand(this.model, evt);
+    if (this.model.fn) {
+      this.parent.triggerCommand(this.model, evt);
+    }
+    else if (!this.model.href) {
+      evt.preventDefault();
+    }
   },
 
-  triggerCommand: function (model, evt) {
-    this.parent.triggerCommand(model, evt);
+  _handleMouseover: function () {
+
+  },
+
+
+
+  _handleMouseout: function () {
+
+  },
+
+
+
+  triggerCommand: function (command, evt) {
+    this.parent.triggerCommand(command, evt);
   }
 });
 
@@ -123,7 +169,8 @@ var ContextMenuView = View.extend({
   },
 
   session: {
-    isOpen: 'boolean'
+    isOpen: 'boolean',
+    scope:  'state'
   },
 
   bindings: {
@@ -148,46 +195,157 @@ var ContextMenuView = View.extend({
 
     this.isOpen = true;
 
+    this.scope = options.scope;
     var commands = options.commands || [
+      // {
+      //   label: 'Actions',
+      //   subcommands: [
+      //     {
+      //       label: 'undo',
+      //       icon: 'undo',
+      //       fn: function () {}
+      //     },
+      //     {
+      //       label: 'redo',
+      //       icon: 'redo',
+      //       fn: function () {}
+      //     }
+      //   ]
+      // },
+      {
+        label: 'Cell',
+        subcommands: [
+          {
+            label: 'clear',
+            icon: 'clear',
+            hint: 'Clear the content of the focused cell',
+            possible: function () {
+              console.info('clear possible?', arguments, this);
+            },
+            fn: function () {}
+          }
+        ]
+      },
       {
         label: 'Rule',
+        icon: '',
         subcommands: [
           {
             label: 'add',
+            icon: 'plus',
             fn: function () {
-              this.parent.model.addRule();
+              this.parent.model.addRule(this.scope);
             }
           },
           {
             label: 'copy',
+            icon: 'copy',
             fn: function () {
-              this.parent.model.addRule();
+              this.parent.model.copyRule(this.scope);
+            },
+            subcommands: [
+              {
+                label: 'above',
+                icon: 'above',
+                hint: 'Copy the rule above the focused one',
+                fn: function () {
+                  this.parent.model.copyRule(this.scope, -1);
+                }
+              },
+              {
+                label: 'below',
+                icon: 'below',
+                hint: 'Copy the rule below the focused one',
+                fn: function () {
+                  this.parent.model.copyRule(this.scope, 1);
+                }
+              }
+            ]
+          },
+          {
+            label: 'remove',
+            icon: 'minus',
+            hint: 'Remove the focused rule',
+            fn: function () {
+              this.parent.model.removeRule(this.scope);
+            }
+          },
+          {
+            label: 'clear',
+            icon: 'clear',
+            hint: 'Clear the focused rule',
+            fn: function () {
+              this.parent.model.clearRule(this.scope);
             }
           }
         ]
       },
       {
-        label: 'Clause',
-        subcommands: []
-      },
-      {
         label: 'Input',
+        icon: 'input',
         subcommands: [
           {
             label: 'add',
+            icon: 'plus',
+            subcommands: [
+              {
+                label: 'before',
+                icon: 'left',
+                hint: 'Add an input clause before the focused one',
+                fn: function () {
+                  this.parent.model.addInput();
+                }
+              },
+              {
+                label: 'after',
+                icon: 'right',
+                hint: 'Add an input clause after the focused one',
+                fn: function () {
+                  this.parent.model.addInput();
+                }
+              }
+            ]
+          },
+          {
+            label: 'remove',
+            icon: 'minus',
             fn: function () {
-              this.parent.model.addInput();
+              this.parent.model.removeInput();
             }
           }
         ]
       },
       {
         label: 'Output',
+        icon: 'output',
         subcommands: [
           {
             label: 'add',
+            icon: 'plus',
+            subcommands: [
+              {
+                label: 'before',
+                icon: 'left',
+                hint: 'Add an output clause before the focused one',
+                fn: function () {
+                  this.parent.model.addOutput();
+                }
+              },
+              {
+                label: 'after',
+                icon: 'right',
+                hint: 'Add an output clause after the focused one',
+                fn: function () {
+                  this.parent.model.addOutput();
+                }
+              }
+            ]
+          },
+          {
+            label: 'remove',
+            icon: 'minus',
             fn: function () {
-              this.parent.model.addOutput();
+              this.parent.model.removeOutput();
             }
           }
         ]

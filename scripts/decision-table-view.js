@@ -11,15 +11,16 @@ function toArray(els) {
   return Array.prototype.slice.apply(els);
 }
 
-// function makeTh(type) {
-//   var el = document.createElement('th');
-//   el.className = type;
-//   return el;
-// }
 
 function makeTd(type) {
   var el = document.createElement('td');
   el.className = type;
+  return el;
+}
+
+function makeCtrls() {
+  var el = document.createElement('span');
+  el.className = 'ctrls';
   return el;
 }
 
@@ -53,6 +54,10 @@ var DecisionTableView = View.extend({
               '</table>' +
             '</div>',
 
+  events: {
+    'click thead .ctrls': '_handleClauseControlClick'
+  },
+
   initialize: function () {
     this.model = this.model || new DecisionTable.Model();
     var contextMenu = this.contextMenu = new ContextMenuView({
@@ -68,9 +73,9 @@ var DecisionTableView = View.extend({
 
   showContextMenu: function (cellModel, evt) {
     this.contextMenu.open({
-      top:  evt.clientY,
-      left: evt.clientX,
-      cell: cellModel
+      top:    evt.clientY,
+      left:   evt.clientX,
+      scope:  cellModel
     });
 
     try {
@@ -200,6 +205,15 @@ var DecisionTableView = View.extend({
   },
 
 
+  _handleClauseControlClick: function (evt) {
+    var holder = evt.delegateTarget.parentNode;
+    var type = holder.className;
+    var el = document.createElement('ul');
+    el.className = 'dmn-clause-group-controls';
+    el.innerHTML = '<li><a><span class="icon plus"></span><span class="">add '+ type +'</span></a></li>';
+    document.body.appendChild(el);
+  },
+
 
   render: function () {
     if (!this.el) {
@@ -207,6 +221,7 @@ var DecisionTableView = View.extend({
     }
     else {
       this.parseTable();
+      this.trigger('change:el');
     }
 
     if (!this.headerEl) {
@@ -220,7 +235,12 @@ var DecisionTableView = View.extend({
         valuesRowEl:      'thead tr.values',
         mappingsRowEl:    'thead tr.mappings'
       });
+
+
+      this.inputsHeaderEl.appendChild(makeCtrls());
+      this.outputsHeaderEl.appendChild(makeCtrls());
     }
+
 
     ['input', 'output'].forEach(function (type) {
       this.listenToAndRun(this.model[type + 's'], 'add reset remove', function () {

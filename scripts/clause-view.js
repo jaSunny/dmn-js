@@ -8,7 +8,16 @@ var ChoiceView = require('./choice-view');
 
 
 var LabelView = View.extend(merge({/*}, ChoiceView.prototype, {*/
+  events: {
+    'input': '_handleInput',
+  },
+
+  _handleInput: function () {
+    this.model.label = this.el.textContent.trim();
+  },
+
   render: function () {
+    this.el.setAttribute('contenteditable', true);
     this.el.textContent = (this.model.label || '').trim();
   }
 }));
@@ -17,7 +26,16 @@ var LabelView = View.extend(merge({/*}, ChoiceView.prototype, {*/
 
 
 var MappingView = View.extend(merge({/*}, ChoiceView.prototype, {*/
+  events: {
+    'input': '_handleInput',
+  },
+
+  _handleInput: function () {
+    this.model.mapping = this.el.textContent.trim();
+  },
+
   render: function () {
+    this.el.setAttribute('contenteditable', true);
     this.el.textContent = (this.model.mapping || '').trim();
   }
 }));
@@ -26,13 +44,45 @@ var MappingView = View.extend(merge({/*}, ChoiceView.prototype, {*/
 
 
 var ValueView = View.extend(merge({/*}, ChoiceView.prototype, {*/
+  events: {
+    'input': '_handleInput',
+    'focus': '_handleFocus'
+  },
+
+  _handleInput: function () {
+    var content = this.el.textContent.trim();
+
+    if (content[0] === '(' && content.slice(-1) === ')') {
+      this.model.choices = content
+        .slice(1, -1)
+        .split(',')
+        .map(function (str) {
+          return str.trim();
+        })
+        .filter(function (str) {
+          return !!str;
+        })
+        ;
+      this.model.datatype = null;
+    }
+    else {
+      this.model.choices = null;
+      this.model.datatype = content;
+    }
+  },
+
+  _handleFocus: function () {
+
+  },
+
   render: function () {
+    this.el.setAttribute('contenteditable', true);
     var str = '';
     if (this.model.choices && this.model.choices.length) {
       str = '(' + this.model.choices.join(', ') + ')';
     }
     else {
-      str = 'TODO: datatype';
+      str = this.model.datatype;
     }
     this.el.textContent = str;
   }
@@ -52,6 +102,14 @@ var ClauseView = View.extend({
     labelEl:    requiredElement,
     mappingEl:  requiredElement,
     valueEl:    requiredElement
+  },
+
+  events: {
+    'click th .ctrls': '_handleControlsClick'
+  },
+
+  _handleControlsClick: function () {
+
   },
 
   initialize: function () {

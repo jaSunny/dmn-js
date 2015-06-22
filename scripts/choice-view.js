@@ -1,48 +1,18 @@
 'use strict';
-/* global deps: false, module: false */
-
-var State = deps('ampersand-state');
-var Collection = deps('ampersand-collection');
+/* global deps: false, require: false, module: false */
 var View = deps('ampersand-view');
+
+var SuggestionsView = require('./suggestions-view');
+
+var suggestionsView = SuggestionsView.instance();
 
 var specialKeys = [
   8 // backspace
 ];
 
-var ChoicesCollection = Collection.extend({
-  model: State.extend({
-    props: {
-      value: 'string',
-      html: 'string'
-    }
-  })
-});
-
-var ChoiceSuggestionView = View.extend({
-  template: '<li></li>',
-
-  bindings: {
-    'model.html': {
-      type: 'innerHTML'
-    }
-  },
-
-  events: {
-    click: '_handleClick'
-  },
-
-  _handleClick: function () {
-    if (!this.parent) { return; }
-    this.parent.model.value = this.model.value;
-    if (this.parent.model.value === this.model.value) { 
-      this.parent.model.trigger('change:value');
-    }
-  }
-});
-
 var ChoiceView = View.extend({
   collections: {
-    choices: ChoicesCollection
+    choices: SuggestionsView.Collection
   },
 
   events: {
@@ -50,13 +20,13 @@ var ChoiceView = View.extend({
     focus: '_handleFocus',
     blur:  '_handleBlur'
   },
-  
+
   session: {
     valid:          {
       default: true,
       type: 'boolean'
     },
-    
+
     originalValue:  'string'
   },
 
@@ -66,6 +36,15 @@ var ChoiceView = View.extend({
       fn: function () {
         return this.model.value === this.originalValue;
       }
+    // },
+
+    // suggestionsView: {
+    //   deps: ['suggestions'],
+    //   cache: false,
+    //   fn: function () {
+    //     return suggestionsView();
+    //     // return SuggestionsView.instance();
+    //   }
     }
   },
 
@@ -92,6 +71,7 @@ var ChoiceView = View.extend({
     options = options || {};
     if (this.el) {
       this.el.contentEditable = true;
+      this.el.spellcheck = false;
       this.originalValue = this.value = this.el.textContent.trim();
     }
     else {
@@ -99,24 +79,26 @@ var ChoiceView = View.extend({
     }
 
 
-    var choices = this.model.choices;
-    if (!choices || !choices.length) {
-      choices = options.choices || [];
-    }
+    this.listenToAndRun(this.model, 'change:choices', function () {
+      var choices = this.model.choices;
+      if (!this.choices) {
+        return;
+      }
+      if (!choices) {
+        choices = [];
+      }
 
-    this.choices.reset(choices.map(function (choice) {
-      return {value: choice};
-    }));
+      this.choices.reset(choices.map(function (choice) {
+        return {value: choice};
+      }));
+    });
 
-    this.suggestions = new ChoicesCollection({
+    this.suggestions = new SuggestionsView.Collection({
       parent: this.choices
     });
-    
-    var suggestionsEl = this.suggestionsEl = document.createElement('ul');
-    suggestionsEl.className = 'dmn-suggestions-helper';
 
-    document.body.appendChild(suggestionsEl);
-    
+
+
     var self = this;
 
     function resetSuggestions() {
@@ -124,12 +106,11 @@ var ChoiceView = View.extend({
     }
     this.listenToAndRun(this.model, 'change:value', resetSuggestions);
 
-    this.renderCollection(this.suggestions, ChoiceSuggestionView, suggestionsEl);
-
     this.listenToAndRun(this.choices, 'change', resetSuggestions);
 
     this.listenToAndRun(this.suggestions, 'reset', function () {
-      this.suggestionsEl.style.display = this.suggestions.length < 2 ? 'none' : 'block';
+      if (!suggestionsView) { return; }
+      suggestionsView.el.style.display = this.suggestions.length < 2 ? 'none' : 'block';
     });
 
 
@@ -141,12 +122,6 @@ var ChoiceView = View.extend({
     }
     window.addEventListener('resize', _handleResize);
     this._handleResize();
-  },
-
-  remove: function () {
-    window.removeEventListener();
-    document.body.removeChild(this.suggestionsEl);
-    View.prototype.remove.apply(this, arguments);
   },
 
   _filter: function (val) {
@@ -177,11 +152,11 @@ var ChoiceView = View.extend({
   },
 
   _handleResize: function () {
-    if (!this.el) { return; }
+    if (!this.el || !suggestionsView) { return; }
     var node = this.el;
     var top = node.offsetTop;
     var left = node.offsetLeft;
-    var helper = this.suggestionsEl;
+    var helper = suggestionsView.el;
 
     while ((node = node.offsetParent)) {
       if (node.offsetTop) {
@@ -204,14 +179,15 @@ var ChoiceView = View.extend({
     var val = this.el.textContent;
 
     var filtered = this._filter(val);
-    this.suggestions.reset(filtered);
+    // this.suggestions.reset(filtered);
+    suggestionsView.show(filtered);
     this._handleResize();
 
     if (filtered.length === 1) {
       if (evt) {
         evt.preventDefault();
       }
-      
+
       var matching = filtered[0].value;
       this.model.set({
         value: matching
