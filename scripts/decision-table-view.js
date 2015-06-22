@@ -75,6 +75,98 @@ var DecisionTableView = View.extend({
     var options = utils.elOffset(evt.currentTarget);
     options.scope = cellModel;
     options.left += evt.currentTarget.clientWidth;
+    var table = this.model;
+
+    options.commands = [
+      {
+        label: 'Rule',
+        icon: '',
+        subcommands: [
+          {
+            label: 'add',
+            icon: 'plus',
+            fn: function () {
+              table.addRule(this.scope);
+            }
+          },
+          {
+            label: 'copy',
+            icon: 'copy',
+            fn: function () {
+              table.copyRule(this.scope);
+            },
+            subcommands: [
+              {
+                label: 'above',
+                icon: 'above',
+                hint: 'Copy the rule above the focused one',
+                fn: function () {
+                  table.copyRule(this.scope, -1);
+                }
+              },
+              {
+                label: 'below',
+                icon: 'below',
+                hint: 'Copy the rule below the focused one',
+                fn: function () {
+                  table.copyRule(this.scope, 1);
+                }
+              }
+            ]
+          },
+          {
+            label: 'remove',
+            icon: 'minus',
+            hint: 'Remove the focused rule',
+            fn: function () {
+              table.removeRule(this.scope);
+            }
+          },
+          {
+            label: 'clear',
+            icon: 'clear',
+            hint: 'Clear the focused rule',
+            fn: function () {
+              table.clearRule(this.scope);
+            }
+          }
+        ]
+      }
+    ];
+
+    var type = cellModel.type;
+
+    options.commands.unshift({
+      label: type === 'input' ? 'Input' : 'Output',
+      icon: type,
+      subcommands: [
+        {
+          label: 'add',
+          icon: 'plus',
+          subcommands: [
+            {
+              label: 'before',
+              icon: 'left',
+              hint: 'Add an ' + type + ' clause before the focused one',
+              fn: function () {
+                var method = type === 'input' ? 'addInput' : 'addOutput';
+                table[method]();
+              }
+            },
+            {
+              label: 'after',
+              icon: 'right',
+              hint: 'Add an ' + type + ' clause after the focused one',
+              fn: function () {
+                var method = type === 'input' ? 'addInput' : 'addOutput';
+                table[method]();
+              }
+            }
+          ]
+        }
+      ]
+    });
+
     contextMenu.open(options);
 
     try {
