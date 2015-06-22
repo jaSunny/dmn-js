@@ -2,29 +2,14 @@
 /* global require: false, module: false, deps: false */
 
 var View = deps('ampersand-view');
-
 var CellViews = require('./cell-view');
+var ScopeControlsView = require('./scopecontrols-view');
+var utils = require('./utils');
 
-function elPosition(el) {
-  var node = el;
-  var top = node.offsetTop;
-  var left = node.offsetLeft;
-
-  while ((node = node.offsetParent)) {
-    top += node.offsetTop;
-    left += node.offsetLeft;
-  }
-
-  return {
-    top: top,
-    left: left
-  };
-}
 
 var RuleView = View.extend({
   template: '<tr><td class="number">' +
               '<span class="value"></span>' +
-              '<span class="ctrls"></span>' +
             '</td></tr>',
 
   bindings: {
@@ -74,12 +59,9 @@ var RuleView = View.extend({
     },
 
     position: {
-      deps: [
-        'el',
-        'parent'
-      ],
+      deps: [],
       cache: false, // because of resize
-      fn: function () { return elPosition(this.el); }
+      fn: function () { return utils.elOffset(this.el); }
     }
   },
 
@@ -93,12 +75,33 @@ var RuleView = View.extend({
   render: function () {
     this.renderWithTemplate();
 
+    this.cacheElements({
+      numberEl: '.number'
+    });
+
+    var rule = this.model;
+    var ctrls = new ScopeControlsView({
+      parent: this,
+      scope: this.model,
+      commands: [
+        {
+          label: 'Remove rule',
+          icon: 'minus',
+          hint: 'Remove this rule',
+          fn: function () {
+            rule.collection.remove(rule);
+          }
+        }
+      ]
+    });
+    this.registerSubview(ctrls);
+    this.numberEl.appendChild(ctrls.el);
+
     var i;
     var subview;
 
     for (i = 0; i < this.inputs.length; i++) {
       subview = new CellViews.Input({
-        //model:  this.model.inputCells[i],
         model:  this.model.cells.at(i),
         parent: this
       });
@@ -109,7 +112,6 @@ var RuleView = View.extend({
 
     for (i = 0; i < this.outputs.length; i++) {
       subview = new CellViews.Output({
-        //model:  this.model.outputCells[i],
         model:  this.model.cells.at(this.inputs.length + i),
         parent: this
       });
@@ -125,8 +127,6 @@ var RuleView = View.extend({
     this.el.appendChild(subview.el);
 
     this.on('change:el change:parent', this.positionControls);
-
-    // this.positionControls();
 
     return this;
   }

@@ -3,7 +3,9 @@
 
 var Clause = require('./clause-data');
 
-var OutputModel = Clause.Model.extend({});
+var OutputModel = Clause.Model.extend({
+  clauseType: 'output'
+});
 
 module.exports = {
   Model: OutputModel,

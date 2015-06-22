@@ -279,7 +279,14 @@ var ContextMenuItem = View.extend({
     'model.href': {
       selector: 'a',
       name: 'href',
-      type: 'attribute'
+      type: function (el, value) {
+        if (!value) {
+          el.removeAttribute('href');
+        }
+        else {
+          el.setAttribute('href', value);
+        }
+      }
     },
 
     'model.icon': {
@@ -390,6 +397,7 @@ var ContextMenuView = View.extend({
     var commands = options.commands || defaultCommands;
 
     this.commands.reset(commands);
+    return this;
   },
 
   triggerCommand: function (command, evt) {
@@ -397,10 +405,12 @@ var ContextMenuView = View.extend({
     if (!command.keepOpen) {
       this.close();
     }
+    return this;
   },
 
   close: function () {
     this.isOpen = false;
+    return this;
   },
 
   render: function () {

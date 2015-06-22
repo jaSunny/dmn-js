@@ -7,6 +7,16 @@ var RuleView = require('./rule-view');
 
 
 
+
+var ClauseHeaderView = require('./clause-view');
+
+var ContextMenuView = require('./contextmenu-view');
+var contextMenu = ContextMenuView.instance();
+var utils = require('./utils');
+
+
+var ScopeControlsView = require('./scopecontrols-view');
+
 function toArray(els) {
   return Array.prototype.slice.apply(els);
 }
@@ -18,15 +28,6 @@ function makeTd(type) {
   return el;
 }
 
-function makeCtrls() {
-  var el = document.createElement('span');
-  el.className = 'ctrls';
-  return el;
-}
-
-var ContextMenuView = require('./contextmenu-view');
-var ClauseHeaderView = require('./clause-view');
-var contextMenu = ContextMenuView.instance();
 
 
 
@@ -55,59 +56,31 @@ var DecisionTableView = View.extend({
             '</div>',
 
   events: {
-    'click thead .ctrls': '_handleClauseControlClick'
+    'click .add-rule a': '_handleAddRuleClick'
+  },
+
+  _handleAddRuleClick: function () {
+    this.model.addRule();
   },
 
   initialize: function () {
     this.model = this.model || new DecisionTable.Model();
-    // var contextMenu = this.contextMenu = new ContextMenuView({
-    //   parent: this
-    // });
-    // this.registerSubview(contextMenu);
-    // document.body.appendChild(contextMenu.el);
   },
-
-  // hideContextMenu: function () {
-  //   this.contextMenu.close();
-  // },
 
   hideContextMenu: function () {
     contextMenu.close();
   },
 
   showContextMenu: function (cellModel, evt) {
-    contextMenu.open({
-      top:    evt.clientY,
-      left:   evt.clientX,
-      scope:  cellModel
-    });
+    var options = utils.elOffset(evt.currentTarget);
+    options.scope = cellModel;
+    options.left += evt.currentTarget.clientWidth;
+    contextMenu.open(options);
 
     try {
       evt.preventDefault();
     } catch (e) {}
   },
-
-  // showContextMenu: function (cellModel, evt) {
-  //   this.contextMenu.open({
-  //     top:    evt.clientY,
-  //     left:   evt.clientX,
-  //     scope:  cellModel
-  //   });
-
-  //   try {
-  //     evt.preventDefault();
-  //   } catch (e) {}
-  // },
-
-  // remove: function () {
-  //   document.body.removeChild(this.contextMenu.el);
-  //   return View.prototype.remove.apply(this, arguments);
-  // },
-
-  update: function () {
-    return this;
-  },
-
 
 
   parseChoices: function (el) {
@@ -221,16 +194,6 @@ var DecisionTableView = View.extend({
   },
 
 
-  _handleClauseControlClick: function (evt) {
-    var holder = evt.delegateTarget.parentNode;
-    var type = holder.className;
-    var el = document.createElement('ul');
-    el.className = 'dmn-clause-group-controls';
-    el.innerHTML = '<li><a><span class="icon plus"></span><span class="">add '+ type +'</span></a></li>';
-    document.body.appendChild(el);
-  },
-
-
   render: function () {
     if (!this.el) {
       this.renderWithTemplate();
@@ -240,8 +203,11 @@ var DecisionTableView = View.extend({
       this.trigger('change:el');
     }
 
+    var table = this.model;
+
     if (!this.headerEl) {
       this.cacheElements({
+        tableEl:          'table',
         labelEl:          'header h3',
         headerEl:         'thead',
         bodyEl:           'tbody',
@@ -252,9 +218,39 @@ var DecisionTableView = View.extend({
         mappingsRowEl:    'thead tr.mappings'
       });
 
+      var inputsHeaderView = new ScopeControlsView({
+        parent: this,
+        scope: this.model,
+        commands: [
+          {
+            label: 'Add input',
+            icon: 'plus',
+            hint: 'Add an input clause after on the right',
+            fn: function () {
+              table.addInput();
+            }
+          }
+        ]
+      });
+      this.registerSubview(inputsHeaderView);
+      this.inputsHeaderEl.appendChild(inputsHeaderView.el);
 
-      this.inputsHeaderEl.appendChild(makeCtrls());
-      this.outputsHeaderEl.appendChild(makeCtrls());
+      var outputsHeaderView = new ScopeControlsView({
+        parent: this,
+        scope: this.model,
+        commands: [
+          {
+            label: 'Add output',
+            icon: 'plus',
+            hint: 'Add an output clause on the right',
+            fn: function () {
+              table.addOutput();
+            }
+          }
+        ]
+      });
+      this.registerSubview(outputsHeaderView);
+      this.outputsHeaderEl.appendChild(outputsHeaderView.el);
     }
 
 
@@ -308,7 +304,17 @@ var DecisionTableView = View.extend({
     this.bodyEl.innerHTML = '';
     this.rulesView = this.renderCollection(this.model.rules, RuleView, this.bodyEl);
 
-    return this.update();
+
+    if (!this.footEl) {
+      var footEl = this.footEl = document.createElement('tfoot');
+      footEl.className = 'rules-controls';
+      footEl.innerHTML = '<tr><td class="add-rule"><a title="Add a rule" class="icon-dmn icon-plus"></a></td></tr>';
+      this.tableEl.appendChild(footEl);
+
+    }
+
+
+    return this;
   }
 });
 

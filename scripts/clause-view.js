@@ -3,29 +3,68 @@
 
 var View = deps('ampersand-view');
 var merge = deps('lodash.merge');
-var ChoiceView = require('./choice-view');
+var ScopeControlsView = require('./scopecontrols-view');
 
 
 
-var LabelView = View.extend(merge({/*}, ChoiceView.prototype, {*/
+var LabelView = View.extend(merge({
   events: {
-    'input': '_handleInput',
+    'input .value': '_handleInput',
   },
 
   _handleInput: function () {
-    this.model.label = this.el.textContent.trim();
+    this.model.label = this.valueEl.textContent.trim();
   },
 
   render: function () {
-    this.el.setAttribute('contenteditable', true);
-    this.el.textContent = (this.model.label || '').trim();
+    var valueEl = this.valueEl = document.createElement('span');
+    valueEl.className = 'value';
+    valueEl.setAttribute('contenteditable', true);
+    valueEl.textContent = (this.model.label || '').trim();
+    this.el.innerHTML = '';
+    this.el.appendChild(valueEl);
+
+
+    var clause = this.model;
+    var table = clause.collection.parent;
+
+    var ctrls = new ScopeControlsView({
+      parent: this,
+      scope: this.model,
+      commands: [
+        {
+          label: 'Remove ' + clause.clauseType,
+          icon: 'minus',
+          hint: 'Remove the ' + clause.clauseType + ' clause',
+          possible: function () {
+            return clause.collection.length > 1;
+          },
+          fn: function () {
+            var delta = clause.collection.indexOf(clause);
+            clause.collection.remove(clause);
+
+            if (clause.clauseType === 'output') {
+              delta += table.inputs.length;
+            }
+
+            table.rules.forEach(function (rule) {
+              var cell = rule.cells.at(delta);
+              rule.cells.remove(cell);
+            });
+            table.rules.trigger('reset');
+          }
+        }
+      ]
+    });
+    this.registerSubview(ctrls);
+    this.el.appendChild(ctrls.el);
   }
 }));
 
 
 
 
-var MappingView = View.extend(merge({/*}, ChoiceView.prototype, {*/
+var MappingView = View.extend(merge({
   events: {
     'input': '_handleInput',
   },
@@ -43,7 +82,7 @@ var MappingView = View.extend(merge({/*}, ChoiceView.prototype, {*/
 
 
 
-var ValueView = View.extend(merge({/*}, ChoiceView.prototype, {*/
+var ValueView = View.extend(merge({
   events: {
     'input': '_handleInput',
     'focus': '_handleFocus'
@@ -102,14 +141,6 @@ var ClauseView = View.extend({
     labelEl:    requiredElement,
     mappingEl:  requiredElement,
     valueEl:    requiredElement
-  },
-
-  events: {
-    'click th .ctrls': '_handleControlsClick'
-  },
-
-  _handleControlsClick: function () {
-
   },
 
   initialize: function () {

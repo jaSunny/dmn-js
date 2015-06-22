@@ -26,7 +26,8 @@
 
 
   header,
-  table {
+  tbody,
+  thead {
     border: 2px solid @dmn-gray;
   }
 
@@ -57,6 +58,11 @@
     &.focused {
       z-index: 10;
       outline: 2px solid @dmn-primary;
+    }
+
+    > .value {
+      .empty();
+      display: block;
     }
   }
 
@@ -112,7 +118,7 @@
 
     .annotation {
       vertical-align: bottom;
-      &:after {
+      .dmn-js-logo:after {
         .dmn-font;
         content: '\e807';
         position: absolute;
@@ -122,14 +128,16 @@
         font-size: 3em;
         color: @dmn-gray-light;
         .transition(color .218s ease);
+        text-decoration: none;
       }
-      &:hover:after {
+      .dmn-js-logo:hover:after {
         color: @dmn-primary;
       }
     }
   }
 
   tbody {
+    border: 2px solid @dmn-gray;
     border-top: none;
 
     tr:nth-child(1) {
@@ -149,45 +157,24 @@
         color: @dmn-gray-light;
       }
     }
+  }
 
-    // tr {
-    //   &:nth-child(even) {
-    //     td, th {
-    //       background-color: @dmn-row-even-bg;
-    //     }
-    //     &:hover {
-    //       td, th {
-    //         background-color: @dmn-row-even-hover-bg;
-    //       }
-    //     }
-    //     td, th {
-    //       &.hover {
-    //         background-color: @dmn-col-even-hover-bg;
-    //       }
-    //     }
-    //   }
-    //   &:nth-child(odd) {
-    //     td, th {
-    //       background-color: @dmn-row-odd-bg;
-    //     }
-    //     &:hover {
-    //       td, th {
-    //         background-color: @dmn-row-odd-hover-bg;
-    //       }
-    //     }
-    //     td, th {
-    //       &.hover {
-    //         background-color: @dmn-col-odd-hover-bg;
-    //       }
-    //     }
-    //   }
+  tfoot {
+    tr, td {
+      border: none;
+    }
+    .add-rule {
+      text-align: right;
 
-    //   &:hover td,
-    //   &:hover th,
-    //   .hover {
-    //     color: @dmn-gray-darker;
-    //   }
-    // }
+      a {
+        cursor: pointer;
+        color: @dmn-primary;
+        &:before {
+          padding: 0;
+          margin: 0;
+        }
+      }
+    }
   }
 
 
@@ -217,6 +204,58 @@
     .controls-icon;
   }
 
+  td.number {
+    .ctrls {
+      right: auto;
+      left: -4px;
+    }
+  }
+
+
+
+
+
+  &.stripped {
+    tr {
+      &:nth-child(even) {
+        td, th {
+          background-color: @dmn-row-even-bg;
+        }
+        &:hover {
+          td, th {
+            background-color: @dmn-row-even-hover-bg;
+          }
+        }
+        td, th {
+          &.hover {
+            background-color: @dmn-col-even-hover-bg;
+          }
+        }
+      }
+      &:nth-child(odd) {
+        td, th {
+          background-color: @dmn-row-odd-bg;
+        }
+        &:hover {
+          td, th {
+            background-color: @dmn-row-odd-hover-bg;
+          }
+        }
+        td, th {
+          &.hover {
+            background-color: @dmn-col-odd-hover-bg;
+          }
+        }
+      }
+
+      &:hover td,
+      &:hover th,
+      .hover {
+        color: @dmn-gray-darker;
+      }
+    }
+  }
+
 
 
 
@@ -235,6 +274,11 @@
       overflow-y: scroll;
     }
   }
+
+
+
+
+
 
 
   > [data-hook=controls] {
