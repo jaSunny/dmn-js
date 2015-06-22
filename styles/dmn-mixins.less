@@ -65,17 +65,18 @@
   position: relative;
   .ctrls {
     position: absolute;
-    top: 5px;
-    right: -4px;
-    .transform-origin(center);
-    .rotate(90deg);
+    top: 2px;
+    right: -2px;
 
     &:before {
       .dmn-font;
-      content: '\e80f';
+      content: '\e810';
       color: @dmn-gray-light;
       cursor: pointer;
       .transition(color .218s ease);
+
+      // .transform-origin(center);
+      // .rotate(90deg);
     }
 
     &.open {
