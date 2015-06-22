@@ -26,7 +26,7 @@ function makeCtrls() {
 
 var ContextMenuView = require('./contextmenu-view');
 var ClauseHeaderView = require('./clause-view');
-
+var contextMenu = ContextMenuView.instance();
 
 
 
@@ -60,19 +60,23 @@ var DecisionTableView = View.extend({
 
   initialize: function () {
     this.model = this.model || new DecisionTable.Model();
-    var contextMenu = this.contextMenu = new ContextMenuView({
-      parent: this
-    });
-    this.registerSubview(contextMenu);
-    document.body.appendChild(contextMenu.el);
+    // var contextMenu = this.contextMenu = new ContextMenuView({
+    //   parent: this
+    // });
+    // this.registerSubview(contextMenu);
+    // document.body.appendChild(contextMenu.el);
   },
 
+  // hideContextMenu: function () {
+  //   this.contextMenu.close();
+  // },
+
   hideContextMenu: function () {
-    this.contextMenu.close();
+    contextMenu.close();
   },
 
   showContextMenu: function (cellModel, evt) {
-    this.contextMenu.open({
+    contextMenu.open({
       top:    evt.clientY,
       left:   evt.clientX,
       scope:  cellModel
@@ -83,10 +87,22 @@ var DecisionTableView = View.extend({
     } catch (e) {}
   },
 
-  remove: function () {
-    document.body.removeChild(this.contextMenu.el);
-    return View.prototype.remove.apply(this, arguments);
-  },
+  // showContextMenu: function (cellModel, evt) {
+  //   this.contextMenu.open({
+  //     top:    evt.clientY,
+  //     left:   evt.clientX,
+  //     scope:  cellModel
+  //   });
+
+  //   try {
+  //     evt.preventDefault();
+  //   } catch (e) {}
+  // },
+
+  // remove: function () {
+  //   document.body.removeChild(this.contextMenu.el);
+  //   return View.prototype.remove.apply(this, arguments);
+  // },
 
   update: function () {
     return this;

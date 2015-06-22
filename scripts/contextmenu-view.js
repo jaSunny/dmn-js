@@ -5,6 +5,170 @@ var View = deps('ampersand-view');
 var Collection = deps('ampersand-collection');
 var State = deps('ampersand-state');
 
+var defaultCommands = [
+  // {
+  //   label: 'Actions',
+  //   subcommands: [
+  //     {
+  //       label: 'undo',
+  //       icon: 'undo',
+  //       fn: function () {}
+  //     },
+  //     {
+  //       label: 'redo',
+  //       icon: 'redo',
+  //       fn: function () {}
+  //     }
+  //   ]
+  // },
+  {
+    label: 'Cell',
+    subcommands: [
+      {
+        label: 'clear',
+        icon: 'clear',
+        hint: 'Clear the content of the focused cell',
+        possible: function () {
+          // console.info('clear possible?', arguments, this);
+        },
+        fn: function () {}
+      }
+    ]
+  },
+  {
+    label: 'Rule',
+    icon: '',
+    subcommands: [
+      {
+        label: 'add',
+        icon: 'plus',
+        fn: function () {
+          this.parent.model.addRule(this.scope);
+        }
+      },
+      {
+        label: 'copy',
+        icon: 'copy',
+        fn: function () {
+          this.parent.model.copyRule(this.scope);
+        },
+        subcommands: [
+          {
+            label: 'above',
+            icon: 'above',
+            hint: 'Copy the rule above the focused one',
+            fn: function () {
+              this.parent.model.copyRule(this.scope, -1);
+            }
+          },
+          {
+            label: 'below',
+            icon: 'below',
+            hint: 'Copy the rule below the focused one',
+            fn: function () {
+              this.parent.model.copyRule(this.scope, 1);
+            }
+          }
+        ]
+      },
+      {
+        label: 'remove',
+        icon: 'minus',
+        hint: 'Remove the focused rule',
+        fn: function () {
+          this.parent.model.removeRule(this.scope);
+        }
+      },
+      {
+        label: 'clear',
+        icon: 'clear',
+        hint: 'Clear the focused rule',
+        fn: function () {
+          this.parent.model.clearRule(this.scope);
+        }
+      }
+    ]
+  },
+  {
+    label: 'Input',
+    icon: 'input',
+    subcommands: [
+      {
+        label: 'add',
+        icon: 'plus',
+        subcommands: [
+          {
+            label: 'before',
+            icon: 'left',
+            hint: 'Add an input clause before the focused one',
+            fn: function () {
+              this.parent.model.addInput();
+            }
+          },
+          {
+            label: 'after',
+            icon: 'right',
+            hint: 'Add an input clause after the focused one',
+            fn: function () {
+              this.parent.model.addInput();
+            }
+          }
+        ]
+      },
+      {
+        label: 'remove',
+        icon: 'minus',
+        fn: function () {
+          this.parent.model.removeInput();
+        }
+      }
+    ]
+  },
+  {
+    label: 'Output',
+    icon: 'output',
+    subcommands: [
+      {
+        label: 'add',
+        icon: 'plus',
+        subcommands: [
+          {
+            label: 'before',
+            icon: 'left',
+            hint: 'Add an output clause before the focused one',
+            fn: function () {
+              this.parent.model.addOutput();
+            }
+          },
+          {
+            label: 'after',
+            icon: 'right',
+            hint: 'Add an output clause after the focused one',
+            fn: function () {
+              this.parent.model.addOutput();
+            }
+          }
+        ]
+      },
+      {
+        label: 'remove',
+        icon: 'minus',
+        fn: function () {
+          this.parent.model.removeOutput();
+        }
+      }
+    ]
+  }
+];
+
+
+
+
+
+
+
+
+
 var CommandModel = State.extend({
   props: {
     label: 'string',
@@ -52,9 +216,27 @@ var CommandModel = State.extend({
   }
 });
 
+
+
+
+
+
+
+
+
+
 var CommandsCollection = Collection.extend({
   model: CommandModel
 });
+
+
+
+
+
+
+
+
+
 
 var ContextMenuItem = View.extend({
   autoRender: true,
@@ -152,6 +334,15 @@ var ContextMenuItem = View.extend({
 
 
 
+
+
+
+
+
+
+
+
+
 var ContextMenuView = View.extend({
   autoRender: true,
 
@@ -196,161 +387,7 @@ var ContextMenuView = View.extend({
     this.isOpen = true;
 
     this.scope = options.scope;
-    var commands = options.commands || [
-      // {
-      //   label: 'Actions',
-      //   subcommands: [
-      //     {
-      //       label: 'undo',
-      //       icon: 'undo',
-      //       fn: function () {}
-      //     },
-      //     {
-      //       label: 'redo',
-      //       icon: 'redo',
-      //       fn: function () {}
-      //     }
-      //   ]
-      // },
-      {
-        label: 'Cell',
-        subcommands: [
-          {
-            label: 'clear',
-            icon: 'clear',
-            hint: 'Clear the content of the focused cell',
-            possible: function () {
-              console.info('clear possible?', arguments, this);
-            },
-            fn: function () {}
-          }
-        ]
-      },
-      {
-        label: 'Rule',
-        icon: '',
-        subcommands: [
-          {
-            label: 'add',
-            icon: 'plus',
-            fn: function () {
-              this.parent.model.addRule(this.scope);
-            }
-          },
-          {
-            label: 'copy',
-            icon: 'copy',
-            fn: function () {
-              this.parent.model.copyRule(this.scope);
-            },
-            subcommands: [
-              {
-                label: 'above',
-                icon: 'above',
-                hint: 'Copy the rule above the focused one',
-                fn: function () {
-                  this.parent.model.copyRule(this.scope, -1);
-                }
-              },
-              {
-                label: 'below',
-                icon: 'below',
-                hint: 'Copy the rule below the focused one',
-                fn: function () {
-                  this.parent.model.copyRule(this.scope, 1);
-                }
-              }
-            ]
-          },
-          {
-            label: 'remove',
-            icon: 'minus',
-            hint: 'Remove the focused rule',
-            fn: function () {
-              this.parent.model.removeRule(this.scope);
-            }
-          },
-          {
-            label: 'clear',
-            icon: 'clear',
-            hint: 'Clear the focused rule',
-            fn: function () {
-              this.parent.model.clearRule(this.scope);
-            }
-          }
-        ]
-      },
-      {
-        label: 'Input',
-        icon: 'input',
-        subcommands: [
-          {
-            label: 'add',
-            icon: 'plus',
-            subcommands: [
-              {
-                label: 'before',
-                icon: 'left',
-                hint: 'Add an input clause before the focused one',
-                fn: function () {
-                  this.parent.model.addInput();
-                }
-              },
-              {
-                label: 'after',
-                icon: 'right',
-                hint: 'Add an input clause after the focused one',
-                fn: function () {
-                  this.parent.model.addInput();
-                }
-              }
-            ]
-          },
-          {
-            label: 'remove',
-            icon: 'minus',
-            fn: function () {
-              this.parent.model.removeInput();
-            }
-          }
-        ]
-      },
-      {
-        label: 'Output',
-        icon: 'output',
-        subcommands: [
-          {
-            label: 'add',
-            icon: 'plus',
-            subcommands: [
-              {
-                label: 'before',
-                icon: 'left',
-                hint: 'Add an output clause before the focused one',
-                fn: function () {
-                  this.parent.model.addOutput();
-                }
-              },
-              {
-                label: 'after',
-                icon: 'right',
-                hint: 'Add an output clause after the focused one',
-                fn: function () {
-                  this.parent.model.addOutput();
-                }
-              }
-            ]
-          },
-          {
-            label: 'remove',
-            icon: 'minus',
-            fn: function () {
-              this.parent.model.removeOutput();
-            }
-          }
-        ]
-      }
-    ];
+    var commands = options.commands || defaultCommands;
 
     this.commands.reset(commands);
   },
@@ -375,5 +412,30 @@ var ContextMenuView = View.extend({
     return this;
   }
 });
+
+
+
+
+
+
+
+
+
+
+
+var instance;
+ContextMenuView.instance = function () {
+  if (!instance) {
+    instance = new ContextMenuView();
+  }
+
+  if (!document.body.contains(instance.el)) {
+    document.body.appendChild(instance.el);
+  }
+
+  return instance;
+};
+
+ContextMenuView.Collection = CommandsCollection;
 
 module.exports = ContextMenuView;

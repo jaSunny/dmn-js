@@ -36,15 +36,6 @@ var ChoiceView = View.extend({
       fn: function () {
         return this.model.value === this.originalValue;
       }
-    // },
-
-    // suggestionsView: {
-    //   deps: ['suggestions'],
-    //   cache: false,
-    //   fn: function () {
-    //     return suggestionsView();
-    //     // return SuggestionsView.instance();
-    //   }
     }
   },
 
@@ -180,7 +171,7 @@ var ChoiceView = View.extend({
 
     var filtered = this._filter(val);
     // this.suggestions.reset(filtered);
-    suggestionsView.show(filtered);
+    suggestionsView.show(filtered, this);
     this._handleResize();
 
     if (filtered.length === 1) {

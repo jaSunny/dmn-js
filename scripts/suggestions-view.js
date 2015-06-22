@@ -32,11 +32,8 @@ var SuggestionsItemView = View.extend({
   },
 
   _handleClick: function () {
-    if (!this.parent) { return; }
-    this.parent.model.value = this.model.value;
-    if (this.parent.model.value === this.model.value) {
-      this.parent.model.trigger('change:value');
-    }
+    if (!this.parent || !this.parent.parent) { return; }
+    this.parent.parent.model.value = this.model.value;
   }
 });
 
@@ -59,7 +56,7 @@ var SuggestionsView = View.extend({
     suggestions: SuggestionsCollection
   },
 
-  show: function (suggestions) {
+  show: function (suggestions, parent) {
     if (suggestions) {
       if (suggestions.isCollection && suggestions.isCollection()) {
         instance.suggestions = suggestions;
@@ -68,6 +65,9 @@ var SuggestionsView = View.extend({
         instance.suggestions.reset(suggestions);
       }
       instance.visible = suggestions.length > 1;
+    }
+    if (parent) {
+      this.parent = parent;
     }
     return this;
   },
@@ -82,7 +82,7 @@ var SuggestionsView = View.extend({
 
 
 var instance;
-SuggestionsView.instance = function (suggestions) {
+SuggestionsView.instance = function (suggestions, parent) {
   if (!instance) {
     instance = new SuggestionsView({});
     instance.render();
@@ -92,7 +92,7 @@ SuggestionsView.instance = function (suggestions) {
     document.body.appendChild(instance.el);
   }
 
-  instance.show(suggestions);
+  instance.show(suggestions, parent);
 
   return instance;
 };
