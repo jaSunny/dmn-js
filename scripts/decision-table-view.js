@@ -193,6 +193,26 @@ var DecisionTableView = View.extend({
               }
             }
           ]
+        },
+        {
+          label: 'remove',
+          icon: 'minus',
+          hint: 'Remove the ' + type + ' clause',
+          fn: function () {
+            var clause = cellModel.clause;
+            var delta = clause.collection.indexOf(clause);
+            clause.collection.remove(clause);
+
+            if (clause.clauseType === 'output') {
+              delta += table.inputs.length;
+            }
+
+            table.rules.forEach(function (rule) {
+              var cell = rule.cells.at(delta);
+              rule.cells.remove(cell);
+            });
+            table.rules.trigger('reset');
+          }
         }
       ]
     });
