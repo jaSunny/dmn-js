@@ -163,6 +163,7 @@ var DecisionTableView = View.extend({
     ];
 
     var type = cellModel.type;
+    var addMethod = type === 'input' ? 'addInput' : 'addOutput';
 
     options.commands.unshift({
       label: type === 'input' ? 'Input' : 'Output',
@@ -171,14 +172,16 @@ var DecisionTableView = View.extend({
         {
           label: 'add',
           icon: 'plus',
+          fn: function () {
+            table[addMethod]();
+          },
           subcommands: [
             {
               label: 'before',
               icon: 'left',
               hint: 'Add an ' + type + ' clause before the focused one',
               fn: function () {
-                var method = type === 'input' ? 'addInput' : 'addOutput';
-                table[method]();
+                table[addMethod]();
               }
             },
             {
@@ -186,8 +189,7 @@ var DecisionTableView = View.extend({
               icon: 'right',
               hint: 'Add an ' + type + ' clause after the focused one',
               fn: function () {
-                var method = type === 'input' ? 'addInput' : 'addOutput';
-                table[method]();
+                table[addMethod]();
               }
             }
           ]
