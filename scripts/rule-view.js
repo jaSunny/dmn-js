@@ -87,67 +87,72 @@ var RuleView = View.extend({
       scope: this.model,
       commands: [
         {
-          label: 'Remove rule',
-          icon: 'minus',
-          hint: 'Remove this rule',
-          fn: function () {
-            rule.collection.remove(rule);
-          }
-        },
-        {
-          label: 'Clear',
-          icon: 'clear',
-          hint: 'Clear the focused rule',
-          fn: function () {
-            table.clearRule(rule);
-          }
-        },
-        {
-          label: 'Add',
-          icon: 'plus',
-          fn: function () {
-            table.addRule(rule);
-          },
+          label: 'Rule',
           subcommands: [
             {
-              label: 'above',
-              icon: 'above',
-              hint: 'Add a rule above the focused one',
+              label: 'add',
+              icon: 'plus',
               fn: function () {
-                table.addRule(rule, -1);
+                table.addRule(rule);
+              },
+              subcommands: [
+                {
+                  label: 'above',
+                  icon: 'above',
+                  hint: 'Add a rule above the focused one',
+                  fn: function () {
+                    table.addRule(rule, -1);
+                  }
+                },
+                {
+                  label: 'below',
+                  icon: 'below',
+                  hint: 'Add a rule below the focused one',
+                  fn: function () {
+                    table.addRule(rule, 1);
+                  }
+                }
+              ]
+            },
+            // {
+            //   label: 'copy',
+            //   icon: 'copy',
+            //   fn: function () {
+            //     table.copyRule(rule);
+            //   },
+            //   subcommands: [
+            //     {
+            //       label: 'above',
+            //       icon: 'above',
+            //       hint: 'Copy the rule above the focused one',
+            //       fn: function () {
+            //         table.copyRule(rule, -1);
+            //       }
+            //     },
+            //     {
+            //       label: 'below',
+            //       icon: 'below',
+            //       hint: 'Copy the rule below the focused one',
+            //       fn: function () {
+            //         table.copyRule(rule, 1);
+            //       }
+            //     }
+            //   ]
+            // },
+            {
+              label: 'remove',
+              icon: 'minus',
+              hint: 'Remove this rule',
+              fn: function () {
+                rule.collection.remove(rule);
               }
             },
             {
-              label: 'below',
-              icon: 'below',
-              hint: 'Add a rule below the focused one',
+              label: 'clear',
+              icon: 'clear',
+              hint: 'Clear the focused rule',
               fn: function () {
-                table.addRule(rule, 1);
-              }
-            }
-          ]
-        },
-        {
-          label: 'Copy',
-          icon: 'copy',
-          fn: function () {
-            table.copyRule(rule);
-          },
-          subcommands: [
-            {
-              label: 'above',
-              icon: 'above',
-              hint: 'Copy the rule above the focused one',
-              fn: function () {
-                table.copyRule(rule, -1);
-              }
-            },
-            {
-              label: 'below',
-              icon: 'below',
-              hint: 'Copy the rule below the focused one',
-              fn: function () {
-                table.copyRule(rule, 1);
+                table.clearRule(rule);
               }
             }
           ]

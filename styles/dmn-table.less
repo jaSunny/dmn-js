@@ -24,6 +24,10 @@
     text-align: right;
   }
 
+  [contenteditable] {
+    cursor: text;
+  }
+
 
   header,
   tbody,
@@ -133,6 +137,11 @@
       .dmn-js-logo:hover:after {
         color: @dmn-primary;
       }
+    }
+
+    > tr .icon-dmn {
+      cursor: pointer;
+      color: @dmn-primary;
     }
   }
 

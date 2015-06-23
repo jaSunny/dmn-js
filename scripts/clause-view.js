@@ -27,32 +27,65 @@ var LabelView = View.extend(merge({
 
     var clause = this.model;
     var table = clause.collection.parent;
+    var addMethod = clause.clauseType === 'input' ? 'addInput' : 'addOutput';
 
     var ctrls = new ScopeControlsView({
       parent: this,
       scope: this.model,
       commands: [
         {
-          label: 'Remove ' + clause.clauseType,
-          icon: 'minus',
-          hint: 'Remove the ' + clause.clauseType + ' clause',
-          possible: function () {
-            return clause.collection.length > 1;
-          },
-          fn: function () {
-            var delta = clause.collection.indexOf(clause);
-            clause.collection.remove(clause);
+          label: clause.clauseType === 'input' ? 'Input' : 'Output',
+          icon: clause.clauseType,
+          subcommands: [
+            {
+              label: 'add',
+              icon: 'plus',
+              hint: 'Add a ' + clause.clauseType + ' clause',
+              fn: function () {
+                table[addMethod]({});
+              },
+              subcommands: [
+                {
+                  label: 'before',
+                  icon: 'left',
+                  hint: 'Add a ' + clause.clauseType + ' before this one',
+                  fn: function () {
+                    table[addMethod]({});
+                  }
+                },
+                {
+                  label: 'after',
+                  icon: 'right',
+                  hint: 'Add a ' + clause.clauseType + ' after this one',
+                  fn: function () {
+                    table[addMethod]({});
+                  }
+                }
+              ]
+            },
+            {
+              label: 'remove',
+              icon: 'minus',
+              hint: 'Remove the ' + clause.clauseType + ' clause',
+              possible: function () {
+                return clause.collection.length > 1;
+              },
+              fn: function () {
+                var delta = clause.collection.indexOf(clause);
+                clause.collection.remove(clause);
 
-            if (clause.clauseType === 'output') {
-              delta += table.inputs.length;
+                if (clause.clauseType === 'output') {
+                  delta += table.inputs.length;
+                }
+
+                table.rules.forEach(function (rule) {
+                  var cell = rule.cells.at(delta);
+                  rule.cells.remove(cell);
+                });
+                table.rules.trigger('reset');
+              }
             }
-
-            table.rules.forEach(function (rule) {
-              var cell = rule.cells.at(delta);
-              rule.cells.remove(cell);
-            });
-            table.rules.trigger('reset');
-          }
+          ]
         }
       ]
     });

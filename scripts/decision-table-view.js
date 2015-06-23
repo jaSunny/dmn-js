@@ -15,7 +15,7 @@ var contextMenu = ContextMenuView.instance();
 var utils = require('./utils');
 
 
-var ScopeControlsView = require('./scopecontrols-view');
+// var ScopeControlsView = require('./scopecontrols-view');
 
 function toArray(els) {
   return Array.prototype.slice.apply(els);
@@ -25,6 +25,16 @@ function toArray(els) {
 function makeTd(type) {
   var el = document.createElement('td');
   el.className = type;
+  return el;
+}
+
+
+function makeAddButton(clauseType, table) {
+  var el = document.createElement('span');
+  el.className = 'icon-dmn icon-plus';
+  el.addEventListener('click', function () {
+    table[clauseType === 'input' ? 'addInput' : 'addOutput']();
+  });
   return el;
 }
 
@@ -107,31 +117,31 @@ var DecisionTableView = View.extend({
               }
             ]
           },
-          {
-            label: 'copy',
-            icon: 'copy',
-            fn: function () {
-              table.copyRule(this.scope);
-            },
-            subcommands: [
-              {
-                label: 'above',
-                icon: 'above',
-                hint: 'Copy the rule above the focused one',
-                fn: function () {
-                  table.copyRule(this.scope, -1);
-                }
-              },
-              {
-                label: 'below',
-                icon: 'below',
-                hint: 'Copy the rule below the focused one',
-                fn: function () {
-                  table.copyRule(this.scope, 1);
-                }
-              }
-            ]
-          },
+          // {
+          //   label: 'copy',
+          //   icon: 'copy',
+          //   fn: function () {
+          //     table.copyRule(this.scope);
+          //   },
+          //   subcommands: [
+          //     {
+          //       label: 'above',
+          //       icon: 'above',
+          //       hint: 'Copy the rule above the focused one',
+          //       fn: function () {
+          //         table.copyRule(this.scope, -1);
+          //       }
+          //     },
+          //     {
+          //       label: 'below',
+          //       icon: 'below',
+          //       hint: 'Copy the rule below the focused one',
+          //       fn: function () {
+          //         table.copyRule(this.scope, 1);
+          //       }
+          //     }
+          //   ]
+          // },
           {
             label: 'remove',
             icon: 'minus',
@@ -328,6 +338,12 @@ var DecisionTableView = View.extend({
         mappingsRowEl:    'thead tr.mappings'
       });
 
+
+      this.inputsHeaderEl.appendChild(makeAddButton('input', table));
+
+      this.outputsHeaderEl.appendChild(makeAddButton('output', table));
+
+      /*
       var inputsHeaderView = new ScopeControlsView({
         parent: this,
         scope: this.model,
@@ -361,6 +377,7 @@ var DecisionTableView = View.extend({
       });
       this.registerSubview(outputsHeaderView);
       this.outputsHeaderEl.appendChild(outputsHeaderView.el);
+      */
     }
 
 
