@@ -40,11 +40,11 @@ By making a **right-click** or using the **menu symbol in the first cell** of th
 
 ## How can I add an input or output to a decision table?
 
- - _How can I add a clause left / right to an existing one?_
+ - _How can I add a clause left / right to an existing one?_    
    By making a **right-click** in any rule cell or using the **menu symbol** next to the clause symbol.
- - _Should it be possible to add a new clause at the end in a single click? If true, how would it work?_
+ - _Should it be possible to add a new clause at the end in a single click? If true, how would it work?_   
    You can add a clause (input or output) by clicking the **"plus" icons** located in the table first row. 
- - _How does the user get visual feedback about which parts of the clause are mandatory to be filled in (validation)?_
+ - _How does the user get visual feedback about which parts of the clause are mandatory to be filled in (validation)?_   
    Empty fields which are required or field values which are not valid are marked with a **warning icon**.
 
 
