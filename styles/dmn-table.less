@@ -140,6 +140,13 @@
     border: 2px solid @dmn-gray;
     border-top: none;
 
+    td {
+      &.input,
+      &.output {
+        cursor: context-menu;
+      }
+    }
+
     tr:nth-child(1) {
       td, th {
         border-top: none;
@@ -205,9 +212,30 @@
   }
 
   td.number {
+    /*
     .ctrls {
       right: auto;
       left: -4px;
+    }
+    */
+
+    .ctrls {
+      right: auto;
+      left: 0;
+
+      &:before {
+        top: -7px;
+        left: -2px;
+        right: auto;
+
+        .rotate(45deg);
+
+        .transition(left 0.218s ease);
+      }
+    }
+
+    &:hover .ctrls:before {
+      left: -2px;
     }
   }
 

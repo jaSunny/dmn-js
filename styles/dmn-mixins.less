@@ -63,25 +63,38 @@
 
 .controls-icon() {
   position: relative;
+
   .ctrls {
     position: absolute;
-    top: 2px;
-    right: -2px;
+    top: 0;
+    right: 0;
+    cursor: pointer;
+
 
     &:before {
-      .dmn-font;
-      content: '\e810';
-      color: @dmn-gray-light;
-      cursor: pointer;
-      .transition(color .218s ease);
+      content: '';
+      display: block;
+      position: absolute;
+      .rotate(135deg);
 
-      // .transform-origin(center);
-      // .rotate(90deg);
+      width: 0;
+      height: 0;
+
+      top: -7px;
+      right: -2px;
+
+      border-top: 10px solid transparent;
+      border-bottom: 10px solid transparent;
+
+      border-right:10px solid @dmn-gray-light;
+      .transition(border 0.218s ease);
+
+      .transition(top 0.218s ease);
+      .transition(right 0.218s ease);
     }
 
     &.open {
       &:before {
-        display: none;
       }
     }
   }
@@ -89,7 +102,13 @@
   // .focused,
   &:hover {
     .ctrls:before {
-      color: @dmn-primary;
+      top: -9px;
+      right: -4px;
+
+      border-top: 14px solid transparent;
+      border-bottom: 14px solid transparent;
+
+      border-right:14px solid @dmn-primary;
     }
   }
 }
