@@ -39,6 +39,7 @@
     "karma-mocha": "^0.1.10",
     "load-grunt-tasks": "^3.2.0",
     "lodash.defaults": "^3.1.1",
-    "lodash.merge": "^3.3.1"
+    "lodash.merge": "^3.3.1",
+    "styles-editor": "camunda-third-party/styles-editor"
   }
 }
