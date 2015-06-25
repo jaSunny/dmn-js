@@ -3,94 +3,120 @@
 
 var View = deps('ampersand-view');
 var merge = deps('lodash.merge');
-var ScopeControlsView = require('./scopecontrols-view');
 
+var ContextMenuView = require('./contextmenu-view');
+var contextMenu = ContextMenuView.instance();
 
 
 var LabelView = View.extend(merge({
   events: {
-    'input .value': '_handleInput',
+    'input':        '_handleInput',
+    'contextmenu':  '_handleContextMenu',
   },
+
+  bindings: {
+    'model.label': {
+      type: function (el, val) {
+        if (document.activeElement === el) { return; }
+        el.textContent = (val || '').trim();
+      }
+    }
+  },
+
 
   _handleInput: function () {
-    this.model.label = this.valueEl.textContent.trim();
+    this.model.label = this.el.textContent.trim();
   },
 
-  render: function () {
-    var valueEl = this.valueEl = document.createElement('span');
-    valueEl.className = 'value';
-    valueEl.setAttribute('contenteditable', true);
-    valueEl.textContent = (this.model.label || '').trim();
-    this.el.innerHTML = '';
-    this.el.appendChild(valueEl);
+  _handleContextMenu: function (evt) {
+    var type = this.model.clauseType;
+    var table = this.model.collection.parent;
 
+    var addMethod = type === 'input' ? 'addInput' : 'addOutput';
 
-    var clause = this.model;
-    var table = clause.collection.parent;
-    var addMethod = clause.clauseType === 'input' ? 'addInput' : 'addOutput';
-
-    var ctrls = new ScopeControlsView({
-      parent: this,
-      scope: this.model,
+    contextMenu.open({
+      top: evt.pageY,
+      left: evt.pageX,
       commands: [
         {
-          label: clause.clauseType === 'input' ? 'Input' : 'Output',
-          icon: clause.clauseType,
+          label: type === 'input' ? 'Input' : 'Output',
+          icon: type,
           subcommands: [
             {
               label: 'add',
               icon: 'plus',
-              hint: 'Add a ' + clause.clauseType + ' clause',
               fn: function () {
-                table[addMethod]({});
+                table[addMethod]();
               },
               subcommands: [
                 {
                   label: 'before',
                   icon: 'left',
-                  hint: 'Add a ' + clause.clauseType + ' before this one',
                   fn: function () {
-                    table[addMethod]({});
+                    table[addMethod]();
                   }
                 },
                 {
                   label: 'after',
                   icon: 'right',
-                  hint: 'Add a ' + clause.clauseType + ' after this one',
                   fn: function () {
-                    table[addMethod]({});
+                    table[addMethod]();
                   }
+                }
+              ]
+            },
+            {
+              label: 'copy',
+              // icon: 'plus',
+              fn: function () {},
+              subcommands: [
+                {
+                  label: 'before',
+                  icon: 'left',
+                  fn: function () {}
+                },
+                {
+                  label: 'after',
+                  icon: 'right',
+                  fn: function () {}
+                }
+              ]
+            },
+            {
+              label: 'move',
+              // icon: 'plus',
+              fn: function () {},
+              subcommands: [
+                {
+                  label: 'before',
+                  icon: 'left',
+                  fn: function () {}
+                },
+                {
+                  label: 'after',
+                  icon: 'right',
+                  fn: function () {}
                 }
               ]
             },
             {
               label: 'remove',
               icon: 'minus',
-              hint: 'Remove the ' + clause.clauseType + ' clause',
-              possible: function () {
-                return clause.collection.length > 1;
-              },
-              fn: function () {
-                var delta = clause.collection.indexOf(clause);
-                clause.collection.remove(clause);
-
-                if (clause.clauseType === 'output') {
-                  delta += table.inputs.length;
-                }
-
-                table.rules.forEach(function (rule) {
-                  var cell = rule.cells.at(delta);
-                  rule.cells.remove(cell);
-                });
-                table.rules.trigger('reset');
-              }
+              fn: function () {}
             }
           ]
         }
       ]
     });
-    this.registerSubview(ctrls);
-    this.el.appendChild(ctrls.el);
+
+    try {
+      evt.preventDefault();
+    } catch (e) {}
+  },
+
+  initialize: function () {
+    this.el.setAttribute('contenteditable', true);
+    this.el.textContent = (this.model.label || '').trim();
   }
 }));
 
@@ -102,11 +128,20 @@ var MappingView = View.extend(merge({
     'input': '_handleInput',
   },
 
+  bindings: {
+    'model.mapping': {
+      type: function (el, val) {
+        if (document.activeElement === el) { return; }
+        el.textContent = (val || '').trim();
+      }
+    }
+  },
+
   _handleInput: function () {
     this.model.mapping = this.el.textContent.trim();
   },
 
-  render: function () {
+  initialize: function () {
     this.el.setAttribute('contenteditable', true);
     this.el.textContent = (this.model.mapping || '').trim();
   }
@@ -119,6 +154,22 @@ var ValueView = View.extend(merge({
   events: {
     'input': '_handleInput',
     'focus': '_handleFocus'
+  },
+
+  bindings: {
+    'model.choices': {
+      type: function (el, val) {
+        if (document.activeElement === el) { return; }
+        var str = '';
+        if (Array.isArray(val) && val.length) {
+          str = '(' + val.join(', ') + ')';
+        }
+        else {
+          str = this.model.datatype;
+        }
+        el.textContent = str;
+      }
+    }
   },
 
   _handleInput: function () {
@@ -147,7 +198,7 @@ var ValueView = View.extend(merge({
 
   },
 
-  render: function () {
+  initialize: function () {
     this.el.setAttribute('contenteditable', true);
     var str = '';
     if (this.model.choices && this.model.choices.length) {
@@ -195,7 +246,7 @@ var ClauseView = View.extend({
           parent: this,
           model:  clause,
           el:     this[kind + 'El']
-        }).render();
+        });//.render();
       });
     }, this);
   }

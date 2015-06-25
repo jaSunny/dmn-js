@@ -81,7 +81,7 @@ var RuleView = View.extend({
 
     var rule = this.model;
     var table = rule.collection.parent;
-
+    /*
     var ctrls = new ScopeControlsView({
       parent: this,
       scope: this.model,
@@ -161,7 +161,7 @@ var RuleView = View.extend({
     });
     this.registerSubview(ctrls);
     this.numberEl.appendChild(ctrls.el);
-
+    */
     var i;
     var subview;
 

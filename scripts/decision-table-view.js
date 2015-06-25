@@ -82,9 +82,14 @@ var DecisionTableView = View.extend({
   },
 
   showContextMenu: function (cellModel, evt) {
-    var options = utils.elOffset(evt.currentTarget);
+    // var options = utils.elOffset(evt.currentTarget);
+    var options = {
+      left: evt.pageX,
+      top: evt.pageY
+    };
+    // options.left += evt.currentTarget.clientWidth;
+    
     options.scope = cellModel;
-    options.left += evt.currentTarget.clientWidth;
     var table = this.model;
 
     options.commands = [
