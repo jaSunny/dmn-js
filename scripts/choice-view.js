@@ -135,7 +135,7 @@ var ChoiceView = View.extend({
 
   _handleFocus: function () {
     this._handleInput();
-    this.model.focused = true;
+    // this.model.focused = true;
   },
 
   _handleBlur: function () {

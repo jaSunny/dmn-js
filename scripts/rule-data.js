@@ -6,38 +6,58 @@ var Collection = deps('ampersand-collection');
 var Cell = require('./cell-data');
 
 var RuleModel = State.extend({
-  session: {
-    focused: 'boolean'
-  },
-
   collections: {
     cells: Cell.Collection
   },
 
   derived: {
+    table: {
+      deps: [
+        'collection',
+        'collection.parent'
+      ],
+      cache: false,
+      fn: function () {
+        return this.collection.parent;
+      }
+    },
+
+    focused: {
+      deps: [
+        'collection',
+        'table'
+      ],
+      cache: false,
+      fn: function () {
+        return this.collection.indexOf(this) === this.table.y;
+      }
+    },
+
+
     delta: {
-      dep: ['collection'],
+      deps: ['collection'],
+      cache: false,
       fn: function () {
         return 1 + this.collection.indexOf(this);
       }
     },
 
     inputCells: {
-      dep: ['cells', 'collection.parent.inputs'],
+      deps: ['cells', 'table.inputs'],
       fn: function () {
-        return this.cells.models.slice(0, this.collection.parent.inputs.length);
+        return this.cells.models.slice(0, this.table.inputs.length);
       }
     },
 
     outputCells: {
-      dep: ['cells', 'collection.parent.inputs'],
+      deps: ['cells', 'table.inputs'],
       fn: function () {
-        return this.cells.models.slice(this.collection.parent.inputs.length, -1);
+        return this.cells.models.slice(this.table.inputs.length, -1);
       }
     },
 
     annotation: {
-      dep: ['cells'],
+      deps: ['cells'],
       fn: function () {
         return this.cells.models[this.cells.length - 1];
       }

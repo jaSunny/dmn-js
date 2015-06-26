@@ -3,24 +3,17 @@
 
 var View = deps('ampersand-view');
 var CellViews = require('./cell-view');
-var ScopeControlsView = require('./scopecontrols-view');
-var utils = require('./utils');
+var ContextMenuView = require('./contextmenu-view');
+var contextMenu = ContextMenuView.instance();
 
 
 var RuleView = View.extend({
-  template: '<tr><td class="number">' +
-              '<span class="value"></span>' +
-            '</td></tr>',
+  template: '<tr><td class="number"></td></tr>',
 
   bindings: {
     'model.delta': {
       type: 'text',
-      selector: '.number .value'
-    },
-
-    'model.focused': {
-      type: 'booleanClass',
-      name: 'focused'
+      selector: '.number'
     }
   },
 
@@ -31,6 +24,7 @@ var RuleView = View.extend({
         'parent.model',
         'parent.model.inputs'
       ],
+      cache: false,
       fn: function () {
         return this.parent.model.inputs;
       }
@@ -42,6 +36,7 @@ var RuleView = View.extend({
         'parent.model',
         'parent.model.outputs'
       ],
+      cache: false,
       fn: function () {
         return this.parent.model.outputs;
       }
@@ -56,35 +51,20 @@ var RuleView = View.extend({
       fn: function () {
         return this.parent.model.annotations.at(0);
       }
-    },
-
-    position: {
-      deps: [],
-      cache: false, // because of resize
-      fn: function () { return utils.elOffset(this.el); }
     }
   },
 
-  initialize: function () {
-    var root = this.model.collection.parent;
-    this.listenToAndRun(root.rules, 'reset', this.render);
-    this.listenToAndRun(root.inputs, 'reset', this.render);
-    this.listenToAndRun(root.outputs, 'reset', this.render);
+  events: {
+    'contextmenu .number': '_handleRowContextMenu'
   },
 
-  render: function () {
-    this.renderWithTemplate();
-
-    this.cacheElements({
-      numberEl: '.number'
-    });
-
+  _handleRowContextMenu: function (evt) {
     var rule = this.model;
     var table = rule.collection.parent;
-    /*
-    var ctrls = new ScopeControlsView({
-      parent: this,
-      scope: this.model,
+
+    contextMenu.open({
+      left:     evt.pageX,
+      top:      evt.pageY,
       commands: [
         {
           label: 'Rule',
@@ -159,9 +139,34 @@ var RuleView = View.extend({
         }
       ]
     });
-    this.registerSubview(ctrls);
-    this.numberEl.appendChild(ctrls.el);
-    */
+
+    evt.preventDefault();
+  },
+
+  initialize: function () {
+    var table = this.model.table;
+
+    this.listenToAndRun(table, 'change:focus', function () {
+      if (!this.el) { return; }
+      if (this.model.focused) {
+        this.el.classList.add('row-focused');
+      }
+      else {
+        this.el.classList.remove('row-focused');
+      }
+    });
+
+    this.listenToAndRun(table.inputs, 'add remove reset', this.render);
+    this.listenToAndRun(table.outputs, 'add remove reset', this.render);
+  },
+
+  render: function () {
+    this.renderWithTemplate();
+
+    this.cacheElements({
+      numberEl: '.number'
+    });
+
     var i;
     var subview;
 
@@ -190,9 +195,7 @@ var RuleView = View.extend({
     });
     this.registerSubview(subview.render());
     this.el.appendChild(subview.el);
-
-    this.on('change:el change:parent', this.positionControls);
-
+    console.info('rule view', this);
     return this;
   }
 });

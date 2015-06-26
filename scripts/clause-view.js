@@ -249,6 +249,20 @@ var ClauseView = View.extend({
         });//.render();
       });
     }, this);
+
+    var table = this.model.collection.parent;
+    this.listenToAndRun(table, 'change:focus', function () {
+      if (this.model.focused) {
+        this.labelEl.classList.add('col-focused');
+        this.mappingEl.classList.add('col-focused');
+        this.valueEl.classList.add('col-focused');
+      }
+      else {
+        this.labelEl.classList.remove('col-focused');
+        this.mappingEl.classList.remove('col-focused');
+        this.valueEl.classList.remove('col-focused');
+      }
+    });
   }
 });
 

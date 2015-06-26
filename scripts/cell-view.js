@@ -36,6 +36,26 @@ var RuleCellView = View.extend(merge({}, ChoiceView.prototype, {
 
   _handleFocus: function () {
     ChoiceView.prototype._handleFocus.apply(this, arguments);
+
+    var table = this.model.table;
+    var cell = this.model;
+    var cells = cell.collection;
+    var rule = cells.parent;
+    var rules = table.rules;
+
+    var x = cells.indexOf(cell);
+    var y = rules.indexOf(rule);
+
+    if (table.x !== x || table.y !== y) {
+      table.set({
+        x: x,
+        y: y
+      }, {
+        // silent: true
+      });
+      table.trigger('change:focus');
+    }
+
     this.parent.parent.hideContextMenu();
   },
 
@@ -45,6 +65,39 @@ var RuleCellView = View.extend(merge({}, ChoiceView.prototype, {
 
   _handleContextMenu: function (evt) {
     this.parent.parent.showContextMenu(this.model, evt);
+  },
+
+  initialize: function () {
+
+    this.listenToAndRun(this.model.table, 'change:x', function () {
+      if (!this.el) { return; }
+      if (this.model.x === this.model.table.x) {
+        this.el.classList.add('col-focused');
+      }
+      else {
+        this.el.classList.remove('col-focused');
+      }
+    });
+
+    this.listenToAndRun(this.model.table, 'change:y', function () {
+      if (!this.el) { return; }
+      if (this.model.y === this.model.table.y) {
+        this.el.classList.add('row-focused');
+      }
+      else {
+        this.el.classList.remove('row-focused');
+      }
+    });
+
+    this.listenToAndRun(this.model.table, 'change:focus', function () {
+      if (!this.el) { return; }
+      if (this.model.focused) {
+        this.el.classList.add('focused');
+      }
+      else {
+        this.el.classList.remove('focused');
+      }
+    });
   }
 }));
 

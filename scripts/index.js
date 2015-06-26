@@ -1,8 +1,5 @@
 'use strict';
-/* global require: false, module: false, deps: false */
-
-deps('./classList');
-
+/* global require: false, module: false */
 
 var DecisionTableView = require('./decision-table-view');
 

@@ -12,10 +12,6 @@ var ClauseHeaderView = require('./clause-view');
 
 var ContextMenuView = require('./contextmenu-view');
 var contextMenu = ContextMenuView.instance();
-var utils = require('./utils');
-
-
-// var ScopeControlsView = require('./scopecontrols-view');
 
 function toArray(els) {
   return Array.prototype.slice.apply(els);
@@ -88,7 +84,7 @@ var DecisionTableView = View.extend({
       top: evt.pageY
     };
     // options.left += evt.currentTarget.clientWidth;
-    
+
     options.scope = cellModel;
     var table = this.model;
 
@@ -367,44 +363,7 @@ var DecisionTableView = View.extend({
 
 
       this.inputsHeaderEl.appendChild(makeAddButton('input', table));
-
       this.outputsHeaderEl.appendChild(makeAddButton('output', table));
-
-      /*
-      var inputsHeaderView = new ScopeControlsView({
-        parent: this,
-        scope: this.model,
-        commands: [
-          {
-            label: 'Add input',
-            icon: 'plus',
-            hint: 'Add an input clause after on the right',
-            fn: function () {
-              table.addInput();
-            }
-          }
-        ]
-      });
-      this.registerSubview(inputsHeaderView);
-      this.inputsHeaderEl.appendChild(inputsHeaderView.el);
-
-      var outputsHeaderView = new ScopeControlsView({
-        parent: this,
-        scope: this.model,
-        commands: [
-          {
-            label: 'Add output',
-            icon: 'plus',
-            hint: 'Add an output clause on the right',
-            fn: function () {
-              table.addOutput();
-            }
-          }
-        ]
-      });
-      this.registerSubview(outputsHeaderView);
-      this.outputsHeaderEl.appendChild(outputsHeaderView.el);
-      */
     }
 
 
@@ -461,12 +420,28 @@ var DecisionTableView = View.extend({
 
     if (!this.footEl) {
       var footEl = this.footEl = document.createElement('tfoot');
-      footEl.className = 'rules-controls';
-      footEl.innerHTML = '<tr><td class="add-rule"><a title="Add a rule" class="icon-dmn icon-plus"></a></td></tr>';
+      footEl.className =  'rules-controls';
+      footEl.innerHTML =  '<tr>' +
+                            '<td class="add-rule">' +
+                              '<a title="Add a rule" class="icon-dmn icon-plus"></a>' +
+                            '</td>' +
+                            '<td colspan="3"></td>' +
+                          '</tr>';
       this.tableEl.appendChild(footEl);
-
     }
 
+    var self = this;
+    function makeColspan() {
+      var count = 1 + self.model.inputs.length + self.model.outputs.length;
+      var tds = [self.query('tfoot .add-rule').outerHTML];
+      for (var c = 0; c < count; c++) {
+        tds.push('<td></td>');
+      }
+      self.footEl.innerHTML = tds.join('');
+    }
+    this.model.inputs.on('add remove reset', makeColspan);
+    this.model.outputs.on('add remove reset', makeColspan);
+    makeColspan();
 
     return this;
   }

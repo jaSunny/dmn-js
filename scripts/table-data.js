@@ -34,11 +34,6 @@ var DecisionTableModel = State.extend({
   _ruleClipboard: null,
 
 
-
-
-
-
-
   addRule: function (scopeCell, beforeAfter) {
     var cells = [];
     var c;

@@ -16,8 +16,7 @@ var ClauseModel = State.extend({
     editable: {
       type: 'boolean',
       default: true
-    },
-    focused: 'boolean'
+    }
   }
 });
 

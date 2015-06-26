@@ -10,11 +10,6 @@ var CellModel = State.extend({
   },
 
   session: {
-    focused: {
-      type: 'boolean',
-      default: false
-    },
-
     editable: {
       type: 'boolean',
       default: true
@@ -22,15 +17,63 @@ var CellModel = State.extend({
   },
 
   derived: {
-    table: {
+    rule: {
       deps: [
         'collection',
-        'collection.parent',
-        'collection.parent.collection',
-        'collection.parent.collection.parent'
+        'collection.parent'
       ],
       fn: function () {
-        return this.collection.parent.collection.parent;
+        return this.collection.parent;
+      }
+    },
+
+
+    table: {
+      deps: [
+        'rule.collection',
+        'rule.collection.parent'
+      ],
+      cache: false,
+      fn: function () {
+        return this.rule.collection.parent;
+      }
+    },
+
+    x: {
+      deps: [
+        'collection'
+      ],
+      cache: false,
+      fn: function () {
+        var cell = this;
+        var cells = cell.collection;
+        return cells.indexOf(cell);
+      }
+    },
+
+    y: {
+      deps: [
+        'rule',
+        'rule.collection'
+      ],
+      cache: false,
+      fn: function () {
+        var rules = this.rule.collection;
+        return rules.indexOf(this.rule);
+      }
+    },
+
+    focused: {
+      deps: [
+        'table',
+        'table.x',
+        'table.y',
+        'x',
+        'y'
+      ],
+      cache: false,
+      fn: function () {
+        return this.x === this.table.x && this.y === this.table.y;
       }
     },
 
@@ -111,44 +154,6 @@ var CellModel = State.extend({
         return this.clause.choices;
       }
     }
-  },
-
-  initialize: function () {
-    this.on('change:focused', function () {
-      if (!this.focused) { return; }
-      var cid = this.cid;
-      var ruleCid = this.collection.parent.cid;
-      var x = 0;
-      var y = 0;
-
-      this.collection.parent.collection.forEach(function (rule, r) {
-        var ruleFocused = rule.cid === ruleCid;
-        if (rule.focused !== ruleFocused) {
-          rule.focused = ruleFocused;
-        }
-
-        if (ruleFocused) {
-          y = r;
-        }
-
-        rule.cells.forEach(function (cell, c) {
-          var cellFocused = cell.cid === cid;
-
-          if (cell.focused !== cellFocused) {
-            cell.focused = cellFocused;
-          }
-
-          if (cellFocused) {
-            x = c;
-          }
-        });
-      });
-
-      this.table.set({
-        x: x,
-        y: y
-      });
-    });
   }
 });
 
