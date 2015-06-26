@@ -35,14 +35,6 @@
     border: 2px solid @dmn-gray;
   }
 
-  thead,
-  tbody,
-  tr,
-  th,
-  td {
-    position: relative;
-  }
-
   header,
   td,
   th {
@@ -75,6 +67,8 @@
     display: inline-block;
     border-bottom: none;
     margin-bottom: -1px;
+    position: relative;
+
     h3 {
       margin: auto;
     }
@@ -132,6 +126,8 @@
 
     .annotation {
       vertical-align: bottom;
+      position: relative;
+
       .dmn-js-logo:after {
         .dmn-font;
         content: '\e807';
@@ -162,7 +158,7 @@
     td {
       &.input,
       &.output {
-        cursor: context-menu;
+        cursor: url(contextmenu-cursor.png), context-menu;
       }
     }
 
@@ -178,15 +174,6 @@
         color: @dmn-gray-darker;
       }
     }
-    /*
-    .input,
-    .output {
-      &:empty:before {
-        content: ' - ';
-        color: @dmn-gray-light;
-      }
-    }
-    */
   }
 
   tfoot {
@@ -224,57 +211,6 @@
       border-left: 3px double @dmn-gray;
     }
   }
-
-
-  th.input,
-  th.output,
-  td.input,
-  td.output,
-  td.number {
-    .controls-icon;
-  }
-
-
-  // &.stripped {
-  //   tr {
-  //     &:nth-child(even) {
-  //       td, th {
-  //         background-color: @dmn-row-even-bg;
-  //       }
-  //       &:hover {
-  //         td, th {
-  //           background-color: @dmn-row-even-hover-bg;
-  //         }
-  //       }
-  //       td, th {
-  //         &.hover {
-  //           background-color: @dmn-col-even-hover-bg;
-  //         }
-  //       }
-  //     }
-  //     &:nth-child(odd) {
-  //       td, th {
-  //         background-color: @dmn-row-odd-bg;
-  //       }
-  //       &:hover {
-  //         td, th {
-  //           background-color: @dmn-row-odd-hover-bg;
-  //         }
-  //       }
-  //       td, th {
-  //         &.hover {
-  //           background-color: @dmn-col-odd-hover-bg;
-  //         }
-  //       }
-  //     }
-
-  //     &:hover td,
-  //     &:hover th,
-  //     .hover {
-  //       color: @dmn-gray-darker;
-  //     }
-  //   }
-  // }
 
 
 
