@@ -143,19 +143,21 @@ var RuleView = View.extend({
     evt.preventDefault();
   },
 
+  setFocus: function () {
+    if (!this.el) { return; }
+
+    if (this.model.focused) {
+      this.el.classList.add('row-focused');
+    }
+    else {
+      this.el.classList.remove('row-focused');
+    }
+  },
+
   initialize: function () {
     var table = this.model.table;
 
-    this.listenToAndRun(table, 'change:focus', function () {
-      if (!this.el) { return; }
-      if (this.model.focused) {
-        this.el.classList.add('row-focused');
-      }
-      else {
-        this.el.classList.remove('row-focused');
-      }
-    });
-
+    this.listenToAndRun(table, 'change:focus', this.setFocus);
     this.listenToAndRun(table.inputs, 'add remove reset', this.render);
     this.listenToAndRun(table.outputs, 'add remove reset', this.render);
   },
@@ -195,7 +197,9 @@ var RuleView = View.extend({
     });
     this.registerSubview(subview.render());
     this.el.appendChild(subview.el);
-    console.info('rule view', this);
+
+
+    this.setFocus();
     return this;
   }
 });

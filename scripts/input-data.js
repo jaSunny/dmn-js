@@ -7,6 +7,16 @@ var InputModel = Clause.Model.extend({
   clauseType: 'input',
 
   derived: {
+    x: {
+      deps: [
+        'collection'
+      ],
+      cache: false,
+      fn: function () {
+        return this.collection.indexOf(this);
+      }
+    },
+
     focused: {
       deps: [
         'collection',
@@ -14,7 +24,7 @@ var InputModel = Clause.Model.extend({
       ],
       cache: false,
       fn: function () {
-        return this.collection.parent.x === this.collection.indexOf(this);
+        return this.collection.parent.x === this.x;
       }
     }
   }

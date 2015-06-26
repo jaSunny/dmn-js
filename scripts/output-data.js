@@ -7,6 +7,18 @@ var OutputModel = Clause.Model.extend({
   clauseType: 'output',
 
   derived: {
+    x: {
+      deps: [
+        'collection',
+        'collection.parent',
+        'collection.parent.inputs'
+      ],
+      cache: false,
+      fn: function () {
+        return this.collection.indexOf(this) + this.collection.parent.inputs.length;
+      }
+    },
+
     focused: {
       deps: [
         'collection',

@@ -10,8 +10,23 @@ var contextMenu = ContextMenuView.instance();
 
 var LabelView = View.extend(merge({
   events: {
+    'focus':        '_handleFocus',
     'input':        '_handleInput',
     'contextmenu':  '_handleContextMenu',
+  },
+
+  derived: {
+    table: {
+      deps: [
+        'model',
+        'model.collection',
+        'model.collection.parent'
+      ],
+      cache: false,
+      fn: function () {
+        return this.model.collection.parent;
+      }
+    }
   },
 
   bindings: {
@@ -24,13 +39,20 @@ var LabelView = View.extend(merge({
   },
 
 
+  _handleFocus: function () {
+    this.table.x = this.model.x;
+    this.table.trigger('change:focus');
+  },
+
   _handleInput: function () {
     this.model.label = this.el.textContent.trim();
+    this._handleFocus();
   },
 
   _handleContextMenu: function (evt) {
     var type = this.model.clauseType;
-    var table = this.model.collection.parent;
+    var table = this.table;
+    this._handleFocus();
 
     var addMethod = type === 'input' ? 'addInput' : 'addOutput';
 
@@ -128,6 +150,20 @@ var MappingView = View.extend(merge({
     'input': '_handleInput',
   },
 
+  derived: {
+    table: {
+      deps: [
+        'model',
+        'model.collection',
+        'model.collection.parent'
+      ],
+      cache: false,
+      fn: function () {
+        return this.model.collection.parent;
+      }
+    }
+  },
+
   bindings: {
     'model.mapping': {
       type: function (el, val) {
@@ -154,6 +190,20 @@ var ValueView = View.extend(merge({
   events: {
     'input': '_handleInput',
     'focus': '_handleFocus'
+  },
+
+  derived: {
+    table: {
+      deps: [
+        'model',
+        'model.collection',
+        'model.collection.parent'
+      ],
+      cache: false,
+      fn: function () {
+        return this.model.collection.parent;
+      }
+    }
   },
 
   bindings: {
@@ -227,8 +277,23 @@ var ClauseView = View.extend({
     valueEl:    requiredElement
   },
 
+  derived: {
+    table: {
+      deps: [
+        'model',
+        'model.collection',
+        'model.collection.parent'
+      ],
+      cache: false,
+      fn: function () {
+        return this.model.collection.parent;
+      }
+    }
+  },
+
   initialize: function () {
     var clause = this.model;
+    var self = this;
 
     var subviews = {
       label:    LabelView,
@@ -250,19 +315,20 @@ var ClauseView = View.extend({
       });
     }, this);
 
-    var table = this.model.collection.parent;
-    this.listenToAndRun(table, 'change:focus', function () {
-      if (this.model.focused) {
-        this.labelEl.classList.add('col-focused');
-        this.mappingEl.classList.add('col-focused');
-        this.valueEl.classList.add('col-focused');
+    function tableChangeFocus() {
+      if (self.model.focused) {
+        self.labelEl.classList.add('col-focused');
+        self.mappingEl.classList.add('col-focused');
+        self.valueEl.classList.add('col-focused');
       }
       else {
-        this.labelEl.classList.remove('col-focused');
-        this.mappingEl.classList.remove('col-focused');
-        this.valueEl.classList.remove('col-focused');
+        self.labelEl.classList.remove('col-focused');
+        self.mappingEl.classList.remove('col-focused');
+        self.valueEl.classList.remove('col-focused');
       }
-    });
+    }
+    this.table.on('change:focus', tableChangeFocus);
+    tableChangeFocus();
   }
 });
 

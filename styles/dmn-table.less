@@ -46,7 +46,7 @@
     border: 1px solid @dmn-gray;
     .empty();
     .transition(color 0.218s ease);
-    .transition(background-color 0.218s ease);
+    .transition(background-color 0.436s ease);
     overflow: hidden;
     text-overflow: ellipsis;
 
@@ -71,6 +71,11 @@
 
     h3 {
       margin: auto;
+      &:empty:before {
+        display: inline;
+        content: '<Set a name>';
+        color: @dmn-warning;
+      }
     }
   }
 
@@ -118,7 +123,7 @@
       color: #fff;
     }
 
-    .labels:empty:before {
+    .labels td:empty:before {
       .dmn-font;
       content: '\e813';
       color: @dmn-danger;
@@ -155,13 +160,6 @@
     border: 2px solid @dmn-gray;
     border-top: none;
 
-    td {
-      &.input,
-      &.output {
-        cursor: url(contextmenu-cursor.png), context-menu;
-      }
-    }
-
     tr:nth-child(1) {
       td, th {
         border-top: none;
@@ -174,6 +172,13 @@
         color: @dmn-gray-darker;
       }
     }
+  }
+
+  .labels td,
+  tbody .input,
+  tbody .output,
+  tbody .number {
+    cursor: url(contextmenu-cursor.png), context-menu;
   }
 
   tfoot {
@@ -206,10 +211,8 @@
 
 
 
-  tr {
-    > .input + .output {
-      border-left: 3px double @dmn-gray;
-    }
+  tr > .input + .output {
+    border-left: 3px double @dmn-gray;
   }
 
 

@@ -1,5 +1,5 @@
 'use strict';
-/* global require: false, module: false, deps: false */
+/* global require: false, module: false, deps: false, console: false */
 
 var View = deps('ampersand-view');
 var DecisionTable = require('./table-data');
@@ -43,15 +43,15 @@ var DecisionTableView = View.extend({
   template: '<div class="dmn-table">' +
               '<div data-hook="controls"></div>' +
               '<header>' +
-                '<h3 data-hook="table-name"></h3>' +
+                '<h3 data-hook="table-name" contenteditable></h3>' +
               '</header>' +
               '<table>' +
                 '<thead>' +
                   '<tr>' +
-                    '<th class="hit" rulespan="4"></th>' +
+                    '<th class="hit" rowspan="4"></th>' +
                     '<th class="input double-border-right" colspan="2">Input</th>' +
                     '<th class="output" colspan="2">Output</th>' +
-                    '<th class="annotation" rulespan="4">Annotation</th>' +
+                    '<th class="annotation" rowspan="4">Annotation</th>' +
                   '</tr>' +
                   '<tr class="labels"></tr>' +
                   '<tr class="values"></tr>' +
@@ -61,16 +61,54 @@ var DecisionTableView = View.extend({
               '</table>' +
             '</div>',
 
+  bindings: {
+    'model.name': {
+      hook: 'table-name',
+      type: 'text'
+    }
+  },
+
   events: {
-    'click .add-rule a': '_handleAddRuleClick'
+    'click .add-rule a': '_handleAddRuleClick',
+    'input header h3':   '_handleNameInput'
   },
 
   _handleAddRuleClick: function () {
     this.model.addRule();
   },
 
+  _handleNameInput: function (evt) {
+    var val = evt.target.textContent.trim();
+    if (val === this.model.name) { return; }
+    this.model.name = val;
+  },
+
+  log: function () {
+    var args = Array.prototype.slice.apply(arguments);
+    var method = args.shift();
+    args.unshift(this.cid);
+    console[method].apply(console, args);
+  },
+
+  eventLog: function (scopeName) {
+    var self = this;
+    return function () {
+      var args = [];//Array.prototype.slice.apply(arguments);
+      args.unshift(scopeName);
+      args.unshift('trace');
+      args.push(arguments[0]);
+      self.log.apply(self, args);
+    };
+  },
+
   initialize: function () {
     this.model = this.model || new DecisionTable.Model();
+
+    // this.listenTo(this.model, 'all', this.eventLog('table'));
+    // this.listenTo(this.model.inputs, 'all', this.eventLog('table.inputs'));
+    // this.listenTo(this.model.outputs, 'all', this.eventLog('table.outputs'));
+    // this.listenTo(this.model.rules, 'all', this.eventLog('table.rules'));
+
   },
 
   hideContextMenu: function () {
@@ -351,7 +389,7 @@ var DecisionTableView = View.extend({
     if (!this.headerEl) {
       this.cacheElements({
         tableEl:          'table',
-        labelEl:          'header h3',
+        tableNameEl:      'header h3',
         headerEl:         'thead',
         bodyEl:           'tbody',
         inputsHeaderEl:   'thead tr:nth-child(1) th.input',
@@ -365,6 +403,7 @@ var DecisionTableView = View.extend({
       this.inputsHeaderEl.appendChild(makeAddButton('input', table));
       this.outputsHeaderEl.appendChild(makeAddButton('output', table));
     }
+
 
 
     ['input', 'output'].forEach(function (type) {
@@ -432,7 +471,7 @@ var DecisionTableView = View.extend({
 
     var self = this;
     function makeColspan() {
-      var count = 1 + self.model.inputs.length + self.model.outputs.length;
+      var count = 1 + Math.max(1, self.model.inputs.length) + Math.max(1, self.model.outputs.length);
       var tds = [self.query('tfoot .add-rule').outerHTML];
       for (var c = 0; c < count; c++) {
         tds.push('<td></td>');

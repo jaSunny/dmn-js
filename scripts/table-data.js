@@ -1,5 +1,5 @@
 'use strict';
-/*global module: false, deps: false, require: false*/
+/*global module: false, deps: false, require: false, console: false*/
 
 var State = deps('ampersand-state');
 var Input = require('./input-data');
@@ -27,9 +27,35 @@ var DecisionTableModel = State.extend({
     y: {
       type: 'number',
       default: 0
+    },
+
+
+    logLevel: {
+      type: 'number',
+      default: 0
     }
   },
 
+  initialize: function () {
+    this.listenToAndRun(this.inputs, 'remove reset', function () {
+      if (this.inputs.length) { return; }
+      this.inputs.add({});
+    });
+
+    this.listenToAndRun(this.outputs, 'remove reset', function () {
+      if (this.outputs.length) { return; }
+      this.outputs.add({});
+    });
+
+    console.info('table data', JSON.stringify(this, null, 2));
+  },
+
+  log: function () {
+    var args = Array.prototype.slice.apply(arguments);
+    var method = args.shift();
+    args.unshift(this.cid);
+    console[method].apply(console, args);
+  },
 
   _ruleClipboard: null,
 
