@@ -73,6 +73,11 @@ module.exports = function(grunt) {
           {src: 'index.html', dest: 'dist/index.html'},
           {src: 'favicon.ico', dest: 'dist/favicon.ico'}
         ]
+      },
+      images: {
+        files: [
+          {src: 'images/contextmenu-cursor.png', dest: 'dist/contextmenu-cursor.png'}
+        ]
       }
     },
 
