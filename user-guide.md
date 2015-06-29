@@ -20,13 +20,13 @@
 
 ## How can I know when a contextual menu is available?
 
-Elements which have a contextual menu have a **triangle in the top (left or right) corner** or show a **special cursor** when passing over them with the mouse.
+Elements which have a context menu show a **special cursor** when passing over them with the mouse cursor.
 
 
 ## How can I add a rule to a decision table?
 
  - _How can I add a row above / below an existing row?_    
-   Either by making a **right-click** or using the **menu symbol in the first cell** of the row and then selecting on one of the arrow present in the menu.
+   Either by making a **right-click** and then selecting on one of the arrow present in the menu.
  - _How can I can add a row at the bottom of the table in a single click?_   
    By clicking on the **"plus" icon** at the bottom of the table.
 
@@ -34,14 +34,14 @@ Elements which have a contextual menu have a **triangle in the top (left or righ
 
 ## How can I remove a rule in a decision table?
 
-By making a **right-click** or using the **menu symbol in the first cell** of the rule you want to remove.
+By making a **right-click** on the rule you want to remove and select the remove action in the menu.
 
 
 
 ## How can I add an input or output to a decision table?
 
  - _How can I add a clause left / right to an existing one?_    
-   By making a **right-click** in any rule cell or using the **menu symbol** next to the clause symbol.
+   By making a **right-click** in any rule cell.
  - _Should it be possible to add a new clause at the end in a single click? If true, how would it work?_   
    You can add a clause (input or output) by clicking the **"plus" icons** located in the table first row. 
  - _How does the user get visual feedback about which parts of the clause are mandatory to be filled in (validation)?_   
@@ -50,15 +50,18 @@ By making a **right-click** or using the **menu symbol in the first cell** of th
 
 ## How can I remove an input / output in a decision table?
 
-By using the menu available at the **clause label cell corner** or the menu which opens when making a **right-click** on a rule cell.
+By using the menu which opens when making a **right-click** on a rule cell.
 
 
-
-----------------------------------------------------------------------
 
 ## How can I define the name of a clause?
 
 Note: the name has no "execution meaning" but allows the user to understand which data is used by this clause
+
+By clicking in the corresponding cell and typing.
+
+
+----------------------------------------------------------------------
 
 ## How can I define an input expression for a clause?
 
