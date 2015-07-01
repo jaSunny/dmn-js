@@ -17,8 +17,7 @@ var ChoiceView = View.extend({
 
   events: {
     input: '_handleInput',
-    focus: '_handleFocus',
-    blur:  '_handleBlur'
+    focus: '_handleFocus'
   },
 
   session: {
@@ -87,32 +86,6 @@ var ChoiceView = View.extend({
     this.suggestions = new SuggestionsView.Collection({
       parent: this.choices
     });
-
-
-
-    var self = this;
-    /*
-    function resetSuggestions() {
-      self.suggestions.reset(self._filter(self.value));
-    }
-    this.listenToAndRun(this.model, 'change:value', resetSuggestions);
-
-    this.listenToAndRun(this.choices, 'change', resetSuggestions);
-
-    this.listenToAndRun(this.suggestions, 'reset', function () {
-      if (!suggestionsView) { return; }
-      suggestionsView.el.style.display = this.suggestions.length < 2 ? 'none' : 'block';
-    });
-
-    function _handleResize() {
-      self._handleResize();
-    }
-    if (!this.el) {
-      this.once('change:el', _handleResize);
-    }
-    window.addEventListener('resize', _handleResize);
-    this._handleResize();
-    */
   },
 
   _filter: function (val) {
@@ -136,11 +109,6 @@ var ChoiceView = View.extend({
 
   _handleFocus: function () {
     this._handleInput();
-    // this.model.focused = true;
-  },
-
-  _handleBlur: function () {
-    // this.model.focused = false;
   },
 
   _handleResize: function () {
@@ -171,7 +139,6 @@ var ChoiceView = View.extend({
     var val = this.el.textContent;
 
     var filtered = this._filter(val);
-    // this.suggestions.reset(filtered);
     suggestionsView.show(filtered, this);
     this._handleResize();
 

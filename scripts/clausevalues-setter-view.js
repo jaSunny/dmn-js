@@ -8,7 +8,6 @@ var State = deps('ampersand-state');
 
 
 
-
 var ValuesCollection = Collection.extend({
   last: function () {
     return this.models[this.models.length - 1];
@@ -42,7 +41,7 @@ var ValuesCollection = Collection.extend({
 });
 
 var ValuesItemView = View.extend({
-  template: '<li><input /></li>',
+  template: '<li><input tabindex="1" /></li>',
 
   session: {
     invalid: 'boolean'
@@ -63,7 +62,6 @@ var ValuesItemView = View.extend({
   events: {
     'change input':   '_handleValueChange',
     'blur input':     '_handleValueChange',
-    //'keypress input': '_handleValueChange',
     'keyup input':    '_handleValueKeyup'
   },
 
@@ -176,6 +174,20 @@ var ClauseValuesView = View.extend({
     datatype: {type: 'string', default: 'string'}
   },
 
+  derived: {
+    contextMenu: {
+      cache: false,
+      fn: function () {
+        var current = this.parent;
+        while ((current = this.parent)) {
+          if (current.contextMenu) {
+            return current.contextMenu;
+          }
+        }
+      }
+    }
+  },
+
   bindings: {
     visible: {
       type: 'toggle'
@@ -257,6 +269,11 @@ var ClauseValuesView = View.extend({
     this.possibleValues.reset(vals);
 
     instance.visible = true;
+    if (this.parent && this.parent.contextMenu) {
+      this.parent.contextMenu.close();
+    }
+
+
     if (instance.visible) {
       this.setPosition();
     }
@@ -309,6 +326,10 @@ ClauseValuesView.instance = function (suggestions, parent) {
   return instance;
 };
 
+
+if (typeof window !== 'undefined') {
+  window.dmnClauseValuedEditor = ClauseValuesView.instance();
+}
 
 ClauseValuesView.Collection = ValuesCollection;
 

@@ -2,7 +2,8 @@
 /* global require: false, module: false */
 
 var DecisionTableView = require('./decision-table-view');
-
+require('./contextmenu-view');
+require('./clausevalues-setter-view');
 
 module.exports = DecisionTableView;
 

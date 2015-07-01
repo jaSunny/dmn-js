@@ -3,9 +3,8 @@
 
 var View = deps('ampersand-view');
 var CellViews = require('./cell-view');
-var ContextMenuView = require('./contextmenu-view');
-var contextMenu = ContextMenuView.instance();
-
+var merge = deps('lodash.merge');
+var contextViewsMixin = require('./context-views-mixin');
 
 var RuleView = View.extend({
   template: '<tr><td class="number"></td></tr>',
@@ -17,7 +16,7 @@ var RuleView = View.extend({
     }
   },
 
-  derived: {
+  derived: merge({}, contextViewsMixin, {
     inputs: {
       deps: [
         'parent',
@@ -52,7 +51,7 @@ var RuleView = View.extend({
         return this.parent.model.annotations.at(0);
       }
     }
-  },
+  }),
 
   events: {
     'contextmenu .number': '_handleRowContextMenu'
@@ -62,7 +61,8 @@ var RuleView = View.extend({
     var rule = this.model;
     var table = rule.collection.parent;
 
-    contextMenu.open({
+    this.contextMenu.open({
+      parent:   this,
       left:     evt.pageX,
       top:      evt.pageY,
       commands: [

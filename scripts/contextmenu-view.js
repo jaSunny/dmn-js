@@ -1,9 +1,10 @@
 'use strict';
-/* global module: false, deps: false */
+/* global require: false, module: false, deps: false */
 
 var View = deps('ampersand-view');
 var Collection = deps('ampersand-collection');
 var State = deps('ampersand-state');
+
 
 var defaultCommands = [
   // {
@@ -392,6 +393,9 @@ var ContextMenuView = View.extend({
     style.top = options.top + 'px';
 
     this.isOpen = true;
+    if (options.parent && options.parent.clauseValuesEditor) {
+      options.parent.clauseValuesEditor.hide();
+    }
 
     this.scope = options.scope;
     var commands = options.commands || defaultCommands;
@@ -445,6 +449,10 @@ ContextMenuView.instance = function () {
 
   return instance;
 };
+
+if (typeof window !== 'undefined') {
+  window.dmnContextMenu = ContextMenuView.instance();
+}
 
 ContextMenuView.Collection = CommandsCollection;
 

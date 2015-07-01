@@ -3,6 +3,7 @@
 
 var View = deps('ampersand-view');
 var merge = deps('lodash.merge');
+var contextViewsMixin = require('./context-views-mixin');
 
 
 var ChoiceView = require('./choice-view');
@@ -72,6 +73,14 @@ var RuleCellView = View.extend(merge({}, ChoiceView.prototype, {
 
     if (this.model.focused) {
       this.el.classList.add('focused');
+
+      if (this.parent.parent.contextMenu) {
+        this.parent.parent.contextMenu.close();
+      }
+
+      if (this.parent.parent.clauseValuesEditor) {
+        this.parent.parent.clauseValuesEditor.hide();
+      }
     }
     else {
       this.el.classList.remove('focused');

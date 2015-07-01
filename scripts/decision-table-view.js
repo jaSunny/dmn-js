@@ -9,9 +9,13 @@ var RuleView = require('./rule-view');
 
 
 var ClauseHeaderView = require('./clause-view');
-
+/*
 var ContextMenuView = require('./contextmenu-view');
 var contextMenu = ContextMenuView.instance();
+
+var ValuesSetterView = require('./clausevalues-setter-view');
+var valuesView = ValuesSetterView.instance();
+*/
 
 function toArray(els) {
   return Array.prototype.slice.apply(els);
@@ -65,6 +69,9 @@ var DecisionTableView = View.extend({
             '</div>',
 
   session: {
+    contextMenu:        'state',
+    clauseValuesEditor: 'state',
+
     hint: {
       type: 'string',
       default: 'Make a right-click on the table'
@@ -107,7 +114,7 @@ var DecisionTableView = View.extend({
   eventLog: function (scopeName) {
     var self = this;
     return function () {
-      var args = [];//Array.prototype.slice.apply(arguments);
+      var args = [];
       args.unshift(scopeName);
       args.unshift('trace');
       args.push(arguments[0]);
@@ -115,24 +122,28 @@ var DecisionTableView = View.extend({
     };
   },
 
-  initialize: function () {
+  initialize: function (options) {
+    options = options || {};
+
     this.model = this.model || new DecisionTable.Model();
   },
 
   hideContextMenu: function () {
-    contextMenu.close();
+    if (!this.contextMenu) { return; }
+    this.contextMenu.close();
   },
 
   showContextMenu: function (cellModel, evt) {
-    // var options = utils.elOffset(evt.currentTarget);
-    var options = {
-      left: evt.pageX,
-      top: evt.pageY
-    };
-    // options.left += evt.currentTarget.clientWidth;
+    if (!this.contextMenu) { return; }
 
-    options.scope = cellModel;
     var table = this.model;
+
+    var options = {
+      scope:  cellModel,
+      parent: this,
+      left:   evt.pageX,
+      top:    evt.pageY
+    };
 
     options.commands = [
       {
@@ -264,7 +275,7 @@ var DecisionTableView = View.extend({
       ]
     });
 
-    contextMenu.open(options);
+    this.contextMenu.open(options);
 
     try {
       evt.preventDefault();
