@@ -41,7 +41,10 @@ var DecisionTableView = View.extend({
   autoRender: true,
 
   template: '<div class="dmn-table">' +
-              '<div data-hook="controls"></div>' +
+              '<div class="hints">' +
+                '<i class="icon-dmn icon-info"></i> ' +
+                '<span data-hook="hints"></span>' +
+              '</div>' +
               '<header>' +
                 '<h3 data-hook="table-name" contenteditable></h3>' +
               '</header>' +
@@ -61,10 +64,21 @@ var DecisionTableView = View.extend({
               '</table>' +
             '</div>',
 
+  session: {
+    hint: {
+      type: 'string',
+      default: 'Make a right-click on the table'
+    }
+  },
+
   bindings: {
     'model.name': {
       hook: 'table-name',
       type: 'text'
+    },
+    hint: {
+      type: 'innerHTML',
+      hook: 'hints'
     }
   },
 
@@ -103,12 +117,6 @@ var DecisionTableView = View.extend({
 
   initialize: function () {
     this.model = this.model || new DecisionTable.Model();
-
-    // this.listenTo(this.model, 'all', this.eventLog('table'));
-    // this.listenTo(this.model.inputs, 'all', this.eventLog('table.inputs'));
-    // this.listenTo(this.model.outputs, 'all', this.eventLog('table.outputs'));
-    // this.listenTo(this.model.rules, 'all', this.eventLog('table.rules'));
-
   },
 
   hideContextMenu: function () {
@@ -403,7 +411,6 @@ var DecisionTableView = View.extend({
       this.inputsHeaderEl.appendChild(makeAddButton('input', table));
       this.outputsHeaderEl.appendChild(makeAddButton('output', table));
     }
-
 
 
     ['input', 'output'].forEach(function (type) {

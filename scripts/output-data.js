@@ -1,5 +1,5 @@
 'use strict';
-/*global module: false, require: false, deps: false*/
+/*global module: false, require: false*/
 
 var Clause = require('./clause-data');
 

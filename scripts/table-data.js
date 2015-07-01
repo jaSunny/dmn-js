@@ -1,11 +1,17 @@
 'use strict';
-/*global module: false, deps: false, require: false, console: false*/
+/*global module: false, deps: true, require: false, console: false*/
+
+if (typeof window === 'undefined') { var deps = require; }
+else { var deps = window.deps; }
+
 
 var State = deps('ampersand-state');
 var Input = require('./input-data');
 var Output = require('./output-data');
 
 var Rule = require('./rule-data');
+
+var defaults = require('lodash.defaults');
 
 var DecisionTableModel = State.extend({
   collections: {
@@ -37,6 +43,24 @@ var DecisionTableModel = State.extend({
   },
 
   initialize: function () {
+    var table = this;
+    [
+      'inputs',
+      'outputs',
+      'rules'
+    ].forEach(function (collectionName) {
+      [
+        'add',
+        'remove',
+        'sort',
+        'reset'
+      ].forEach(function (evtName) {
+        table.listenTo(table[collectionName], evtName, function (arg1, arg2, arg3) {
+          table.trigger(collectionName + ':' + evtName, arg1, arg2, arg3);
+        });
+      });
+    });
+
     this.listenToAndRun(this.inputs, 'remove reset', function () {
       if (this.inputs.length) { return; }
       this.inputs.add({});
@@ -46,8 +70,6 @@ var DecisionTableModel = State.extend({
       if (this.outputs.length) { return; }
       this.outputs.add({});
     });
-
-    console.info('table data', JSON.stringify(this, null, 2));
   },
 
   log: function () {
@@ -67,7 +89,7 @@ var DecisionTableModel = State.extend({
     for (c = 0; c < this.inputs.length; c++) {
       cells.push({
         value: '',
-        choices: this.inputs.at(c).choices,
+        // choices: this.inputs.at(c).choices,
         focused: c === 0
       });
     }
@@ -75,7 +97,7 @@ var DecisionTableModel = State.extend({
     for (c = 0; c < this.outputs.length; c++) {
       cells.push({
         value: '',
-        choices: this.outputs.at(c).choices
+        // choices: this.outputs.at(c).choices
       });
     }
 
@@ -139,23 +161,33 @@ var DecisionTableModel = State.extend({
   _rulesCells: function (added, delta) {
     this.rules.forEach(function (rule) {
       rule.cells.add({
-        choices: added.choices
+        // choices: added.choices
       }, {
         at: delta,
         silent: true
       });
     });
+
     this.rules.trigger('reset');
   },
 
-  addInput: function () {
-    var delta = this.inputs.length;
-    this._rulesCells(this.inputs.add({
+  addInput: function (data, position) {
+    var delta = typeof position !== 'undefined' ? position : this.inputs.length;
+    delta = delta < 0 ? 0 : delta;
+
+    var input = {};
+    defaults(input, data, {
       label:    null,
       choices:  null,
       mapping:  null,
       datatype: 'string'
-    }), delta);
+    });
+
+    var newModel = this.inputs.add(input, {
+      at: delta
+    });
+
+    this._rulesCells(newModel, newModel.collection.indexOf(newModel));
 
     return this;
   },
@@ -166,14 +198,23 @@ var DecisionTableModel = State.extend({
 
 
 
-  addOutput: function () {
-    var delta = this.inputs.length + this.inputs.length - 1;
-    this._rulesCells(this.outputs.add({
+  addOutput: function (data, position) {
+    var delta = typeof position !== 'undefined' ? position : this.outputs.length;
+    delta = delta < 0 ? 0 : delta;
+
+    var output = {};
+    defaults(output, data, {
       label:    null,
       choices:  null,
       mapping:  null,
       datatype: 'string'
-    }), delta);
+    });
+
+    var newModel = this.outputs.add(output, {
+      at: delta
+    });
+
+    this._rulesCells(newModel, newModel.collection.indexOf(newModel));
 
     return this;
   },
@@ -183,7 +224,9 @@ var DecisionTableModel = State.extend({
   }
 });
 
-window.DecisionTableModel = DecisionTableModel;
+if (typeof window !== 'undefined') {
+  window.DecisionTableModel = DecisionTableModel;
+}
 
 module.exports = {
   Model: DecisionTableModel

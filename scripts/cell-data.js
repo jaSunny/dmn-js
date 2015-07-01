@@ -1,5 +1,8 @@
 'use strict';
-/*global module: false, deps: false*/
+/*global module: false, deps: true, require: false*/
+
+if (typeof window === 'undefined') { var deps = require; }
+else { var deps = window.deps; }
 
 var State = deps('ampersand-state');
 var Collection = deps('ampersand-collection');
@@ -151,7 +154,9 @@ var CellModel = State.extend({
       cache: false,
       fn: function () {
         if (!this.clause) { return; }
-        return this.clause.choices;
+        return this.clause.choices.map(function (val) {
+          return {value: val};
+        });
       }
     }
   }

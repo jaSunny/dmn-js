@@ -91,7 +91,7 @@ var ChoiceView = View.extend({
 
 
     var self = this;
-
+    /*
     function resetSuggestions() {
       self.suggestions.reset(self._filter(self.value));
     }
@@ -104,7 +104,6 @@ var ChoiceView = View.extend({
       suggestionsView.el.style.display = this.suggestions.length < 2 ? 'none' : 'block';
     });
 
-
     function _handleResize() {
       self._handleResize();
     }
@@ -113,16 +112,18 @@ var ChoiceView = View.extend({
     }
     window.addEventListener('resize', _handleResize);
     this._handleResize();
+    */
   },
 
   _filter: function (val) {
-    var filtered = this.choices
+    var choices = this.model.choices || this.choices;
+    var filtered = choices
           .filter(function (choice) {
             return choice.value.indexOf(val) === 0;
           })
           .map(function (choice) {
             var chars = this.el.textContent.length;
-            var val = choice.escape('value');
+            var val = choice.escape ? choice.escape('value') : choice.value;
             var htmlStr = '<span class="highlighted">' + val.slice(0, chars) + '</span>';
             htmlStr += val.slice(chars);
             return {

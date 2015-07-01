@@ -240,19 +240,18 @@
 
 
 
-  > [data-hook=controls] {
+  > .hints {
     float: right;
     max-width: 50%;
     min-width: 20%;
     padding: 3px 6px;
     font-size: 90%;
-    &:empty:before {
-      content: 'Hint: Make a right-click on the table';
-      display: inline-block;
-      min-width: 1em;
-    }
 
     background-color: @dmn-gray-lighter;
+    i:before {
+      margin: 0;
+      color: @dmn-gray-light;
+    }
 
     ul, li {
       margin: 0;

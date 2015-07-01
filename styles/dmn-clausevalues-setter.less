@@ -1,0 +1,66 @@
+.dmn-clausevalues-setter {
+  .tooltip;
+  background-color: @dmn-gray-lighter;
+  min-width: 180px;
+
+  .borderbox;
+
+  .arrow-left(8px, 40px);
+
+  .datatype,
+  .allowed-values {
+    padding: 6px;
+    max-width: 100%;
+  }
+
+  .datatype {
+    display: table;
+    width: 100%;
+    label,
+    select {
+      display: table-cell;
+    }
+    border-bottom: 1px solid @dmn-gray;
+  }
+
+  .allowed-values {
+    border-top: 1px solid #fff;
+  }
+
+  .invalid {
+    background-color: lighten(@dmn-danger, 30%);
+    border-color: @dmn-danger;
+    color: darken(@dmn-danger, 10%);
+  }
+
+  select,
+  input {
+    border: 1px solid @dmn-gray;
+    background-color: #fff;
+    padding: 3px 6px;
+    &:focus {
+      outline-color: @dmn-primary;
+    }
+  }
+
+  label {
+    font-weight: bolder;
+  }
+
+  select {
+    width: 100%;
+  }
+
+  ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    max-height: 180px;
+    overflow-y: scroll;
+  }
+
+  li {
+    margin: 3px 0 0 0;
+    padding: 0;
+  }
+}

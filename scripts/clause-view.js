@@ -143,6 +143,63 @@ var LabelView = View.extend(merge({
 }));
 
 
+var ValuesSetterView = require('./clausevalues-setter-view');
+var valuesView = ValuesSetterView.instance();
+
+
+
+var ValueView = View.extend(merge({
+  events: {
+    'click':    '_handleFocus'
+  },
+
+  derived: {
+    table: {
+      deps: [
+        'model',
+        'model.collection',
+        'model.collection.parent'
+      ],
+      cache: false,
+      fn: function () {
+        return this.model.collection.parent;
+      }
+    }
+  },
+
+  bindings: {
+    'model.choices': {
+      type: function (el) {
+        this._renderContent(el);
+      }
+    },
+    'model.datatype': {
+      type: function (el) {
+        this._renderContent(el);
+      }
+    }
+  },
+
+  _renderContent: function (el) {
+    var str = '';
+    var val = this.model.choices;
+    if (Array.isArray(val) && val.length) {
+      str = '(' + val.join(', ') + ')';
+    }
+    else {
+      str = this.model.datatype;
+    }
+    el.textContent = str;
+  },
+
+  _handleFocus: function (evt) {
+    if (evt.defaultPrevented) { return; }
+    valuesView.show(this.model.datatype, this.model.choices, this);
+    evt.preventDefault();
+  }
+}));
+
+
 
 
 var MappingView = View.extend(merge({
@@ -180,84 +237,6 @@ var MappingView = View.extend(merge({
   initialize: function () {
     this.el.setAttribute('contenteditable', true);
     this.el.textContent = (this.model.mapping || '').trim();
-  }
-}));
-
-
-
-
-var ValueView = View.extend(merge({
-  events: {
-    'input': '_handleInput',
-    'focus': '_handleFocus'
-  },
-
-  derived: {
-    table: {
-      deps: [
-        'model',
-        'model.collection',
-        'model.collection.parent'
-      ],
-      cache: false,
-      fn: function () {
-        return this.model.collection.parent;
-      }
-    }
-  },
-
-  bindings: {
-    'model.choices': {
-      type: function (el, val) {
-        if (document.activeElement === el) { return; }
-        var str = '';
-        if (Array.isArray(val) && val.length) {
-          str = '(' + val.join(', ') + ')';
-        }
-        else {
-          str = this.model.datatype;
-        }
-        el.textContent = str;
-      }
-    }
-  },
-
-  _handleInput: function () {
-    var content = this.el.textContent.trim();
-
-    if (content[0] === '(' && content.slice(-1) === ')') {
-      this.model.choices = content
-        .slice(1, -1)
-        .split(',')
-        .map(function (str) {
-          return str.trim();
-        })
-        .filter(function (str) {
-          return !!str;
-        })
-        ;
-      this.model.datatype = null;
-    }
-    else {
-      this.model.choices = null;
-      this.model.datatype = content;
-    }
-  },
-
-  _handleFocus: function () {
-
-  },
-
-  initialize: function () {
-    this.el.setAttribute('contenteditable', true);
-    var str = '';
-    if (this.model.choices && this.model.choices.length) {
-      str = '(' + this.model.choices.join(', ') + ')';
-    }
-    else {
-      str = this.model.datatype;
-    }
-    this.el.textContent = str;
   }
 }));
 

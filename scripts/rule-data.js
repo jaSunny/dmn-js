@@ -1,5 +1,8 @@
 'use strict';
-/*global module: false, require: false, deps: false*/
+/*global module: false, deps: true, require: false*/
+
+if (typeof window === 'undefined') { var deps = require; }
+else { var deps = window.deps; }
 
 var State = deps('ampersand-state');
 var Collection = deps('ampersand-collection');
@@ -44,6 +47,7 @@ var RuleModel = State.extend({
 
     inputCells: {
       deps: ['cells', 'table.inputs'],
+      cache: false,
       fn: function () {
         return this.cells.models.slice(0, this.table.inputs.length);
       }
@@ -51,6 +55,7 @@ var RuleModel = State.extend({
 
     outputCells: {
       deps: ['cells', 'table.inputs'],
+      cache: false,
       fn: function () {
         return this.cells.models.slice(this.table.inputs.length, -1);
       }
@@ -58,10 +63,37 @@ var RuleModel = State.extend({
 
     annotation: {
       deps: ['cells'],
+      cache: false,
       fn: function () {
         return this.cells.models[this.cells.length - 1];
       }
     }
+  },
+
+  ensureCells: function () {
+    var c = this.table.inputs.length + this.table.outputs.length + 1;
+
+    // fine
+    if (this.cells.length === c || c === 1) {
+      return;
+    }
+
+    // needs to be filled
+    if (this.cells.length < c) {
+      while (this.cells.length <= c) {
+        this.cells.add({value:''});
+      }
+    }
+
+    // needs to be truncated
+    else {
+      this.cells.models = this.cells.models.slice(0, c);
+    }
+  },
+
+  initialize: function () {
+    this.listenTo(this.table.inputs, 'reset', this.ensureCells);
+    this.listenToAndRun(this.table.outputs, 'reset', this.ensureCells);
   }
 });
 
