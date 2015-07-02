@@ -5,7 +5,7 @@
 
   .borderbox;
 
-  .arrow-left(8px, 40px);
+  .arrow-left(8px, 20px);
 
   .datatype,
   .allowed-values {
@@ -20,11 +20,26 @@
     select {
       display: table-cell;
     }
-    border-bottom: 1px solid @dmn-gray;
   }
 
   .allowed-values {
     border-top: 1px solid #fff;
+    max-height: 0;
+    overflow: hidden;
+    padding: 0 6px;
+    // .transition(padding 0.436s linear);
+    // .transition(max-height 0.436s linear);
+  }
+
+  &.choices {
+    .datatype {
+      border-bottom: 1px solid @dmn-gray;
+    }
+
+    .allowed-values {
+      padding: 6px;
+      max-height: 1000px;
+    }
   }
 
   .invalid {

@@ -9,13 +9,6 @@ var RuleView = require('./rule-view');
 
 
 var ClauseHeaderView = require('./clause-view');
-/*
-var ContextMenuView = require('./contextmenu-view');
-var contextMenu = ContextMenuView.instance();
-
-var ValuesSetterView = require('./clausevalues-setter-view');
-var valuesView = ValuesSetterView.instance();
-*/
 
 function toArray(els) {
   return Array.prototype.slice.apply(els);
@@ -135,6 +128,9 @@ var DecisionTableView = View.extend({
 
   showContextMenu: function (cellModel, evt) {
     if (!this.contextMenu) { return; }
+    if (evt) {
+      evt.preventDefault();
+    }
 
     var table = this.model;
 
@@ -213,7 +209,7 @@ var DecisionTableView = View.extend({
             icon: 'clear',
             hint: 'Clear the focused rule',
             fn: function () {
-              table.clearRule(this.scope);
+              table.clearRule(this.scope.rule);
             }
           }
         ]
@@ -222,6 +218,10 @@ var DecisionTableView = View.extend({
 
     var type = cellModel.type;
     var addMethod = type === 'input' ? 'addInput' : 'addOutput';
+    if (type !== 'input' && type !== 'output') {
+      this.contextMenu.open(options);
+      return;
+    }
 
     options.commands.unshift({
       label: type === 'input' ? 'Input' : 'Output',
@@ -276,10 +276,6 @@ var DecisionTableView = View.extend({
     });
 
     this.contextMenu.open(options);
-
-    try {
-      evt.preventDefault();
-    } catch (e) {}
   },
 
 

@@ -41,7 +41,7 @@ var ValuesCollection = Collection.extend({
 });
 
 var ValuesItemView = View.extend({
-  template: '<li><input tabindex="1" /></li>',
+  template: '<li><input /></li>',
 
   session: {
     invalid: 'boolean'
@@ -62,6 +62,7 @@ var ValuesItemView = View.extend({
   events: {
     'change input':   '_handleValueChange',
     'blur input':     '_handleValueChange',
+    'keydown input':  '_handleValueKeydown',
     'keyup input':    '_handleValueKeyup'
   },
 
@@ -71,6 +72,26 @@ var ValuesItemView = View.extend({
     }
 
     this.validate();
+  },
+
+  _handleValueKeydown: function (evt) {
+    var code = evt.which || evt.keyCode;
+
+    var collection = this.model.collection;
+    var last = collection.last();
+
+    if (last === this.model && evt.target.value) {
+      collection.add({value: ''});
+    }
+
+    if (code === 9) {
+      var inputs = this.parent.queryAll('.allowed-values input');
+      var lastInput = inputs[inputs.length - 1];
+
+      if (inputs.indexOf(evt.target) === (inputs.length - 2)) {
+        lastInput.focus();
+      }
+    }
   },
 
   _handleValueKeyup: function (evt) {
@@ -110,7 +131,8 @@ var DatatypesCollection = Collection.extend({
   mainIndex: 'value',
   model: State.extend({
     props: {
-      value: 'string'
+      value: 'string',
+      offer: 'string'
     }
   })
 });
@@ -138,22 +160,45 @@ var DatatypeOptionView = View.extend({
 
 
 var primitiveTypes = [
-  'string',
-  'date',
+  {
+    value: 'string',
+    offer: 'choices'
+  },
+  {
+    value: 'date',
+    offer: 'range'
+  },
 
   // https://docs.oracle.com/javase/tutorial/java/nutsandbolts/datatypes.html
-  'short',
-  'int',
-  'long',
-  'float',
-  'double',
-  'boolean'
-].map(function (val) {
-  return { value: val };
-});
+  {
+    value: 'short',
+    offer: 'range'
+  },
+  {
+    value: 'int',
+    offer: 'range'
+  },
+  {
+    value: 'long',
+    offer: 'range'
+  },
+  {
+    value: 'float',
+    offer: 'range'
+  },
+  {
+    value: 'double',
+    offer: 'range'
+  },
+
+  {
+    value: 'boolean'
+  }
+];
+
 
 var ClauseValuesView = View.extend({
-  template: '<div class="dmn-clausevalues-setter">' +
+  template: '<div class="dmn-clausevalues-setter choices">' +
               '<div class="datatype">' +
                 '<label>Data type:</label>' +
                 '<select></select>' +
@@ -178,8 +223,8 @@ var ClauseValuesView = View.extend({
     contextMenu: {
       cache: false,
       fn: function () {
-        var current = this.parent;
-        while ((current = this.parent)) {
+        var current = this;
+        while ((current = current.parent)) {
           if (current.contextMenu) {
             return current.contextMenu;
           }
@@ -191,6 +236,26 @@ var ClauseValuesView = View.extend({
   bindings: {
     visible: {
       type: 'toggle'
+    },
+    datatype: {
+      type: function(el, val, prev) {
+        if (!this.datatypes.length) { return; }
+        var type;
+
+        if (prev) {
+          type = this.datatypes.get(prev);
+          if (type) {
+            el.classList.remove(type.offer);
+          }
+        }
+
+        if (val) {
+          type = this.datatypes.get(val);
+          if (type) {
+            el.classList.add(type.offer);
+          }
+        }
+      }
     }
   },
 
@@ -248,7 +313,12 @@ var ClauseValuesView = View.extend({
     }
 
     left += this.parent.el.clientWidth;
-    top -= 40;
+    top -= 20;
+
+    left += Math.min(document.body.clientWidth - (left + this.el.clientWidth), 0);
+
+    top += Math.min(document.body.clientHeight - (top + this.el.clientHeight), 0);
+
     helper.style.top = top;
     helper.style.left = left;
   },
@@ -262,8 +332,12 @@ var ClauseValuesView = View.extend({
     this.datatypeEl.value = datatype;
 
     values = values || [];
-    var vals = Array.isArray(values) ? values.map(function (val) { return {value: val}; }) : values.toJSON();
-    vals = vals.filter(function (item) { return item.value; });
+    var vals = (Array.isArray(values) ? values.map(function (val) {
+      return { value: val };
+    }) : values.toJSON())
+        .filter(function (item) {
+          return item.value;
+        });
     vals.push({ value: '' });
 
     this.possibleValues.reset(vals);

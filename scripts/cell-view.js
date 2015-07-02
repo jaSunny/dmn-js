@@ -3,7 +3,6 @@
 
 var View = deps('ampersand-view');
 var merge = deps('lodash.merge');
-var contextViewsMixin = require('./context-views-mixin');
 
 
 var ChoiceView = require('./choice-view');

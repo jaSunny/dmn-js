@@ -150,8 +150,7 @@ var DecisionTableModel = State.extend({
 
 
   clearRule: function (rule) {
-    var ruleDelta = this.rules.indexOf(rule);
-    this.rules.at(ruleDelta).cells.forEach(function (cell) {
+    rule.cells.forEach(function (cell) {
       cell.value = '';
     });
     return this;

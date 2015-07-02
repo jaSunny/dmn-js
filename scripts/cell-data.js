@@ -153,7 +153,7 @@ var CellModel = State.extend({
       ],
       cache: false,
       fn: function () {
-        if (!this.clause) { return; }
+        if (!this.clause || !this.clause.choices) { return; }
         return this.clause.choices.map(function (val) {
           return {value: val};
         });
