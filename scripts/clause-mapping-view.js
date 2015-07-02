@@ -6,7 +6,7 @@ var merge = deps('lodash.merge');
 
 
 
-var MappingView = View.extend(merge({
+var MappingView = View.extend(merge({}, {
   events: {
     'input': '_handleInput',
   },

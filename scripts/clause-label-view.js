@@ -6,11 +6,16 @@ var merge = deps('lodash.merge');
 var contextViewsMixin = require('./context-views-mixin');
 
 
-var LabelView = View.extend(merge({
+var LabelView = View.extend(merge({}, {
   events: {
-    'focus':        '_handleFocus',
-    'input':        '_handleInput',
-    'contextmenu':  '_handleContextMenu',
+    'focus':                          '_handleFocus',
+    'focus [contenteditable]':        '_handleFocus',
+    'click':                          '_handleFocus',
+    'click [contenteditable]':        '_handleFocus',
+    'input':                          '_handleInput',
+    'input [contenteditable]':        '_handleInput',
+    'contextmenu':                    '_handleContextMenu',
+    'contextmenu [contenteditable]':  '_handleContextMenu',
   },
 
   derived: merge({}, contextViewsMixin, {
@@ -30,12 +35,16 @@ var LabelView = View.extend(merge({
   bindings: {
     'model.label': {
       type: function (el, val) {
-        if (document.activeElement === el) { return; }
-        el.textContent = (val || '').trim();
+        var editable = this.editableEl();
+        if (document.activeElement === editable) { return; }
+        editable.textContent = (val || '').trim();
       }
     }
   },
 
+  editableEl: function () {
+    return this.query('[contenteditable]') || this.el;
+  },
 
   _handleFocus: function () {
     this.table.x = this.model.x;
@@ -43,7 +52,7 @@ var LabelView = View.extend(merge({
   },
 
   _handleInput: function () {
-    this.model.label = this.el.textContent.trim();
+    this.model.label = this.editableEl().textContent.trim();
     this._handleFocus();
   },
 
@@ -136,8 +145,11 @@ var LabelView = View.extend(merge({
   },
 
   initialize: function () {
-    this.el.setAttribute('contenteditable', true);
-    this.el.textContent = (this.model.label || '').trim();
+    var editable = document.createElement('span');
+    editable.setAttribute('contenteditable', true);
+    editable.textContent = (this.model.label || '').trim();
+    this.el.innerHTML = '';
+    this.el.appendChild(editable);
   }
 }));
 

@@ -46,10 +46,6 @@ var RuleCellView = View.extend(merge({}, ChoiceView.prototype, {
     }
 
     el.focus();
-
-    if (el.select) {
-      el.select();
-    }
   },
 
   _handleFocus: function () {
@@ -100,7 +96,9 @@ var RuleCellView = View.extend(merge({}, ChoiceView.prototype, {
         this.parent.parent.clauseValuesEditor.hide();
       }
 
-      this._focusPseudo();
+      if (Element.prototype.contains && document.activeElement.contains(this.editableEl())) {
+        this._focusPseudo();
+      }
     }
     else {
       this.el.classList.remove('focused');

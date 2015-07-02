@@ -1,0 +1,52 @@
+.combobox-suggestions {
+  .tooltip(@dmn-gray-dark, #fff);
+
+  z-index: 999;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  border: 1px solid @dmn-gray;
+  margin-top: 5px;
+
+  &:before {
+    content: '';
+    display: block;
+    height: 4px;
+    top: -4px;
+    width: 100%;
+    z-index: 10;
+    background-color: inherit;
+    position: absolute;
+    border: 1px solid @dmn-gray;
+
+    left: -1px;
+    z-index: 1;
+  }
+
+  li {
+    position: relative;
+    z-index: 2;
+    padding: 0;
+    margin: 0;
+    min-height: 12px;
+    padding: 3px 6px;
+    cursor: pointer;
+
+    border-bottom: 1px solid @dmn-gray-light;
+
+    background-color: #fff;
+    .transition(background-color 0.218s ease);
+
+    .focused();
+
+    &:hover {
+      background-color: lighten(@dmn-primary, 55%);
+    }
+    &:first-child {
+      margin-top: -4px;
+    }
+    &:last-child {
+      border-bottom: 0;
+    }
+  }
+}

@@ -1,11 +1,10 @@
 .dmn-clausevalues-setter {
-  .tooltip;
-  background-color: @dmn-gray-lighter;
+  .tooltip(@dmn-gray-dark, #fff);
   min-width: 180px;
 
   .borderbox;
 
-  .arrow-left(8px, 20px);
+  .arrow-left(8px, 20px, #fff);
 
   .datatype,
   .allowed-values {
@@ -17,28 +16,54 @@
     display: table;
     width: 100%;
     label,
-    select {
+    input {
+      vertical-align: middle;
       display: table-cell;
     }
   }
 
-  .allowed-values {
-    border-top: 1px solid #fff;
+  .allowed-values,
+  .ranged-values {
     max-height: 0;
     overflow: hidden;
     padding: 0 6px;
-    // .transition(padding 0.436s linear);
-    // .transition(max-height 0.436s linear);
   }
 
-  &.choices {
+  &.choices,
+  &.range {
     .datatype {
-      border-bottom: 1px solid @dmn-gray;
+      border-bottom: 1px solid @dmn-gray-lighter;
     }
+  }
 
-    .allowed-values {
-      padding: 6px;
-      max-height: 1000px;
+  &.choices .allowed-values,
+  &.range .ranged-values {
+    padding: 6px;
+    max-height: 1000px;
+  }
+
+  .allowed-values,
+  .ranged-values {
+    ul {
+      max-height: 180px;
+    }
+  }
+
+  .allowed-values {
+    ul {
+      overflow-y: scroll;
+    }
+    input {
+      width: 100%;
+    }
+  }
+
+  .ranged-values li {
+    display: table;
+    label,
+    input {
+      vertical-align: middle;
+      display: table-cell;
     }
   }
 
@@ -48,30 +73,25 @@
     color: darken(@dmn-danger, 10%);
   }
 
-  select,
   input {
     border: 1px solid @dmn-gray;
     background-color: #fff;
     padding: 3px 6px;
-    &:focus {
-      outline-color: @dmn-primary;
-    }
+    .focused();
   }
 
   label {
-    font-weight: bolder;
-  }
-
-  select {
-    width: 100%;
+    color: @dmn-gray-darker;
+    min-width: 50px;
+    font-weight: lighter;
+    padding: 3px 0;
+    margin-right: 6px;
   }
 
   ul {
     list-style: none;
     margin: 0;
     padding: 0;
-    max-height: 180px;
-    overflow-y: scroll;
   }
 
   li {

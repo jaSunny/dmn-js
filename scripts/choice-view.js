@@ -37,12 +37,6 @@ var ChoiceView = View.extend({
       fn: function () {
         return this.model.value === this.originalValue;
       }
-    // },
-    // pseudoEl: {
-    //   cache: false,
-    //   fn: function () {
-    //     return this.query('[contenteditable]') || this.el;
-    //   }
     }
   },
 

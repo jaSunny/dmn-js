@@ -470,28 +470,42 @@ var DecisionTableView = View.extend({
     this.bodyEl.innerHTML = '';
     this.rulesView = this.renderCollection(this.model.rules, RuleView, this.bodyEl);
 
+    var self = this;
 
     if (!this.footEl) {
       var footEl = this.footEl = document.createElement('tfoot');
       footEl.className =  'rules-controls';
-      footEl.innerHTML =  '<tr>' +
-                            '<td class="add-rule">' +
-                              '<a title="Add a rule" class="icon-dmn icon-plus"></a>' +
-                            '</td>' +
-                            '<td colspan="3"></td>' +
-                          '</tr>';
       this.tableEl.appendChild(footEl);
     }
 
-    var self = this;
+    var footRow = this.footEl.querySelector('tr');
+    if (footRow) {
+      this.footEl.removeChild(footRow);
+    }
+
+    footRow = document.createElement('tr');
+    this.footEl.appendChild(footRow);
+
+    function makeAddRule() {
+      var td = document.createElement('td');
+      td.className = 'add-rule';
+      var a = document.createElement('a');
+      a.setAttribute('title', 'Add a rule');
+      a.className = 'icon-dmn icon-plus';
+      td.appendChild(a);
+      return td;
+    }
+
     function makeColspan() {
       var count = 1 + Math.max(1, self.model.inputs.length) + Math.max(1, self.model.outputs.length);
-      var tds = [self.query('tfoot .add-rule').outerHTML];
+      var link = self.query('tfoot .add-rule') || makeAddRule();
+      footRow.appendChild(link);
+
       for (var c = 0; c < count; c++) {
-        tds.push('<td></td>');
+        footRow.appendChild(document.createElement('td'));
       }
-      self.footEl.innerHTML = tds.join('');
     }
+
     this.model.inputs.on('add remove reset', makeColspan);
     this.model.outputs.on('add remove reset', makeColspan);
     makeColspan();

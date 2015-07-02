@@ -1,10 +1,10 @@
 'use strict';
-/* global module: false, deps: false */
+/* global module: false, deps: false, require: false */
 
 var View = deps('ampersand-view');
 var Collection = deps('ampersand-collection');
 var State = deps('ampersand-state');
-
+var ComboBoxView = require('./combobox-view');
 
 
 
@@ -41,7 +41,7 @@ var ValuesCollection = Collection.extend({
 });
 
 var ValuesItemView = View.extend({
-  template: '<li><input /></li>',
+  template: '<li><input tabindex="1" /></li>',
 
   session: {
     invalid: 'boolean'
@@ -137,25 +137,6 @@ var DatatypesCollection = Collection.extend({
   })
 });
 
-var DatatypeOptionView = View.extend({
-  template: '<option></option>',
-
-  bindings: {
-    'model.value': [
-      {
-        type: 'text'
-      },
-      {
-        type: 'attribute',
-        name: 'value'
-      }
-    ]
-  }
-});
-
-
-
-
 
 
 
@@ -200,14 +181,57 @@ var primitiveTypes = [
 var ClauseValuesView = View.extend({
   template: '<div class="dmn-clausevalues-setter choices">' +
               '<div class="datatype">' +
-                '<label>Data type:</label>' +
-                '<select></select>' +
               '</div>' +
+
               '<div class="allowed-values">' +
                 '<label>Allowed values:</label>' +
                 '<ul></ul>' +
               '</div>' +
+
+              '<ul class="ranged-values">' +
+                '<li class="min">' +
+                  '<label>Min:</label>' +
+                  '<input tabindex="1" />' +
+                '</li>' +
+                '<li class="max">' +
+                  '<label>Max:</label>' +
+                  '<input tabindex="2" />' +
+                '</li>' +
+              '</ul>' +
             '</div>',
+
+  subviews: {
+    datatypeView: {
+      container: '.datatype',
+      prepareView: function (el) {
+        var comboboxView = new ComboBoxView({
+          parent:     this,
+          collection: this.datatypes,
+          // value:      this.datatype,
+          label:      'Type:',
+          className:  el.className
+        });
+
+        var cbEl = comboboxView.render().el;
+        el.parentNode.replaceChild(cbEl, el);
+
+        this.listenTo(comboboxView, 'change:value', function () {
+          this.datatype = comboboxView.value;
+        });
+
+        this.on('change:visible', function () {
+          if (this.visible) {
+            comboboxView.setVisible();
+          }
+          else {
+            comboboxView.suggestionsEl.style.display = 'none';
+          }
+        });
+
+        return comboboxView;
+      }
+    }
+  },
 
   collections: {
     datatypes: DatatypesCollection,
@@ -284,11 +308,12 @@ var ClauseValuesView = View.extend({
       if (!hasModel()) { return; }
 
       this.parent.model.choices = this.possibleValues
-                                  .filter(function (item) {
-                                    return item.value;
-                                  }).map(function (item) {
-                                    return item.value;
-                                  });
+                                    .filter(function (item) {
+                                      return item.value;
+                                    })
+                                    .map(function (item) {
+                                      return item.value;
+                                    });
     });
   },
 
@@ -316,11 +341,16 @@ var ClauseValuesView = View.extend({
     top -= 20;
 
     left += Math.min(document.body.clientWidth - (left + this.el.clientWidth), 0);
-
     top += Math.min(document.body.clientHeight - (top + this.el.clientHeight), 0);
 
-    helper.style.top = top;
-    helper.style.left = left;
+    helper.style.position = 'absolute';
+    helper.style.top = top +'px';
+    helper.style.left = left +'px';
+
+
+    if (this.datatypeView) {
+      this.datatypeView.setPosition();
+    }
   },
 
   show: function (datatype, values, parent) {
@@ -329,7 +359,10 @@ var ClauseValuesView = View.extend({
     }
 
     this.datatypes.reset(primitiveTypes);
-    this.datatypeEl.value = datatype;
+
+    if (this.datatype && !this.datatypeView.inputEl.value) {
+      this.datatypeView.inputEl.value = this.datatype;
+    }
 
     values = values || [];
     var vals = (Array.isArray(values) ? values.map(function (val) {
@@ -347,7 +380,6 @@ var ClauseValuesView = View.extend({
       this.parent.contextMenu.close();
     }
 
-
     if (instance.visible) {
       this.setPosition();
     }
@@ -364,14 +396,15 @@ var ClauseValuesView = View.extend({
     this.renderWithTemplate();
 
     this.cacheElements({
-      datatypeEl: 'select',
-      valuesEl: 'ul'
+      valuesEl:   'ul',
+
+      minLabelEl: '.min label',
+      minInputEl: '.min input',
+
+      maxLabelEl: '.max label',
+      maxInputEl: '.max input'
     });
 
-    this.query('.datatype label').setAttribute('for', this.cid + '-datatype');
-    this.datatypeEl.setAttribute('id', this.cid + '-datatype');
-
-    this.renderCollection(this.datatypes, DatatypeOptionView, this.datatypeEl);
     this.renderCollection(this.possibleValues, ValuesItemView, this.valuesEl);
 
     this.listenTo(this.possibleValues, 'change', function () {
