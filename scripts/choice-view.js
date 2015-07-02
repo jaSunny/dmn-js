@@ -17,7 +17,9 @@ var ChoiceView = View.extend({
 
   events: {
     input: '_handleInput',
-    focus: '_handleFocus'
+    'input [contenteditable]': '_handleInput',
+    focus: '_handleFocus',
+    'focus [contenteditable]': '_handleFocus'
   },
 
   session: {
@@ -35,6 +37,12 @@ var ChoiceView = View.extend({
       fn: function () {
         return this.model.value === this.originalValue;
       }
+    // },
+    // pseudoEl: {
+    //   cache: false,
+    //   fn: function () {
+    //     return this.query('[contenteditable]') || this.el;
+    //   }
     }
   },
 
@@ -55,6 +63,10 @@ var ChoiceView = View.extend({
       type: 'booleanClass',
       name: 'untouched'
     }
+  },
+
+  editableEl: function () {
+    return this.query('[contenteditable]') || this.el;
   },
 
   initialize: function (options) {
@@ -90,12 +102,13 @@ var ChoiceView = View.extend({
 
   _filter: function (val) {
     var choices = this.model.choices || this.choices;
+    var el = this.editableEl();
     var filtered = choices
           .filter(function (choice) {
             return choice.value.indexOf(val) === 0;
           })
           .map(function (choice) {
-            var chars = this.el.textContent.length;
+            var chars = el.textContent.length;
             var val = choice.escape ? choice.escape('value') : choice.value;
             var htmlStr = '<span class="highlighted">' + val.slice(0, chars) + '</span>';
             htmlStr += val.slice(chars);
@@ -136,7 +149,8 @@ var ChoiceView = View.extend({
     if (evt && (specialKeys.indexOf(evt.keyCode) > -1 || evt.ctrlKey)) {
       return;
     }
-    var val = this.el.textContent;
+    var el = this.editableEl();
+    var val = el.textContent.trim();
 
     var filtered = this._filter(val);
     suggestionsView.show(filtered, this);
@@ -153,7 +167,7 @@ var ChoiceView = View.extend({
       }, {
         silent: true
       });
-      this.el.textContent = matching;
+      el.textContent = matching;
     }
   }
 });

@@ -7,21 +7,24 @@ var merge = deps('lodash.merge');
 
 var ChoiceView = require('./choice-view');
 var RuleCellView = View.extend(merge({}, ChoiceView.prototype, {
-  template: '<td></td>',
+  template: '<td><span contenteditable></span></td>',
 
   bindings: merge({}, ChoiceView.prototype.bindings, {
     'model.value': {
-      type: 'text'
+      type: 'text',
+      selector: '[contenteditable]'
     },
 
     'model.editable': {
       type: 'booleanAttribute',
-      name: 'contenteditable'
+      name: 'contenteditable',
+      selector: '[contenteditable]'
     },
 
     'model.spellchecked': {
       type: 'booleanAttribute',
-      name: 'spellcheck'
+      name: 'spellcheck',
+      selector: '[contenteditable]'
     },
 
     'model.type': {
@@ -30,9 +33,24 @@ var RuleCellView = View.extend(merge({}, ChoiceView.prototype, {
   }),
 
   events: merge({}, ChoiceView.prototype.events, {
-    'contextmenu':  '_handleContextMenu',
-    'click':        '_handleClick'
+    'contextmenu':                    '_handleContextMenu',
+    'contextmenu [contenteditable]':  '_handleContextMenu',
+    'click':                          '_handleClick',
+    'click [contenteditable]':        '_handleClick'
   }),
+
+  _focusPseudo: function () {
+    var el = this.editableEl();
+    if (!el) {
+      return;
+    }
+
+    el.focus();
+
+    if (el.select) {
+      el.select();
+    }
+  },
 
   _handleFocus: function () {
     ChoiceView.prototype._handleFocus.apply(this, arguments);
@@ -61,6 +79,7 @@ var RuleCellView = View.extend(merge({}, ChoiceView.prototype, {
 
   _handleClick: function () {
     this.parent.parent.hideContextMenu();
+    this._focusPseudo();
   },
 
   _handleContextMenu: function (evt) {
@@ -80,6 +99,8 @@ var RuleCellView = View.extend(merge({}, ChoiceView.prototype, {
       if (this.parent.parent.clauseValuesEditor) {
         this.parent.parent.clauseValuesEditor.hide();
       }
+
+      this._focusPseudo();
     }
     else {
       this.el.classList.remove('focused');
