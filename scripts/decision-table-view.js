@@ -32,6 +32,56 @@ function makeAddButton(clauseType, table) {
 }
 
 
+var FootView = View.extend({
+  template: '<tfoot><tr></tr></tfoot>',
+
+  events: {
+    'click .add-rule': '_handleAddRuleClick'
+  },
+
+  _handleAddRuleClick: function () {
+    this.model.addRule();
+  },
+
+  makeLinkEl: function () {
+    var td = document.createElement('td');
+    td.className = 'add-rule';
+    var a = document.createElement('a');
+    a.setAttribute('title', 'Add a rule');
+    a.className = 'icon-dmn icon-plus';
+    td.appendChild(a);
+    return td;
+  },
+
+  initialize: function () {
+    var table = this.model;
+    this.listenTo(table.inputs, 'all', this.render);
+    this.listenToAndRun(table.outputs, 'all', this.render);
+  },
+
+  render: function () {
+    var table = this.model;
+    if (this.rowEl) {
+      var children = [].slice.apply(this.rowEl.childNodes);
+      children.forEach(function (el) {
+        this.rowEl.removeChild(el);
+      }, this);
+    }
+    else {
+      this.renderWithTemplate();
+      this.cacheElements({
+        rowEl: 'tr'
+      });
+    }
+
+    this.rowEl.appendChild(this.makeLinkEl());
+    var count = 1 + Math.max(1, table.inputs.length) + Math.max(1, table.outputs.length);
+    for (var c = 0; c < count; c++) {
+      this.rowEl.appendChild(document.createElement('td'));
+    }
+    return this;
+  }
+});
 
 
 var DecisionTableView = View.extend({
@@ -83,12 +133,7 @@ var DecisionTableView = View.extend({
   },
 
   events: {
-    'click .add-rule a': '_handleAddRuleClick',
     'input header h3':   '_handleNameInput'
-  },
-
-  _handleAddRuleClick: function () {
-    this.model.addRule();
   },
 
   _handleNameInput: function (evt) {
@@ -470,45 +515,15 @@ var DecisionTableView = View.extend({
     this.bodyEl.innerHTML = '';
     this.rulesView = this.renderCollection(this.model.rules, RuleView, this.bodyEl);
 
-    var self = this;
+    if (!this.footView) {
+      var footEl = this.query('tfoot');
+      if (footEl) { footEl.parentNode.removeChild(footEl); }
 
-    if (!this.footEl) {
-      var footEl = this.footEl = document.createElement('tfoot');
-      footEl.className =  'rules-controls';
-      this.tableEl.appendChild(footEl);
+      this.footView = new FootView({
+        model: this.model
+      });
+      this.tableEl.appendChild(this.footView.el);
     }
-
-    var footRow = this.footEl.querySelector('tr');
-    if (footRow) {
-      this.footEl.removeChild(footRow);
-    }
-
-    footRow = document.createElement('tr');
-    this.footEl.appendChild(footRow);
-
-    function makeAddRule() {
-      var td = document.createElement('td');
-      td.className = 'add-rule';
-      var a = document.createElement('a');
-      a.setAttribute('title', 'Add a rule');
-      a.className = 'icon-dmn icon-plus';
-      td.appendChild(a);
-      return td;
-    }
-
-    function makeColspan() {
-      var count = 1 + Math.max(1, self.model.inputs.length) + Math.max(1, self.model.outputs.length);
-      var link = self.query('tfoot .add-rule') || makeAddRule();
-      footRow.appendChild(link);
-
-      for (var c = 0; c < count; c++) {
-        footRow.appendChild(document.createElement('td'));
-      }
-    }
-
-    this.model.inputs.on('add remove reset', makeColspan);
-    this.model.outputs.on('add remove reset', makeColspan);
-    makeColspan();
 
     return this;
   }
