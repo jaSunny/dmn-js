@@ -271,6 +271,7 @@ var DecisionTableView = View.extend({
     options.commands.unshift({
       label: type === 'input' ? 'Input' : 'Output',
       icon: type,
+      className: type,
       subcommands: [
         {
           label: 'add',

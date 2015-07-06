@@ -7,21 +7,6 @@ var State = deps('ampersand-state');
 
 
 var defaultCommands = [
-  // {
-  //   label: 'Actions',
-  //   subcommands: [
-  //     {
-  //       label: 'undo',
-  //       icon: 'undo',
-  //       fn: function () {}
-  //     },
-  //     {
-  //       label: 'redo',
-  //       icon: 'redo',
-  //       fn: function () {}
-  //     }
-  //   ]
-  // },
   {
     label: 'Cell',
     subcommands: [
@@ -172,10 +157,11 @@ var defaultCommands = [
 
 var CommandModel = State.extend({
   props: {
-    label: 'string',
-    hint: 'string',
-    icon: 'string',
-    href: 'string',
+    label:      'string',
+    hint:       'string',
+    icon:       'string',
+    href:       'string',
+    className:  'string',
 
     possible: {
       type: 'any',
@@ -295,6 +281,10 @@ var ContextMenuItem = View.extend({
         el.className = 'icon ' + value;
       },
       selector: '.icon'
+    },
+
+    'model.className': {
+      type: 'class'
     }
   },
 
@@ -422,6 +412,9 @@ var ContextMenuView = View.extend({
     this.cacheElements({
       commandsEl: 'ul'
     });
+
+
+
     this.commandsView = this.renderCollection(this.commands, ContextMenuItem, this.commandsEl);
     return this;
   }

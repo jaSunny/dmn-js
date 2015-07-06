@@ -1,4 +1,42 @@
-.combobox-suggestions {
+.dmn-combobox {
+  position: relative;
+
+  input {
+    position: relative;
+    z-index: 1;
+  }
+
+  .caret {
+    position: absolute;
+    top: 6px;
+    right: 6px;
+    bottom: 6px;
+    display: block;
+    z-index: 2;
+    text-align: center;
+
+    cursor: pointer;
+    &:before {
+      .dmn-font();
+      display: block;
+      position: absolute;
+      height: 100%;
+      right: 0;
+      top: 50%;
+      margin-top: -8px;
+      content: '\E801';
+    }
+    &:hover:before {
+      color: @dmn-primary;
+    }
+  }
+
+  &.expanded .caret:before {
+    content: '\E800';
+  }
+}
+
+.dmn-combobox-suggestions {
   .tooltip(@dmn-gray-dark, #fff);
 
   z-index: 999;

@@ -71,6 +71,7 @@ var LabelView = View.extend(merge({}, {
         {
           label: type === 'input' ? 'Input' : 'Output',
           icon: type,
+          className: type,
           subcommands: [
             {
               label: 'add',

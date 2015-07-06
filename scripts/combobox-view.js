@@ -63,7 +63,11 @@ var SuggestionView = View.extend({
 });
 
 var ComboBoxView = View.extend({
-  template: '<div class="combobox"><label></label><input tabindex="0" /></div>',
+  template: '<div class="dmn-combobox">' +
+              '<label></label>' +
+              '<input tabindex="0" />' +
+              '<span class="caret"></span>' +
+            '</div>',
 
   collections: {
     suggestions: SuggestionsCollection
@@ -90,7 +94,8 @@ var ComboBoxView = View.extend({
     'input input':    '_handleInput',
     'focus input':    '_handleFocus',
     'blur input':     '_handleBlur',
-    'keydown input':  '_handleKeydown'
+    'keydown input':  '_handleKeydown',
+    'click .caret':   '_handleCaretClick'
   },
 
   _handleFocus: function () {
@@ -119,6 +124,31 @@ var ComboBoxView = View.extend({
     else if (code === 27) { // esc
       this.suggestionsEl.style.display = 'none';
     }
+  },
+
+  _handleCaretClick: function () {
+    this.toggle();
+  },
+
+  expand: function () {
+    if (this.suggestionsEl.style.display === 'none') {
+      this.suggestions.reset(this.collection.toJSON());
+      this.el.classList.add('expanded');
+    }
+    return this;
+  },
+
+  collapse: function () {
+    if (this.suggestionsEl.style.display !== 'none') {
+      this.suggestionsEl.style.display = 'none';
+      this.el.classList.remove('expanded');
+    }
+    return this;
+  },
+
+  toggle: function () {
+    this[this.suggestionsEl.style.display === 'none' ? 'expand' : 'collapse']();
+    return this;
   },
 
   filter: function () {
@@ -211,7 +241,7 @@ var ComboBoxView = View.extend({
     }
 
     this.suggestionsEl = document.createElement('ul');
-    this.suggestionsEl.className = 'combobox-suggestions';
+    this.suggestionsEl.className = 'dmn-combobox-suggestions';
     document.body.appendChild(this.suggestionsEl);
 
     this.suggestionsView = this.renderCollection(this.suggestions, SuggestionView, this.suggestionsEl);
