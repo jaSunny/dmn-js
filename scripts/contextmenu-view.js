@@ -1,5 +1,5 @@
 'use strict';
-/* global require: false, module: false, deps: false */
+/* global module: false, deps: false */
 
 var View = deps('ampersand-view');
 var Collection = deps('ampersand-collection');

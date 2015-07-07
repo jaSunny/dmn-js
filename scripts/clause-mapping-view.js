@@ -41,7 +41,7 @@ var MappingView = View.extend(merge({}, {
 
   _handleContextMenu: function (evt) {
     if (evt.defaultPrevented) { return; }
-    this.clauseExpressionEditor.show(this.model.language, this.model.source, this);
+    this.clauseExpressionEditor.show(this.model, this);
     evt.preventDefault();
   },
 

@@ -92,7 +92,8 @@ var defaultLanguage = [
     value: 'COBOL'
   },
   {
-    value: 'PHP'
+    value: 'PHP',
+    placeholder: 'return $obj[\'propertyName\'];'
   },
   {
     value: 'LISP'
@@ -104,7 +105,8 @@ var defaultLanguage = [
     value: 'C'
   },
   {
-    value: 'Javascript'
+    value: 'Javascript',
+    placeholder: 'return obj.propertyName;'
   },
   {
     value: 'Groovy'
@@ -170,7 +172,7 @@ var ClauseExpressionView = View.extend({
   session: {
     visible:      'boolean',
     big:          'boolean',
-    language:     {type: 'string', default: 'string'},
+    language:     {type: 'string', default: 'FEEL'},
     originalBox:  'any'
   },
 
@@ -204,25 +206,10 @@ var ClauseExpressionView = View.extend({
     visible: {
       type: 'toggle'
     },
-    language: {
-      type: function(el, val, prev) {
-        if (!this.languages.length) { return; }
-        var type;
-
-        if (prev) {
-          type = this.languages.get(prev);
-          if (type) {
-            el.classList.remove(type.offer);
-          }
-        }
-
-        if (val) {
-          type = this.languages.get(val);
-          if (type) {
-            el.classList.add(type.offer);
-          }
-        }
-      }
+    'model.placeholder': {
+      type: 'attribute',
+      selector: 'textarea',
+      name: 'placeholder'
     }
   },
 
@@ -337,27 +324,20 @@ var ClauseExpressionView = View.extend({
     this.originalBox = elBox(this.el);
   },
 
-  show: function (language, values, parent) {
+  show: function (model, parent) {
     if (parent && this.parent !== parent) {
       this.parent = parent;
     }
+    if (!model) {
+      return;
+    }
+    this.model = model;
 
     this.languages.reset(defaultLanguage);
 
-    if (this.language && !this.languageView.inputEl.value) {
-      this.languageView.inputEl.value = this.language;
+    if (this.model.language && !this.languageView.inputEl.value) {
+      this.languageView.inputEl.value = this.model.language;
     }
-
-    values = values || [];
-    var vals = (Array.isArray(values) ? values.map(function (val) {
-      return { value: val };
-    }) : values.toJSON())
-        .filter(function (item) {
-          return item.value;
-        });
-    vals.push({ value: '' });
-
-    this.possibleLanguages.reset(vals);
 
     instance.visible = true;
     if (this.parent) {

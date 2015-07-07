@@ -118,8 +118,11 @@ var ComboBoxView = View.extend({
     var code = evt.which || evt.keyCode;
     if (code === 9 || code === 40) {
       var views = this.suggestionsView.views;
-      views[evt.shiftKey ? views.length - 1 : 0].el.focus();
-      evt.preventDefault();
+      var view = views[evt.shiftKey ? views.length - 1 : 0];
+      if (view) {
+        view.el.focus();
+        evt.preventDefault();
+      }
     }
     else if (code === 27) { // esc
       this.collapse();

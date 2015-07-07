@@ -23,8 +23,8 @@ var ClauseModel = State.extend({
   props: {
     label:    'string',
     choices:  'array',
-    language: 'string',
-    soruces:  'string',
+    source:   'string',
+    language: {type: 'string', default: 'COBOL'},
     datatype: {type: 'string', default: 'string'}
   },
 
@@ -43,7 +43,7 @@ var ClauseModel = State.extend({
       ],
       // cache: false,
       fn: function () {
-        return 'TODO';
+        return this.language;
       }
     }
   }
