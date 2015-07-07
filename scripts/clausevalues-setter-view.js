@@ -435,7 +435,7 @@ ClauseValuesView.instance = function (suggestions, parent) {
 
 
 if (typeof window !== 'undefined') {
-  window.dmnClauseValuedEditor = ClauseValuesView.instance();
+  window.dmnClauseValuesEditor = ClauseValuesView.instance();
 }
 
 ClauseValuesView.Collection = ValuesCollection;

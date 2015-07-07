@@ -8,7 +8,7 @@
 
   .datatype,
   .allowed-values {
-    padding: 6px;
+    padding: @dmn-horizontal-padding;
     max-width: 100%;
   }
 
@@ -26,7 +26,7 @@
   .ranged-values {
     max-height: 0;
     overflow: hidden;
-    padding: 0 6px;
+    padding: 0 @dmn-horizontal-padding;
   }
 
   &.choices,
@@ -38,7 +38,7 @@
 
   &.choices .allowed-values,
   &.range .ranged-values {
-    padding: 6px;
+    padding: @dmn-horizontal-padding;
     max-height: 1000px;
   }
 
@@ -76,7 +76,7 @@
   input {
     border: 1px solid @dmn-gray;
     background-color: #fff;
-    padding: 3px 6px;
+    padding: @dmn-vertical-padding @dmn-horizontal-padding;
     .focused();
   }
 
@@ -84,8 +84,8 @@
     color: @dmn-gray-darker;
     min-width: 50px;
     font-weight: lighter;
-    padding: 3px 0;
-    margin-right: 6px;
+    padding: @dmn-vertical-padding 0;
+    margin-right: @dmn-horizontal-padding;
   }
 
   ul {
@@ -95,7 +95,7 @@
   }
 
   li {
-    margin: 3px 0 0 0;
+    margin: @dmn-vertical-padding 0 0 0;
     padding: 0;
   }
 }

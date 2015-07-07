@@ -133,6 +133,18 @@
       "css": "menu",
       "code": 59407,
       "src": "entypo"
+    },
+    {
+      "uid": "776687efbdb973ebc67e049cc4c41b13",
+      "css": "resize-big",
+      "code": 59412,
+      "src": "iconic"
+    },
+    {
+      "uid": "8596dc69a5e7e0297e8926b6e2563509",
+      "css": "resize-small",
+      "code": 59413,
+      "src": "iconic"
     }
   ]
 }

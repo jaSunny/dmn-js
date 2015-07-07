@@ -1033,8 +1033,9 @@
       var dmnTables = {};
       selectAll('.dmn-table').forEach(function (dt) {
         var tableView = new DecisionTable({
-          contextMenu:        window.dmnContextMenu,
-          clauseValuesEditor: window.dmnClauseValuedEditor,
+          contextMenu:            window.dmnContextMenu,
+          clauseValuesEditor:     window.dmnClauseValuesEditor,
+          clauseExpressionEditor: window.dmnClauseExpressionEditor,
 
           el: dt
         });
@@ -1044,8 +1045,9 @@
       var fromScratchContainer = document.querySelector('#from-scratch');
 
       var tableView = new DecisionTable({
-        contextMenu:        window.dmnContextMenu,
-        clauseValuesEditor: window.dmnClauseValuedEditor,
+        contextMenu:            window.dmnContextMenu,
+        clauseValuesEditor:     window.dmnClauseValuesEditor,
+        clauseExpressionEditor: window.dmnClauseExpressionEditor,
 
         model: new DecisionTableModel({
           // name: 'Brand new table',

@@ -1,7 +1,19 @@
 .dmn-combobox {
   position: relative;
 
+  display: table;
+  width: 100%;
+
+  label,
   input {
+    display: table-cell;
+    vertical-align: middle;
+  }
+
+  input {
+    .focused();
+    padding: 3px 6px;
+    border: 1px solid;
     position: relative;
     z-index: 1;
   }

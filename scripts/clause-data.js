@@ -19,11 +19,12 @@ var ClauseModel = State.extend({
     })
   },
   */
-  
+
   props: {
     label:    'string',
     choices:  'array',
-    mapping:  'string',
+    language: 'string',
+    soruces:  'string',
     datatype: {type: 'string', default: 'string'}
   },
 
@@ -31,6 +32,19 @@ var ClauseModel = State.extend({
     editable: {
       type: 'boolean',
       default: true
+    }
+  },
+
+  derived: {
+    mapping: {
+      deps: [
+        'language',
+        'source'
+      ],
+      // cache: false,
+      fn: function () {
+        return 'TODO';
+      }
     }
   }
 });

@@ -1,17 +1,18 @@
 'use strict';
-/* global module: false, deps: false */
+/* global module: false, deps: false, require: false */
 
 var View = deps('ampersand-view');
 var merge = deps('lodash.merge');
+var contextViewsMixin = require('./context-views-mixin');
 
 
 
 var MappingView = View.extend(merge({}, {
   events: {
-    'input': '_handleInput',
+    'contextmenu': '_handleContextMenu'
   },
 
-  derived: {
+  derived: merge({}, contextViewsMixin, {
     table: {
       deps: [
         'model',
@@ -23,7 +24,7 @@ var MappingView = View.extend(merge({}, {
         return this.model.collection.parent;
       }
     }
-  },
+  }),
 
   bindings: {
     'model.mapping': {
@@ -38,8 +39,14 @@ var MappingView = View.extend(merge({}, {
     this.model.mapping = this.el.textContent.trim();
   },
 
+  _handleContextMenu: function (evt) {
+    if (evt.defaultPrevented) { return; }
+    this.clauseExpressionEditor.show(this.model.language, this.model.source, this);
+    evt.preventDefault();
+  },
+
   initialize: function () {
-    this.el.setAttribute('contenteditable', true);
+    // this.el.setAttribute('contenteditable', true);
     this.el.textContent = (this.model.mapping || '').trim();
   }
 }));

@@ -35,7 +35,7 @@ var SuggestionView = View.extend({
 
   _handleClick: function () {
     this.parent.inputEl.value = this.parent.value = this.model.value;
-    this.parent.suggestionsEl.style.display = 'none';
+    this.parent.collapse();
   },
 
   _handleFocus: function () {
@@ -122,7 +122,7 @@ var ComboBoxView = View.extend({
       evt.preventDefault();
     }
     else if (code === 27) { // esc
-      this.suggestionsEl.style.display = 'none';
+      this.collapse();
     }
   },
 
@@ -206,8 +206,11 @@ var ComboBoxView = View.extend({
 
     this.suggestionsEl.style.display = display;
     if (display === 'none') {
+      this.el.classList.remove('expanded');
       return;
     }
+
+    this.el.classList.add('expanded');
 
     this.setPosition();
 

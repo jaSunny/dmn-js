@@ -1,26 +1,22 @@
 'use strict';
 /*global module: false*/
-module.exports = {
-  clauseValuesEditor: {
+
+var mixins = module.exports = {};
+
+[
+  'clauseValuesEditor',
+  'clauseExpressionEditor',
+  'contextMenu'
+].forEach(function (name) {
+  mixins[name] = {
     cache: false,
     fn: function () {
       var current = this;
       while ((current = current.parent)) {
-        if (current.clauseValuesEditor) {
-          return current.clauseValuesEditor;
+        if (current[name]) {
+          return current[name];
         }
       }
     }
-  },
-  contextMenu: {
-    cache: false,
-    fn: function () {
-      var current = this;
-      while ((current = current.parent)) {
-        if (current.contextMenu) {
-          return current.contextMenu;
-        }
-      }
-    }
-  }
-};
+  };
+});

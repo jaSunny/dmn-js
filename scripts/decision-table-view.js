@@ -112,8 +112,9 @@ var DecisionTableView = View.extend({
             '</div>',
 
   session: {
-    contextMenu:        'state',
-    clauseValuesEditor: 'state',
+    contextMenu:            'state',
+    clauseValuesEditor:     'state',
+    clauseExpressionEditor: 'state',
 
     hint: {
       type: 'string',

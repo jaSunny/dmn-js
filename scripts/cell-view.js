@@ -96,6 +96,10 @@ var RuleCellView = View.extend(merge({}, ChoiceView.prototype, {
         this.parent.parent.clauseValuesEditor.hide();
       }
 
+      if (this.parent.parent.clauseExpressionEditor) {
+        this.parent.parent.clauseExpressionEditor.hide();
+      }
+
       if (Element.prototype.contains && document.activeElement.contains(this.editableEl())) {
         this._focusPseudo();
       }
