@@ -3,6 +3,7 @@
 
 module.exports = function(grunt) {
   require('load-grunt-tasks')(grunt);
+  grunt.task.loadTasks('node_modules/styles-editor/tasks');
 
   grunt.initConfig({
     less: {
@@ -24,6 +25,14 @@ module.exports = function(grunt) {
           'dist/styles.css':        'styles/styles.less',
           'dist/dev.css':           'styles/dev.less',
           'dist/normalize.css':     'node_modules/bootstrap/less/normalize.less'
+        }
+      }
+    },
+
+    'extract-less-variables': {
+      styles: {
+        files: {
+          'dist/styles-variables.json': 'styles/dmn-variables.less'
         }
       }
     },
