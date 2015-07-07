@@ -5,7 +5,7 @@
   min-width: 180px;
 
   .coordinates {
-    padding: 3px 6px;
+    padding: @dmn-vertical-padding @dmn-horizontal-padding;
     display: none;
   }
 
@@ -69,8 +69,8 @@
   }
 
   > ul > li {
-    padding-top: 3px;
-    padding-bottom: 3px;
+    padding-top: @dmn-vertical-padding;
+    padding-bottom: @dmn-vertical-padding;
     border-bottom: 1px dotted @dmn-gray-light;
     &:last-child {
       border-bottom: none;

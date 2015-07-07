@@ -134,8 +134,8 @@
 
 .links-item(@color:           @dmn-primary,
             @bg-color:        @dmn-gray-light,
-            @pad-horizontal:  3px,
-            @pad-vertical:    6px) {
+            @pad-horizontal:  @dmn-vertical-padding,
+            @pad-vertical:    @dmn-horizontal-padding) {
   .link(@color);
   display: block;
   padding: @pad-horizontal @pad-vertical;
