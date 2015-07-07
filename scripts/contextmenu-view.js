@@ -383,8 +383,13 @@ var ContextMenuView = View.extend({
     style.top = options.top + 'px';
 
     this.isOpen = true;
-    if (options.parent && options.parent.clauseValuesEditor) {
-      options.parent.clauseValuesEditor.hide();
+    if (options.parent) {
+      if (options.parent.clauseValuesEditor) {
+        options.parent.clauseValuesEditor.hide();
+      }
+      if (options.parent.clauseExpressionEditor) {
+        options.parent.clauseExpressionEditor.hide();
+      }
     }
 
     this.scope = options.scope;

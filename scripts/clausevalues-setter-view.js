@@ -376,8 +376,13 @@ var ClauseValuesView = View.extend({
     this.possibleValues.reset(vals);
 
     instance.visible = true;
-    if (this.parent && this.parent.contextMenu) {
-      this.parent.contextMenu.close();
+    if (this.parent) {
+      if (this.parent.contextMenu) {
+        this.parent.contextMenu.close();
+      }
+      if (this.parent.clauseExpressionEditor) {
+        this.parent.clauseExpressionEditor.hide();
+      }
     }
 
     if (instance.visible) {

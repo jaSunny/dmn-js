@@ -360,8 +360,13 @@ var ClauseExpressionView = View.extend({
     this.possibleLanguages.reset(vals);
 
     instance.visible = true;
-    if (this.parent && this.parent.contextMenu) {
-      this.parent.contextMenu.close();
+    if (this.parent) {
+      if (this.parent.contextMenu) {
+        this.parent.contextMenu.close();
+      }
+      if (this.parent.clauseValuesEditor) {
+        this.parent.clauseValuesEditor.hide();
+      }
     }
 
     if (instance.visible) {
