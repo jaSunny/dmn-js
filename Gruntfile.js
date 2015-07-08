@@ -14,12 +14,6 @@ module.exports = function(grunt) {
         ]
       },
 
-      editor: {
-        files: {
-          'dist/styles-editor.css': 'node_modules/styles-editor/styles/styles-editor.less'
-        }
-      },
-
       styles: {
         files: {
           'dist/styles.css':        'styles/styles.less',
@@ -68,25 +62,6 @@ module.exports = function(grunt) {
         files: {
           'dist/scripts.js': 'scripts/index.js'
         }
-      },
-
-      editor: {
-        options: {
-          ignore: [
-            './dependencies'
-          ],
-          exclude: [
-            './dependencies'
-          ],
-          browserifyOptions: {
-            standalone: 'StylesEditor',
-            list: true,
-            debug: true
-          }
-        },
-        files: {
-          'dist/styles-editor.js': 'node_modules/styles-editor/scripts/styles-editor.js'
-        }
       }
     },
 
@@ -112,32 +87,26 @@ module.exports = function(grunt) {
       html: {
         files: [
           {src: 'index.html', dest: 'dist/index.html'},
-          {src: 'favicon.ico', dest: 'dist/favicon.ico'}
+          {src: 'favicon.ico', dest: 'dist/favicon.ico'},
+          {src: 'scripts/app.js', dest: 'dist/app.js'},
+          {src: 'images/contextmenu-cursor.png', dest: 'dist/contextmenu-cursor.png'}
         ]
       },
-      images: {
+      editor: {
         files: [
-          {src: 'images/contextmenu-cursor.png', dest: 'dist/contextmenu-cursor.png'}
+          {src: 'node_modules/styles-editor/dist/styles-editor.js', dest: 'dist/styles-editor.js'},
+          {src: 'node_modules/styles-editor/dist/styles-editor.css', dest: 'dist/styles-editor.css'}
         ]
       }
     },
 
     watch: {
-      editorScripts: {
+      editor: {
         files: [
-          'node_modules/styles-editor/scripts/**/*.js'
+          'node_modules/styles-editor/dist/styles-editor.{js,css}'
         ],
         tasks: [
-          'browserify:editor'
-        ]
-      },
-
-      editorStyles: {
-        files: [
-          'node_modules/styles-editor/styles/**/*.less'
-        ],
-        tasks: [
-          'less:editor'
+          'copy:editor'
         ]
       },
 
@@ -146,19 +115,24 @@ module.exports = function(grunt) {
           'styles/**/*.less'
         ],
         tasks: [
+          'extract-less-variables',
           'less:styles'
         ]
       },
 
       html: {
-        files: ['index.html'],
+        files: [
+          'index.html',
+          'scripts/app.js'
+        ],
         tasks: ['copy:html']
       },
 
       scripts: {
         files: [
           'scripts/**/*.js',
-          '!scripts/dependencies.js'
+          '!scripts/dependencies.js',
+          '!scripts/app.js'
         ],
         tasks: [
           'browserify:scripts'
@@ -167,7 +141,8 @@ module.exports = function(grunt) {
 
       dependencies: {
         files: [
-          'scripts/dependencies.js'
+          'scripts/dependencies.js',
+          '!scripts/app.js'
         ],
         tasks: [
           'browserify:dependencies'
@@ -188,6 +163,7 @@ module.exports = function(grunt) {
 
   grunt.registerTask('build', [
     'copy',
+    'extract-less-variables',
     'browserify',
     'less'
   ]);
