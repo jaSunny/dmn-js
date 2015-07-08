@@ -256,7 +256,7 @@ var ComboBoxView = View.extend({
   setVisible: function () {
     var display = 'block';
 
-    if (this.suggestions.length < 2) {
+    if (this.suggestions.length < 1) {
       display = 'none';
     }
 
