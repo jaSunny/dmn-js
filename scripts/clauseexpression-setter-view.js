@@ -248,18 +248,6 @@ var ClauseExpressionView = View.extend({
       this.parent.model.language = this.language;
     });
 
-    this.listenTo(this.possibleLanguages, 'all', function () {
-      if (!hasModel()) { return; }
-
-      this.parent.model.choices = this.possibleLanguages
-                                    .filter(function (item) {
-                                      return item.value;
-                                    })
-                                    .map(function (item) {
-                                      return item.value;
-                                    });
-    });
-
     this.on('change:big', function () {
       var style = this.el.style;
       var box;
@@ -271,9 +259,6 @@ var ClauseExpressionView = View.extend({
 
         style.width = box.width +'px';
         style.height = box.height +'px';
-
-        var labelHeight = this.sourceEl.parentNode.clientHeight - this.sourceEl.clientHeight;
-        this.sourceEl.style.height = (this.el.clientHeight - (this.languageEl.clientHeight + labelHeight)) + 'px';
       }
       else {
         this.el.classList.remove('big');
@@ -282,9 +267,9 @@ var ClauseExpressionView = View.extend({
 
         style.width = 'auto';
         style.height = 'auto';
-
-        this.sourceEl.style.height = null;
       }
+
+      this._resizeTextarea(box);
 
       style.top = box.top +'px';
       style.left = box.left +'px';
@@ -345,9 +330,7 @@ var ClauseExpressionView = View.extend({
       }
     }
 
-    if (instance.visible) {
-      this.setPosition();
-    }
+    this.setPosition();
 
     return this;
   },
@@ -367,10 +350,6 @@ var ClauseExpressionView = View.extend({
 
     this.sourceEl.setAttribute('id', this.cid);
     this.query('.source label').setAttribute('for', this.cid);
-
-    this.listenTo(this.possibleLanguages, 'change', function () {
-      this.trigger('change');
-    });
 
     return this;
   }

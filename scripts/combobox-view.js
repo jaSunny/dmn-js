@@ -5,9 +5,9 @@ var View = deps('ampersand-view');
 var Collection = deps('ampersand-collection');
 var State = deps('ampersand-state');
 
-function toArray(thing) {
-  return Array.prototype.slice.apply(thing);
-}
+// function toArray(thing) {
+//   return Array.prototype.slice.apply(thing);
+// }
 
 var SuggestionsCollection = Collection.extend({
   model: State.extend({
