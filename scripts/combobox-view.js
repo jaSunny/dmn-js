@@ -87,6 +87,12 @@ var ComboBoxView = View.extend({
     label: {
       type: 'text',
       selector: 'label'
+    },
+
+    placeholder: {
+      type: 'attribute',
+      name: 'placeholder',
+      selector: 'input'
     }
   },
 

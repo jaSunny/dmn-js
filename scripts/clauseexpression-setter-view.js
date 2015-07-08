@@ -73,7 +73,7 @@ var LanguagesCollection = Collection.extend({
   model: State.extend({
     props: {
       value: 'string',
-      offer: 'string'
+      placeholder: 'string'
     }
   })
 });
@@ -148,6 +148,9 @@ var ClauseExpressionView = View.extend({
 
         this.listenTo(comboboxView, 'change:value', function () {
           this.language = comboboxView.value;
+          var info = this.languages.get(this.language);
+          if (!info) { return; }
+          this.placeholder = info.placeholder || '';
         });
 
         this.on('change:visible', function () {
@@ -173,6 +176,7 @@ var ClauseExpressionView = View.extend({
     visible:      'boolean',
     big:          'boolean',
     language:     {type: 'string', default: 'FEEL'},
+    placeholder:  'string',
     originalBox:  'any'
   },
 
@@ -206,7 +210,7 @@ var ClauseExpressionView = View.extend({
     visible: {
       type: 'toggle'
     },
-    'model.placeholder': {
+    placeholder: {
       type: 'attribute',
       selector: 'textarea',
       name: 'placeholder'
@@ -293,51 +297,43 @@ var ClauseExpressionView = View.extend({
       return;
     }
 
-    var node = this.parent.el;
-    var top = node.offsetTop;
-    var left = node.offsetLeft;
     var helper = this.el;
+    var box = elBox(this.parent.el);
 
-    while ((node = node.offsetParent)) {
-      if (node.offsetTop) {
-        top += parseInt(node.offsetTop, 10);
-      }
-      if (node.offsetLeft) {
-        left += parseInt(node.offsetLeft, 10);
-      }
-    }
+    box.left += this.parent.el.clientWidth;
+    box.top -= 20;
 
-    left += this.parent.el.clientWidth;
-    top -= 20;
+    box.left += Math.min(document.body.clientWidth - (box.left + this.el.clientWidth), 0);
+    box.top += Math.min(document.body.clientHeight - (box.top + this.el.clientHeight), 0);
 
-    left += Math.min(document.body.clientWidth - (left + this.el.clientWidth), 0);
-    top += Math.min(document.body.clientHeight - (top + this.el.clientHeight), 0);
-
-    helper.style.position = 'absolute';
-    helper.style.top = top +'px';
-    helper.style.left = left +'px';
-
+    helper.style.top = box.top +'px';
+    helper.style.left = box.left +'px';
 
     if (this.languageView) {
       this.languageView.setPosition();
     }
+
     this.originalBox = elBox(this.el);
   },
 
+  _resizeTextarea: function (box) {
+    var labelHeight = this.sourceEl.parentNode.clientHeight - this.sourceEl.clientHeight;
+    this.sourceEl.style.height = (box.height - (this.languageEl.clientHeight + labelHeight)) + 'px';
+  },
+
   show: function (model, parent) {
-    if (parent && this.parent !== parent) {
-      this.parent = parent;
-    }
     if (!model) {
       return;
+    }
+    if (parent && this.parent !== parent) {
+      this.parent = parent;
     }
     this.model = model;
 
     this.languages.reset(defaultLanguage);
 
-    if (this.model.language && !this.languageView.inputEl.value) {
-      this.languageView.inputEl.value = this.model.language;
-    }
+    this.languageView.inputEl.value = this.model.language || '';
+
 
     instance.visible = true;
     if (this.parent) {

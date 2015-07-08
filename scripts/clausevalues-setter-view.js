@@ -41,7 +41,7 @@ var ValuesCollection = Collection.extend({
 });
 
 var ValuesItemView = View.extend({
-  template: '<li><input tabindex="1" /></li>',
+  template: '<li><input tabindex="1" placeholder="An other possible value" /></li>',
 
   session: {
     invalid: 'boolean'
@@ -261,26 +261,44 @@ var ClauseValuesView = View.extend({
     visible: {
       type: 'toggle'
     },
-    datatype: {
-      type: function(el, val, prev) {
-        if (!this.datatypes.length) { return; }
-        var type;
+    datatype: [
+      {
+        type: function(el, val, prev) {
+          if (!this.datatypes.length) { return; }
+          var type;
 
-        if (prev) {
-          type = this.datatypes.get(prev);
-          if (type) {
-            el.classList.remove(type.offer);
+          if (prev) {
+            type = this.datatypes.get(prev);
+            if (type) {
+              el.classList.remove(type.offer);
+            }
+          }
+
+          if (val) {
+            type = this.datatypes.get(val);
+            if (type) {
+              el.classList.add(type.offer);
+            }
           }
         }
-
-        if (val) {
-          type = this.datatypes.get(val);
-          if (type) {
-            el.classList.add(type.offer);
-          }
+      },
+      {
+        selector: '.min input',
+        type: function (el, val) {
+          var before = new Date();
+          before.setFullYear(before.getFullYear() - 1);
+          el.setAttribute('placeholder', val === 'date' ? before.toISOString().split('.').shift() : '');
+        }
+      },
+      {
+        selector: '.max input',
+        type: function (el, val) {
+          var after = new Date();
+          after.setFullYear(after.getFullYear() + 1);
+          el.setAttribute('placeholder', val === 'date' ? after.toISOString().split('.').shift() : '');
         }
       }
-    }
+    ]
   },
 
   events: {
