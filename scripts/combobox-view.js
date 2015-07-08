@@ -44,10 +44,13 @@ var SuggestionView = View.extend({
 
   _handleKeydown: function (evt) {
     var code = evt.which || evt.keyCode;
+    // enter
     if (code === 13) {
       this._handleClick();
       evt.preventDefault();
     }
+
+    // tab
     else if (code === 9) {
       var next = this.el[evt.shiftKey ? 'previousSibling' : 'nextSibling'];
       if (!next) {
@@ -56,11 +59,35 @@ var SuggestionView = View.extend({
       evt.preventDefault();
       next.focus();
     }
+
+    // down
+    else if (code === 40) {
+      var next = this.el.nextSibling;
+      if (!next) {
+        next = this.parent.inputEl;
+      }
+      evt.preventDefault();
+      next.focus();
+    }
+
+    // up
+    else if (code === 38) {
+      var next = this.el.previousSibling;
+      if (!next) {
+        next = this.parent.inputEl;
+      }
+      evt.preventDefault();
+      next.focus();
+    }
+
+    // esc
     else if (code === 27) {
       this.el.parentNode.style.display = 'none';
     }
   }
 });
+
+
 
 var ComboBoxView = View.extend({
   template: '<div class="dmn-combobox">' +
@@ -104,6 +131,16 @@ var ComboBoxView = View.extend({
     'click .caret':   '_handleCaretClick'
   },
 
+  derived: {
+    expanded: {
+      deps: [],
+      cache: false,
+      fn: function () {
+        return this.suggestionsEl.style.display !== 'none';
+      }
+    }
+  },
+
   _handleFocus: function () {
     this.setPosition();
 
@@ -122,15 +159,25 @@ var ComboBoxView = View.extend({
 
   _handleKeydown: function (evt) {
     var code = evt.which || evt.keyCode;
-    if (code === 9 || code === 40) {
+    if (code === 9 || code === 40 || code === 38) {
       var views = this.suggestionsView.views;
-      var view = views[evt.shiftKey ? views.length - 1 : 0];
+      var view = views[evt.shiftKey || code === 38 ? views.length - 1 : 0];
       if (view) {
+        if (!this.expanded) {
+          this.expand();
+        }
         view.el.focus();
         evt.preventDefault();
       }
     }
-    else if (code === 27) { // esc
+
+    // enter
+    else if (code === 13) {
+      this.toggle();
+    }
+
+    // esc
+    else if (code === 27) {
       this.collapse();
     }
   },
@@ -140,7 +187,7 @@ var ComboBoxView = View.extend({
   },
 
   expand: function () {
-    if (this.suggestionsEl.style.display === 'none') {
+    if (!this.expanded) {
       this.suggestions.reset(this.collection.toJSON());
       this.el.classList.add('expanded');
     }
@@ -148,7 +195,7 @@ var ComboBoxView = View.extend({
   },
 
   collapse: function () {
-    if (this.suggestionsEl.style.display !== 'none') {
+    if (this.expanded) {
       this.suggestionsEl.style.display = 'none';
       this.el.classList.remove('expanded');
     }
@@ -156,7 +203,7 @@ var ComboBoxView = View.extend({
   },
 
   toggle: function () {
-    this[this.suggestionsEl.style.display === 'none' ? 'expand' : 'collapse']();
+    this[this.expanded ? 'collapse' : 'expand']();
     return this;
   },
 
