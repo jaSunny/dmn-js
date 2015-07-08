@@ -47,6 +47,9 @@ var LabelView = View.extend(merge({}, {
   },
 
   _handleFocus: function () {
+    this.contextMenu.close();
+    this.clauseExpressionEditor.hide();
+    this.clauseValuesEditor.hide();
     this.table.x = this.model.x;
     this.table.trigger('change:focus');
   },

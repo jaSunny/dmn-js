@@ -7,7 +7,8 @@ var contextViewsMixin = require('./context-views-mixin');
 
 var ValueView = View.extend(merge({}, {
   events: {
-    'contextmenu':    '_handleContextMenu'
+    'contextmenu':    '_handleContextMenu',
+    'click':          '_handleClick'
   },
 
   derived: merge({}, contextViewsMixin, {
@@ -35,6 +36,12 @@ var ValueView = View.extend(merge({}, {
         this._renderContent(el);
       }
     }
+  },
+
+  _handleClick: function () {
+    this.contextMenu.close();
+    this.clauseExpressionEditor.hide();
+    this.clauseValuesEditor.hide();
   },
 
   _renderContent: function (el) {

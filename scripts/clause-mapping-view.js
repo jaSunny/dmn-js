@@ -9,7 +9,8 @@ var contextViewsMixin = require('./context-views-mixin');
 
 var MappingView = View.extend(merge({}, {
   events: {
-    'contextmenu': '_handleContextMenu'
+    'contextmenu': '_handleContextMenu',
+    'click':       '_handleClick'
   },
 
   derived: merge({}, contextViewsMixin, {
@@ -33,6 +34,12 @@ var MappingView = View.extend(merge({}, {
         el.textContent = (val || '').trim();
       }
     }
+  },
+
+  _handleClick: function () {
+    this.contextMenu.close();
+    this.clauseExpressionEditor.hide();
+    this.clauseValuesEditor.hide();
   },
 
   _handleInput: function () {
