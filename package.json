@@ -19,6 +19,7 @@
   ],
   "author": "Valentin Vago <zeropaper@irata.ch>",
   "license": "https://raw.githubusercontent.com/dmn-io/dmn-js/blob/design-table/LICENSE",
+  "masterBranchDir": "./../dmn-js-master",
   "devDependencies": {
     "ampersand-collection": "^1.4.5",
     "ampersand-state": "^4.5.6",

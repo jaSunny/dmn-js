@@ -1,9 +1,22 @@
 /* jshint node: true */
 'use strict';
 
+var path = require('path');
+
 module.exports = function(grunt) {
   require('load-grunt-tasks')(grunt);
   grunt.task.loadTasks('node_modules/styles-editor/tasks');
+
+  var pkg = grunt.file.readJSON('./package.json');
+
+  grunt.registerTask('copyLess2master', function () {
+    if (!pkg.masterBranchDir) { return; }
+    var dest = path.join(pkg.masterBranchDir, 'styles');
+
+    grunt.file.expand({cwd: 'styles'}, 'dmn-*.less').forEach(function (filename) {
+      grunt.file.copy(path.join('styles', filename), path.join(dest, filename));
+    });
+  });
 
   grunt.initConfig({
     less: {
@@ -15,7 +28,7 @@ module.exports = function(grunt) {
 
       styles: {
         files: {
-          'dist/styles.css':        'styles/styles.less',
+          'dist/dmn-js.css':        'styles/dmn-js.less',
           'dist/dev.css':           'styles/dev.less',
           'dist/normalize.css':     'node_modules/bootstrap/less/normalize.less'
         }
@@ -117,6 +130,7 @@ module.exports = function(grunt) {
         tasks: [
           'extract-less-variables',
           'copy:less',
+          'copyLess2master',
           'less:styles'
         ]
       },
