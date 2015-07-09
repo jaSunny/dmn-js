@@ -104,8 +104,8 @@ var DecisionTableView = View.extend({
                     '<th class="annotation" rowspan="4">Annotation</th>' +
                   '</tr>' +
                   '<tr class="labels"></tr>' +
-                  '<tr class="values"></tr>' +
                   '<tr class="mappings"></tr>' +
+                  '<tr class="values"></tr>' +
                 '</thead>' +
                 '<tbody></tbody>' +
               '</table>' +

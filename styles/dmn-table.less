@@ -111,7 +111,7 @@
 
     .values,
     .mappings {
-      background-color: @dmn-gray-light;
+      background-color: lighten(@dmn-gray-light, 6%);
       color: #fff;
       .input,
       .output {
@@ -124,8 +124,7 @@
 
     .mappings {
       font-family: monospace;
-      background-color: lighten(@dmn-gray-light, 6%);
-      color: #fff;
+      background-color: @dmn-gray-light;
     }
 
     .labels td:empty:before {
@@ -172,13 +171,20 @@
     }
   }
 
-  .labels td,
-  .values td,
-  .mappings td,
-  tbody .input,
-  tbody .output,
-  tbody .number {
-    cursor: url(contextmenu-cursor.png), context-menu;
+  // .labels td,
+  // .values td,
+  // .mappings td,
+  // tbody .input,
+  // tbody .output,
+  // tbody .number {
+  //   cursor: url(contextmenu-cursor.png), context-menu;
+  // }
+
+  .mappings,
+  .values {
+    td {
+      cursor: pointer;
+    }
   }
 
   tfoot {

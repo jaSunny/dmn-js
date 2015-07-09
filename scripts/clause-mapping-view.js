@@ -9,7 +9,7 @@ var contextViewsMixin = require('./context-views-mixin');
 
 var MappingView = View.extend(merge({}, {
   events: {
-    'contextmenu': '_handleContextMenu',
+    // 'contextmenu': '_handleContextMenu',
     'click':       '_handleClick'
   },
 
@@ -38,7 +38,7 @@ var MappingView = View.extend(merge({}, {
 
   _handleClick: function () {
     this.contextMenu.close();
-    this.clauseExpressionEditor.hide();
+    this.clauseExpressionEditor.show(this.model, this);
     this.clauseValuesEditor.hide();
   },
 
@@ -46,11 +46,11 @@ var MappingView = View.extend(merge({}, {
     this.model.mapping = this.el.textContent.trim();
   },
 
-  _handleContextMenu: function (evt) {
-    if (evt.defaultPrevented) { return; }
-    this.clauseExpressionEditor.show(this.model, this);
-    evt.preventDefault();
-  },
+  // _handleContextMenu: function (evt) {
+  //   if (evt.defaultPrevented) { return; }
+  //   this.clauseExpressionEditor.show(this.model, this);
+  //   evt.preventDefault();
+  // },
 
   initialize: function () {
     // this.el.setAttribute('contenteditable', true);

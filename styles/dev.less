@@ -22,6 +22,15 @@ body {
     background-color: @dmn-gray-lighter;
     z-index: 999;
     border-bottom: 1px solid @dmn-gray-light;
+    &:after {
+      position: absolute;
+      bottom: 0;
+      content: '';
+      width: 100%;
+      left: 0;
+      height: 1px;
+      background-color: #fff;
+    }
 
     ul,
     li {
@@ -109,4 +118,5 @@ body {
 
 body > .styles-editor {
   top: 31px;
+  z-index: 998;
 }

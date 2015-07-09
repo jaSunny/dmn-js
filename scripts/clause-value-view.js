@@ -7,7 +7,7 @@ var contextViewsMixin = require('./context-views-mixin');
 
 var ValueView = View.extend(merge({}, {
   events: {
-    'contextmenu':    '_handleContextMenu',
+    // 'contextmenu':    '_handleContextMenu',
     'click':          '_handleClick'
   },
 
@@ -38,10 +38,16 @@ var ValueView = View.extend(merge({}, {
     }
   },
 
+  // _handleContextMenu: function (evt) {
+  //   if (evt.defaultPrevented) { return; }
+  //   this.clauseValuesEditor.show(this.model.datatype, this.model.choices, this);
+  //   evt.preventDefault();
+  // },
+
   _handleClick: function () {
     this.contextMenu.close();
     this.clauseExpressionEditor.hide();
-    this.clauseValuesEditor.hide();
+    this.clauseValuesEditor.show(this.model.datatype, this.model.choices, this);
   },
 
   _renderContent: function (el) {
@@ -54,12 +60,6 @@ var ValueView = View.extend(merge({}, {
       str = this.model.datatype;
     }
     el.textContent = str;
-  },
-
-  _handleContextMenu: function (evt) {
-    if (evt.defaultPrevented) { return; }
-    this.clauseValuesEditor.show(this.model.datatype, this.model.choices, this);
-    evt.preventDefault();
   }
 }));
 
