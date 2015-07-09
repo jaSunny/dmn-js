@@ -11,10 +11,12 @@ module.exports = function(grunt) {
 
   grunt.registerTask('copyLess2master', function () {
     if (!pkg.masterBranchDir) { return; }
-    var dest = path.join(pkg.masterBranchDir, 'styles');
-
     grunt.file.expand({cwd: 'styles'}, 'dmn-*.less').forEach(function (filename) {
-      grunt.file.copy(path.join('styles', filename), path.join(dest, filename));
+      grunt.file.copy(path.join('styles', filename), path.join(pkg.masterBranchDir, 'styles', filename));
+    });
+
+    grunt.file.expand({cwd: 'fonts'}, '**.*').forEach(function (filename) {
+      grunt.file.copy(path.join('fonts', filename), path.join(pkg.masterBranchDir, 'fonts', filename));
     });
   });
 
