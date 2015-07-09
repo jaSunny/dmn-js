@@ -90,8 +90,12 @@ module.exports = function(grunt) {
         files: [
           {src: 'node_modules/styles-editor/dist/styles-editor.js', dest: 'dist/styles-editor.js'},
           {src: 'node_modules/styles-editor/dist/styles-editor.css', dest: 'dist/styles-editor.css'},
-          {cwd: 'styles/', src: '*.less', expand: true, dest: 'dist/'},
           {cwd: 'node_modules/', src: 'bootstrap/less/**/*.less', expand: true, dest: 'dist/'}
+        ]
+      },
+      less: {
+        files: [
+          {cwd: 'styles/', src: '*.less', expand: true, dest: 'dist/'}
         ]
       }
     },
@@ -112,6 +116,7 @@ module.exports = function(grunt) {
         ],
         tasks: [
           'extract-less-variables',
+          'copy:less',
           'less:styles'
         ]
       },
