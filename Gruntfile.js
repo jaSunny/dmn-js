@@ -150,7 +150,8 @@ module.exports = function(grunt) {
           livereload: 9998
         },
         files: [
-          'dist/**.*'
+          'dist/**.*',
+          '!dist/**.json'
         ],
         tasks: []
       }
