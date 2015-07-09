@@ -9,7 +9,6 @@ module.exports = function(grunt) {
     less: {
       options: {
         paths: [
-          'node_modules/bootstrap/less',
           'node_modules'
         ]
       },
@@ -70,12 +69,7 @@ module.exports = function(grunt) {
         options: {
           port: 9999,
           livereload: 9998,
-          base: [
-            'dist',
-            'styles',
-            'node_modules/grunt-contrib-less/node_modules/less/dist',
-            'node_modules/bootstrap/less'
-          ]
+          base: ['dist']
         }
       }
     },
@@ -95,7 +89,9 @@ module.exports = function(grunt) {
       editor: {
         files: [
           {src: 'node_modules/styles-editor/dist/styles-editor.js', dest: 'dist/styles-editor.js'},
-          {src: 'node_modules/styles-editor/dist/styles-editor.css', dest: 'dist/styles-editor.css'}
+          {src: 'node_modules/styles-editor/dist/styles-editor.css', dest: 'dist/styles-editor.css'},
+          {cwd: 'styles/', src: '*.less', expand: true, dest: 'dist/'},
+          {cwd: 'node_modules/', src: 'bootstrap/less/**/*.less', expand: true, dest: 'dist/'}
         ]
       }
     },
