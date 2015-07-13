@@ -84,8 +84,8 @@ var SuggestionsView = View.extend({
     }
 
     top -= helper.clientHeight;
-    helper.style.top = top;
-    helper.style.left = left;
+    helper.style.top = top +'px';
+    helper.style.left = left +'px';
   },
 
   show: function (suggestions, parent, force) {
