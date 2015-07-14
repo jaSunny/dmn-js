@@ -57,8 +57,12 @@
 
   td,
   th {
+    overflow: hidden;
+    text-overflow: ellipsis;
     [contenteditable] {
       .empty();
+      overflow: hidden;
+      text-overflow: ellipsis;
       display: block;
       overflow: hidden;
       text-overflow: ellipsis;
@@ -170,15 +174,6 @@
       }
     }
   }
-
-  // .labels td,
-  // .values td,
-  // .mappings td,
-  // tbody .input,
-  // tbody .output,
-  // tbody .number {
-  //   cursor: url(contextmenu-cursor.png), context-menu;
-  // }
 
   .mappings,
   .values {

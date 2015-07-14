@@ -115,6 +115,19 @@ module.exports = function(grunt) {
       }
     },
 
+    exorcise: {
+      scripts: {
+        files: {
+          'dist/scripts.map': ['dist/scripts.js'],
+        }
+      },
+      dependencies: {
+        files: {
+          'dist/dependencies.map': ['dist/dependencies.js'],
+        }
+      }
+    },
+
     watch: {
       editor: {
         files: [
@@ -152,7 +165,8 @@ module.exports = function(grunt) {
           '!scripts/app.js'
         ],
         tasks: [
-          'browserify:scripts'
+          'browserify:scripts',
+          'exorcise:scripts'
         ]
       },
 
@@ -162,7 +176,8 @@ module.exports = function(grunt) {
           '!scripts/app.js'
         ],
         tasks: [
-          'browserify:dependencies'
+          'browserify:dependencies',
+          'exorcise:dependencies'
         ]
       },
 
@@ -182,6 +197,7 @@ module.exports = function(grunt) {
     'copy',
     'extract-less-variables',
     'browserify',
+    'exorcise',
     'less'
   ]);
 

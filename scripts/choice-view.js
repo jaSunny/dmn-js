@@ -1,14 +1,13 @@
 'use strict';
 /* global deps: false, require: false, module: false */
 var View = deps('ampersand-view');
+var keyBus = require('./keybus');
 
 var SuggestionsView = require('./suggestions-view');
 
 var suggestionsView = SuggestionsView.instance();
 
-var specialKeys = [
-  8 // backspace
-];
+var specialKeys = Object.keys(keyBus.keyCodes);
 
 var ChoiceView = View.extend({
   collections: {
@@ -16,8 +15,8 @@ var ChoiceView = View.extend({
   },
 
   events: {
-    input: '_handleInput',
-    'input [contenteditable]': '_handleInput',
+    keyup: '_handleInput',
+    'keyup [contenteditable]': '_handleInput',
     focus: '_handleFocus',
     'focus [contenteditable]': '_handleFocus'
   },
@@ -114,8 +113,8 @@ var ChoiceView = View.extend({
     return filtered;
   },
 
-  _handleFocus: function () {
-    this._handleInput();
+  _handleFocus: function (evt) {
+    this._handleInput(evt);
   },
 
   _handleResize: function () {

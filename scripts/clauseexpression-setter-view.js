@@ -83,28 +83,6 @@ var LanguagesCollection = Collection.extend({
 
 var defaultLanguage = [
   {
-    value: 'FEEL'
-  },
-  {
-    value: 'LUA'
-  },
-  {
-    value: 'COBOL'
-  },
-  {
-    value: 'PHP',
-    placeholder: 'return $obj[\'propertyName\'];'
-  },
-  {
-    value: 'LISP'
-  },
-  {
-    value: 'Scala'
-  },
-  {
-    value: 'C'
-  },
-  {
     value: 'Javascript',
     placeholder: 'return obj.propertyName;'
   },
@@ -115,19 +93,35 @@ var defaultLanguage = [
     value: 'Python'
   },
   {
-    value: 'Perl'
+    value: 'Ruby'
   }
 ];
 
 
 var ClauseExpressionView = View.extend({
   template: '<div class="dmn-clauseexpression-setter">' +
-              '<div class="language"></div>' +
+              '<div class="expression region">' +
+                '<div class="row link">' +
+                  '<a class="toggle-script use-script">Use script</a>' +
+                  '<span class="icon-dmn icon-clear"></span>' +
+                '</div>' +
 
-              '<div class="source">' +
-                '<label>Source:</label>' +
-                '<textarea></textarea>' +
-                '<span class="toggle-editor-size"></span>' +
+                '<div class="row fields">' +
+                  '<label>Expression:</label>' +
+                  '<input placeholder="${propertyName}" />' +
+                '</div>' +
+              '</div>' +
+
+              '<div class="script region">' +
+                '<div class="row link">' +
+                  '<a class="toggle-script use-expression">Use expression</a>' +
+                  '<span class="icon-dmn icon-clear"></span>' +
+                '</div>' +
+
+                '<div class="row fields">' +
+                  '<div class="language"></div>' +
+                  '<textarea></textarea>' +
+                '</div>' +
               '</div>' +
             '</div>',
 
@@ -147,8 +141,11 @@ var ClauseExpressionView = View.extend({
         el.parentNode.replaceChild(cbEl, el);
 
         this.listenTo(comboboxView, 'change:value', function () {
-          this.language = comboboxView.value;
-          var info = this.languages.get(this.language);
+          if (this.model.mappingType !== 'script') { return; }
+
+          this.model.language = comboboxView.value;
+          var info = this.languages.get(this.model.language);
+
           if (!info) { return; }
           this.placeholder = info.placeholder || '';
         });
@@ -175,7 +172,6 @@ var ClauseExpressionView = View.extend({
   session: {
     visible:      'boolean',
     big:          'boolean',
-    language:     {type: 'string', default: 'FEEL'},
     placeholder:  'string',
     originalBox:  'any'
   },
@@ -210,44 +206,55 @@ var ClauseExpressionView = View.extend({
     visible: {
       type: 'toggle'
     },
+
     placeholder: {
       type: 'attribute',
       selector: 'textarea',
       name: 'placeholder'
+    },
+
+    'model.source': {
+      type: 'value',
+      selector: '.script textarea'
+    },
+
+    'model.expression': {
+      type: 'value',
+      selector: '.expression input'
     }
   },
 
   events: {
-    'change select':              '_handleLanguageChange',
-    'input textarea':             '_handleSourceInput',
-    'click .toggle-editor-size':  '_handleSizeClick'
+    'keyup .expression input':    '_handleExpressionChange',
+    'keyup .script textarea':     '_handleScriptChange',
+    'click .toggle-script':       '_handleScriptToggleClick',
+    'click .icon-clear':          '_handleClearClick'
   },
 
-  _handleLanguageChange: function () {
-    this.language = this.languageEl.value;
+  _handleExpressionChange: function () {
+    this.model.expression = this.expressionEl.value;
   },
 
-  _handleSourceInput: function () {
-
+  _handleScriptChange: function (evt) {
+    this.model.source = evt.target.value;
   },
 
-  _handleSizeClick: function () {
-    this.big = !this.big;
+  _handleScriptToggleClick: function (evt) {
+    if (evt.target.className.indexOf('use-script') > -1) {
+      this.model.mappingType = 'script';
+      this.big = true;
+    }
+    else {
+      this.model.mappingType = 'expression';
+      this.big = false;
+    }
+  },
+
+  _handleClearClick: function () {
+    this.hide();
   },
 
   initialize: function () {
-    var self = this;
-
-    function hasModel() {
-      return self.parent && self.parent.model && self.parent.model.language;
-    }
-
-    this.on('change:language', function () {
-      if (!hasModel()) { return; }
-
-      this.parent.model.language = this.language;
-    });
-
     this.on('change:big', function () {
       var style = this.el.style;
       var box;
@@ -269,10 +276,11 @@ var ClauseExpressionView = View.extend({
         style.height = 'auto';
       }
 
-      this._resizeTextarea(box);
-
-      style.top = box.top +'px';
-      style.left = box.left +'px';
+      if (box) {
+        this._resizeTextarea(box);
+        style.top = box.top +'px';
+        style.left = box.left +'px';
+      }
     });
   },
 
@@ -282,23 +290,21 @@ var ClauseExpressionView = View.extend({
       return;
     }
 
-    var helper = this.el;
+    this.originalBox = elBox(this.el);
+
     var box = elBox(this.parent.el);
 
-    box.left += this.parent.el.clientWidth;
-    box.top -= 20;
+    box.top -= this.el.clientHeight;
 
     box.left += Math.min(document.body.clientWidth - (box.left + this.el.clientWidth), 0);
     box.top += Math.min(document.body.clientHeight - (box.top + this.el.clientHeight), 0);
 
-    helper.style.top = box.top +'px';
-    helper.style.left = box.left +'px';
+    this.el.style.top = box.top +'px';
+    this.el.style.left = box.left +'px';
 
     if (this.languageView) {
       this.languageView.setPosition();
     }
-
-    this.originalBox = elBox(this.el);
   },
 
   _resizeTextarea: function (box) {
@@ -310,15 +316,16 @@ var ClauseExpressionView = View.extend({
     if (!model) {
       return;
     }
+
     if (parent && this.parent !== parent) {
       this.parent = parent;
     }
-    this.model = model;
+
+    if (this.model !== model) {
+      this.model = model;
+    }
 
     this.languages.reset(defaultLanguage);
-
-    this.languageView.inputEl.value = this.model.language || '';
-
 
     instance.visible = true;
     if (this.parent) {
@@ -336,6 +343,7 @@ var ClauseExpressionView = View.extend({
   },
 
   hide: function () {
+    this.big = false;
     this.visible = false;
     return this;
   },
@@ -344,12 +352,10 @@ var ClauseExpressionView = View.extend({
     this.renderWithTemplate();
 
     this.cacheElements({
-      languageEl: '.language',
-      sourceEl:   '.source textarea'
+      expressionEl: '.expression input',
+      languageEl:   '.language',
+      sourceEl:     '.script textarea'
     });
-
-    this.sourceEl.setAttribute('id', this.cid);
-    this.query('.source label').setAttribute('for', this.cid);
 
     return this;
   }

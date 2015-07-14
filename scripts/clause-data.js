@@ -8,43 +8,17 @@ var State = deps('ampersand-state');
 var Collection = deps('ampersand-collection');
 
 var ClauseModel = State.extend({
-  /*
-  collections: {
-    choices: Collection.extend({
-      model: State.extend({
-        props: {
-          value: 'string'
-        }
-      })
-    })
-  },
-  */
-
   props: {
-    label:    'string',
-    choices:  'array',
-    source:   'string',
-    language: {type: 'string', default: 'COBOL'},
-    datatype: {type: 'string', default: 'string'}
+    label:        'string',
+    choices:      'array',
+    datatype:     {type: 'string', default: 'string'},
+    expression:   'string'
   },
 
   session: {
     editable: {
       type: 'boolean',
       default: true
-    }
-  },
-
-  derived: {
-    mapping: {
-      deps: [
-        'language',
-        'source'
-      ],
-      // cache: false,
-      fn: function () {
-        return this.language;
-      }
     }
   }
 });
