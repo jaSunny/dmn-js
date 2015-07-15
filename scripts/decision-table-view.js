@@ -88,26 +88,28 @@ var DecisionTableView = View.extend({
   autoRender: true,
 
   template: '<div class="dmn-table">' +
-              '<div class="hints">' +
-                '<i class="icon-dmn icon-info"></i> ' +
-                '<span data-hook="hints"></span>' +
-              '</div>' +
+              '<span data-hook="controls"></span>' +
+
               '<header>' +
                 '<h3 data-hook="table-name" contenteditable></h3>' +
               '</header>' +
+
               '<table>' +
                 '<thead>' +
                   '<tr>' +
                     '<th class="hit" rowspan="4"></th>' +
-                    '<th class="input double-border-right" colspan="2">Input</th>' +
+                    '<th class="input" colspan="2">Input</th>' +
                     '<th class="output" colspan="2">Output</th>' +
                     '<th class="annotation" rowspan="4">Annotation</th>' +
                   '</tr>' +
+
                   '<tr class="labels"></tr>' +
                   '<tr class="mappings"></tr>' +
                   '<tr class="values"></tr>' +
                 '</thead>' +
+
                 '<tbody></tbody>' +
+
               '</table>' +
             '</div>',
 
