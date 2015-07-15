@@ -121,7 +121,9 @@ var DecisionTableView = View.extend({
     hint: {
       type: 'string',
       default: 'Make a right-click on the table'
-    }
+    },
+
+    scrollable: 'boolean'
   },
 
   bindings: {
@@ -132,6 +134,9 @@ var DecisionTableView = View.extend({
     hint: {
       type: 'innerHTML',
       hook: 'hints'
+    },
+    scrollable: {
+      type: 'booleanClass'
     }
   },
 
@@ -438,6 +443,54 @@ var DecisionTableView = View.extend({
     return this;
   },
 
+  _resizeBody: function () {
+    if (!this.el.parentNode) {
+      return;
+    }
+
+    var parentHeight = this.el.parentNode.clientHeight;
+    var nameHeight = this.tableNameEl.clientHeight;
+    var headHeight = this.headerEl.clientHeight;
+    var footHeight = this.footView.el.clientHeight;
+    var tableTop = this.tableEl.offsetTop + this.el.offsetTop;//this.tableEl.offsetTop + this.tableNameEl.offsetTop;
+
+
+    var availableHeight = parentHeight - (tableTop + nameHeight + headHeight + footHeight + 40);
+    var bodyHeight = this.bodyEl.clientHeight;
+
+    this.bodyEl.style.visibility = 'hidden';
+    this.bodyEl.style.height = 'auto';
+
+    var firstRow = this.queryAll('tbody tr:first-child td');
+    var footRow = this.footView.queryAll('td');
+    if (bodyHeight > availableHeight) {
+      this.bodyEl.style.height = availableHeight +'px';
+
+      this.scrollable = true;
+      firstRow[0].style.width = this.hitEl.clientWidth + 'px';
+      footRow[0].style.width = this.hitEl.clientWidth + 'px';
+      this.queryAll('thead tr:nth-child(2) td').forEach(function (th, i) {
+        // don't set the width of the last column
+        if (i === firstRow.length - 2) { return; }
+
+        var styles = getComputedStyle(firstRow[i + 1]);
+        var border = styles.getPropertyValue('border-left-width');
+        border = parseInt(border, 10);
+        // border = border === 1 ? border : border + 1;
+
+        firstRow[i + 1].style.width = th.clientWidth + border + 'px';
+        footRow[i + 1].style.width = th.clientWidth + border + 'px';
+      }, this);
+    }
+    else if (this.scrollable) {
+      this.scrollable = false;
+      firstRow.forEach(function (td, i) {
+        td.style.width = null;
+        footRow[i].style.width = null;
+      }, this);
+    }
+    this.bodyEl.style.visibility = 'visible';
+  },
 
   render: function () {
     if (!this.el) {
@@ -455,6 +508,7 @@ var DecisionTableView = View.extend({
         tableEl:          'table',
         tableNameEl:      'header h3',
         headerEl:         'thead',
+        hitEl:            'th.hit',
         bodyEl:           'tbody',
         inputsHeaderEl:   'thead tr:nth-child(1) th.input',
         outputsHeaderEl:  'thead tr:nth-child(1) th.output',
@@ -515,7 +569,6 @@ var DecisionTableView = View.extend({
       });
     }, this);
 
-
     this.bodyEl.innerHTML = '';
     this.rulesView = this.renderCollection(this.model.rules, RuleView, this.bodyEl);
 
@@ -529,6 +582,10 @@ var DecisionTableView = View.extend({
       this.tableEl.appendChild(this.footView.el);
     }
 
+    this.listenToAndRun(this.model.rules, 'all', this._resizeBody);
+    // window.addEventListener('resize', function () {
+    //   this._resizeBody();
+    // }.bind(this));
     return this;
   }
 });
