@@ -12,7 +12,14 @@ var ClauseModel = State.extend({
     label:        'string',
     choices:      'array',
     datatype:     {type: 'string', default: 'string'},
-    expression:   'string'
+    expression:   {
+      type: 'string',
+      test: function (val) {
+        if (/[^a-z0-9-_]+/ig.test(val)) {
+          return 'only alphanumeric charachters are allowed';
+        }
+      }
+    }
   },
 
   session: {

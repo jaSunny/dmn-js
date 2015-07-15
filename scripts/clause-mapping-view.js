@@ -9,7 +9,8 @@ var contextViewsMixin = require('./context-views-mixin');
 
 var MappingView = View.extend(merge({}, {
   events: {
-    'click':       '_handleClick'
+    'click': '_handleClick',
+    'keyup [contenteditable]': '_handleKeyup'
   },
 
   derived: merge({}, contextViewsMixin, {
@@ -35,7 +36,32 @@ var MappingView = View.extend(merge({}, {
         type: 'attribute',
         name: 'title'
       }
+    ],
+    'model.expression': {
+      type: function (el, value) {
+        if (el === document.activeElement) {
+          return;
+        }
+        el.textContent = value.trim();
+      },
+      selector: '[contenteditable]'
+    },
+
+    error: [
+      {
+        type: 'booleanClass',
+        name: 'invalid'
+      },
+      {
+        type: 'attribute',
+        name: 'title'
+      }
     ]
+  },
+
+  session: {
+    // invalid: 'boolean',
+    error: 'string'
   },
 
   _handleClick: function () {
@@ -49,12 +75,29 @@ var MappingView = View.extend(merge({}, {
     this.clauseValuesEditor.hide();
   },
 
-  _handleInput: function () {
-    this.model.mapping = this.el.textContent.trim();
+  _handleKeyup: function (evt) {
+    try {
+      this.model.expression = evt.target.textContent.trim();
+      if (this.error) {
+        this.error = false;
+      }
+    }
+    catch (err) {
+      if (!this.error) {
+        this.error = err.message;
+      }
+    }
   },
 
   initialize: function () {
-    this.el.textContent = (this.model.mapping || '').trim();
+    var val = (this.model.mapping || '').trim();
+
+    if (this.model.clauseType !== 'input') {
+      this.el.innerHTML = '<span contenteditable spellcheck="false">' + val + '</span>';
+    }
+    else {
+      this.el.textContent = val;
+    }
   }
 }));
 
