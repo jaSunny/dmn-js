@@ -60,7 +60,6 @@ var MappingView = View.extend(merge({}, {
   },
 
   session: {
-    // invalid: 'boolean',
     error: 'string'
   },
 

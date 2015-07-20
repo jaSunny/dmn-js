@@ -173,7 +173,8 @@ var ClauseExpressionView = View.extend({
     visible:      'boolean',
     big:          'boolean',
     placeholder:  'string',
-    originalBox:  'any'
+    originalBox:  'any',
+    invalid:      'boolean'
   },
 
   derived: {
@@ -232,7 +233,15 @@ var ClauseExpressionView = View.extend({
   },
 
   _handleExpressionChange: function () {
-    this.model.expression = this.expressionEl.value;
+    try {
+      this.model.expression = this.expressionEl.value;
+      if (this.parent.error) {
+        this.parent.error = false;
+      }
+    }
+    catch (err) {
+      this.parent.error = err.message;
+    }
   },
 
   _handleScriptChange: function (evt) {
@@ -308,8 +317,11 @@ var ClauseExpressionView = View.extend({
   },
 
   _resizeTextarea: function (box) {
-    var labelHeight = this.sourceEl.parentNode.clientHeight - this.sourceEl.clientHeight;
-    this.sourceEl.style.height = (box.height - (this.languageEl.clientHeight + labelHeight)) + 'px';
+    var holder = this.sourceEl.parentNode;
+    var link = this.query('.region.' +  this.model.mappingType + ' .row.link');
+    var availableHeight = holder.clientHeight - (this.languageEl.clientHeight + link.clientHeight);
+
+    this.sourceEl.style.height = (box.height - (this.languageEl.clientHeight + availableHeight)) + 'px';
   },
 
   show: function (model, parent) {

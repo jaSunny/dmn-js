@@ -31,6 +31,23 @@ function makeAddButton(clauseType, table) {
   return el;
 }
 
+var ControlsView = View.extend({
+  autoRender: true,
+
+  template: '<div class="controls">' +
+              '<a class="toggle-mappings">Hide mappings</a>' +
+            '</div>',
+
+  events: {
+    'click .toggle-mappings': '_handleMappingsClick'
+  },
+
+  _handleMappingsClick: function (evt) {
+    this.parent.hideMappings = !this.parent.hideMappings;
+    evt.target.textContent = this.parent.hideMappings ? 'Show mappings' : 'Hide mappings';
+  }
+});
+
 
 var FootView = View.extend({
   template: '<tfoot><tr></tr></tfoot>',
@@ -88,7 +105,7 @@ var DecisionTableView = View.extend({
   autoRender: true,
 
   template: '<div class="dmn-table">' +
-              '<span data-hook="controls"></span>' +
+              '<div data-hook="controls"></div>' +
 
               '<header>' +
                 '<h3 data-hook="table-name" contenteditable></h3>' +
@@ -117,13 +134,8 @@ var DecisionTableView = View.extend({
     contextMenu:            'state',
     clauseValuesEditor:     'state',
     clauseExpressionEditor: 'state',
-
-    hint: {
-      type: 'string',
-      default: 'Make a right-click on the table'
-    },
-
-    scrollable: 'boolean'
+    scrollable:             'boolean',
+    hideMappings:           'boolean'
   },
 
   bindings: {
@@ -137,35 +149,21 @@ var DecisionTableView = View.extend({
     },
     scrollable: {
       type: 'booleanClass'
+    },
+    hideMappings: {
+      type: 'booleanClass',
+      name: 'hide-mappings'
     }
   },
 
   events: {
-    'input header h3':   '_handleNameInput'
+    'input header h3': '_handleNameInput'
   },
 
   _handleNameInput: function (evt) {
     var val = evt.target.textContent.trim();
     if (val === this.model.name) { return; }
     this.model.name = val;
-  },
-
-  log: function () {
-    var args = Array.prototype.slice.apply(arguments);
-    var method = args.shift();
-    args.unshift(this.cid);
-    console[method].apply(console, args);
-  },
-
-  eventLog: function (scopeName) {
-    var self = this;
-    return function () {
-      var args = [];
-      args.unshift(scopeName);
-      args.unshift('trace');
-      args.push(arguments[0]);
-      self.log.apply(self, args);
-    };
   },
 
   initialize: function (options) {
@@ -514,7 +512,8 @@ var DecisionTableView = View.extend({
         outputsHeaderEl:  'thead tr:nth-child(1) th.output',
         labelsRowEl:      'thead tr.labels',
         valuesRowEl:      'thead tr.values',
-        mappingsRowEl:    'thead tr.mappings'
+        mappingsRowEl:    'thead tr.mappings',
+        controlsEl:       '[data-hook="controls"]'
       });
 
 
@@ -572,6 +571,13 @@ var DecisionTableView = View.extend({
     this.bodyEl.innerHTML = '';
     this.rulesView = this.renderCollection(this.model.rules, RuleView, this.bodyEl);
 
+    if (!this.controlsView) {
+      this.controlsView = new ControlsView({
+        parent: this,
+        el:     this.controlsEl
+      });
+    }
+
     if (!this.footView) {
       var footEl = this.query('tfoot');
       if (footEl) { footEl.parentNode.removeChild(footEl); }
@@ -582,10 +588,12 @@ var DecisionTableView = View.extend({
       this.tableEl.appendChild(this.footView.el);
     }
 
-    this.listenToAndRun(this.model.rules, 'all', this._resizeBody);
-    // window.addEventListener('resize', function () {
-    //   this._resizeBody();
-    // }.bind(this));
+    if (this.el.classList.contains('scroll-enabled')) {
+      this.listenToAndRun(this.model.rules, 'all', this._resizeBody);
+      // window.addEventListener('resize', function () {
+      //   this._resizeBody();
+      // }.bind(this));
+    }
     return this;
   }
 });
