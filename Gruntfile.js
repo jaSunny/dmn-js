@@ -101,11 +101,15 @@ module.exports = function(grunt) {
           {src: 'images/contextmenu-cursor.png', dest: 'dist/contextmenu-cursor.png'}
         ]
       },
-      editor: {
+      editorStyles: {
         files: [
-          {src: 'node_modules/styles-editor/dist/styles-editor.js', dest: 'dist/styles-editor.js'},
           {src: 'node_modules/styles-editor/dist/styles-editor.css', dest: 'dist/styles-editor.css'},
           {cwd: 'node_modules/', src: 'bootstrap/less/**/*.less', expand: true, dest: 'dist/'}
+        ]
+      },
+      editorScripts: {
+        files: [
+          {src: 'node_modules/styles-editor/dist/styles-editor.js', dest: 'dist/styles-editor.js'}
         ]
       },
       less: {
@@ -129,12 +133,20 @@ module.exports = function(grunt) {
     },
 
     watch: {
-      editor: {
+      editorStyles: {
         files: [
-          'node_modules/styles-editor/dist/styles-editor.{js,css}'
+          'node_modules/styles-editor/dist/styles-editor.css'
         ],
         tasks: [
-          'copy:editor'
+          'copy:editorStyles'
+        ]
+      },
+      editorScripts: {
+        files: [
+          'node_modules/styles-editor/dist/styles-editor.js'
+        ],
+        tasks: [
+          'copy:editorScripts'
         ]
       },
 

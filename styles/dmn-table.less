@@ -2,7 +2,7 @@
   position: relative;
   max-height: 100%;
   color: @dmn-gray-darker;
-  overflow: visible;
+  overflow: auto;
 
   .borderbox;
 
@@ -147,13 +147,21 @@
     }
   }
 
-  .values .col-focused {
-    background-color: @dmn-values-focused-bg;
+  .values {
+    td {
+      background-color: @dmn-values-bg;;
+    }
+
+    .col-focused {
+      background-color: @dmn-values-focused-bg;
+    }
   }
 
   .mappings {
     font-family: monospace;
-    background-color: @dmn-gray-light;
+    td {
+      background-color: @dmn-mappings-bg;;
+    }
 
     .col-focused {
       background-color: @dmn-mappings-focused-bg;

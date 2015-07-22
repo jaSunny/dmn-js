@@ -100,28 +100,22 @@ var defaultLanguage = [
 
 var ClauseExpressionView = View.extend({
   template: '<div class="dmn-clauseexpression-setter">' +
-              '<div class="expression region">' +
-                '<div class="row link">' +
-                  '<a class="toggle-script use-script">Use script</a>' +
-                  '<span class="icon-dmn icon-clear"></span>' +
+              '<div class="links">' +
+                '<div class="toggle-type">' +
+                  '<a class="expression">Expression</a>' +
+                  '<a class="script">Script</a>' +
                 '</div>' +
+                '<a class="icon-dmn icon-clear"></a>' +
+              '</div>' +
 
-                '<div class="row fields">' +
-                  '<label>Expression:</label>' +
-                  '<input placeholder="${propertyName}" />' +
-                '</div>' +
+              '<div class="expression region">' +
+                '<label>Expression:</label>' +
+                '<input placeholder="propertyName" />' +
               '</div>' +
 
               '<div class="script region">' +
-                '<div class="row link">' +
-                  '<a class="toggle-script use-expression">Use expression</a>' +
-                  '<span class="icon-dmn icon-clear"></span>' +
-                '</div>' +
-
-                '<div class="row fields">' +
-                  '<div class="language"></div>' +
-                  '<textarea></textarea>' +
-                '</div>' +
+                '<div class="language"></div>' +
+                '<textarea></textarea>' +
               '</div>' +
             '</div>',
 
@@ -171,7 +165,6 @@ var ClauseExpressionView = View.extend({
 
   session: {
     visible:      'boolean',
-    big:          'boolean',
     placeholder:  'string',
     originalBox:  'any',
     invalid:      'boolean'
@@ -222,13 +215,19 @@ var ClauseExpressionView = View.extend({
     'model.expression': {
       type: 'value',
       selector: '.expression input'
+    },
+
+    'model.mappingType': {
+      type: function () {
+        this.setPosition();
+      }
     }
   },
 
   events: {
     'keyup .expression input':    '_handleExpressionChange',
     'keyup .script textarea':     '_handleScriptChange',
-    'click .toggle-script':       '_handleScriptToggleClick',
+    'click .toggle-type a':       '_handleScriptToggleClick',
     'click .icon-clear':          '_handleClearClick'
   },
 
@@ -249,48 +248,11 @@ var ClauseExpressionView = View.extend({
   },
 
   _handleScriptToggleClick: function (evt) {
-    if (evt.target.className.indexOf('use-script') > -1) {
-      this.model.mappingType = 'script';
-      this.big = true;
-    }
-    else {
-      this.model.mappingType = 'expression';
-      this.big = false;
-    }
+    this.model.mappingType = evt.target.className;
   },
 
   _handleClearClick: function () {
     this.hide();
-  },
-
-  initialize: function () {
-    this.on('change:big', function () {
-      var style = this.el.style;
-      var box;
-
-      if (this.big) {
-        this.el.classList.add('big');
-
-        box = elBox(this.tableView.el);
-
-        style.width = box.width +'px';
-        style.height = box.height +'px';
-      }
-      else {
-        this.el.classList.remove('big');
-
-        box = this.originalBox;
-
-        style.width = 'auto';
-        style.height = 'auto';
-      }
-
-      if (box) {
-        this._resizeTextarea(box);
-        style.top = box.top +'px';
-        style.left = box.left +'px';
-      }
-    });
   },
 
   setPosition: function () {
@@ -298,30 +260,44 @@ var ClauseExpressionView = View.extend({
       this.visible = false;
       return;
     }
+    var box;
+    var style = this.el.style;
 
-    this.originalBox = elBox(this.el);
+    // initial or expression
+    if (this.model.mappingType !== 'script') {
+      this.el.classList.remove('use-script');
 
-    var box = elBox(this.parent.el);
+      style.visibility = 'hidden';
+      style.display = 'block';
+      style.width = 'auto';
 
-    box.top -= this.el.clientHeight;
+      this.originalBox = elBox(this.el);
+      box = elBox(this.parent.el);
 
-    box.left += Math.min(document.body.clientWidth - (box.left + this.el.clientWidth), 0);
-    box.top += Math.min(document.body.clientHeight - (box.top + this.el.clientHeight), 0);
+      box.top -= this.el.clientHeight;
 
-    this.el.style.top = box.top +'px';
-    this.el.style.left = box.left +'px';
+      box.left += Math.min(document.body.clientWidth - (box.left + this.el.clientWidth), 0);
+      box.top += Math.min(document.body.clientHeight - (box.top + this.el.clientHeight), 0);
 
-    if (this.languageView) {
-      this.languageView.setPosition();
+      style.top = box.top +'px';
+      style.left = box.left +'px';
+      style.visibility = null;
     }
-  },
 
-  _resizeTextarea: function (box) {
-    var holder = this.sourceEl.parentNode;
-    var link = this.query('.region.' +  this.model.mappingType + ' .row.link');
-    var availableHeight = holder.clientHeight - (this.languageEl.clientHeight + link.clientHeight);
+    // script
+    else {
+      if (this.languageView) {
+        this.languageView.setPosition();
+      }
+      this.el.classList.add('use-script');
 
-    this.sourceEl.style.height = (box.height - (this.languageEl.clientHeight + availableHeight)) + 'px';
+      box = elBox(this.tableView.el);
+      style.top = box.top + 'px';
+      style.left = box.left + 'px';
+      style.width = box.width + 'px';
+    }
+
+    return this;
   },
 
   show: function (model, parent) {
@@ -355,7 +331,6 @@ var ClauseExpressionView = View.extend({
   },
 
   hide: function () {
-    this.big = false;
     this.visible = false;
     return this;
   },

@@ -12,6 +12,7 @@ var ClauseModel = State.extend({
     label:        'string',
     choices:      'array',
     datatype:     {type: 'string', default: 'string'},
+    mappingType:  {type: 'string', default: 'expression'},
     expression:   {
       type: 'string',
       test: function (val) {
