@@ -34,8 +34,6 @@
   },
   "license": "LicenseRef-LICENSE",
   "devDependencies": {
-    "bootstrap": "^3.3.5",
-    "brfs": "^1.4.0",
     "chai": "~2.2.0",
     "browserify": "^8.1.0",
     "browserify-derequire": "^0.9.1",
@@ -68,6 +66,8 @@
     "uglify-js": "^2.4.16"
   },
   "dependencies": {
+    "bootstrap": "^3.3.5",
+    "brfs": "^1.4.0",
     "dmn-moddle": "^0.1.0",
     "table-js": "dmn-io/table-js",
     "diagram-js": "^0.11.0",
