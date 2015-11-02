@@ -31,7 +31,7 @@ describe('Modeler', function() {
   }
 
 
-  it('should import simple process', function(done) {
+  it.only('should import simple process', function(done) {
     var xml = fs.readFileSync(__dirname + '/../fixtures/dmn/simple.dmn', 'utf-8');
     createModeler(xml, done);
   });
